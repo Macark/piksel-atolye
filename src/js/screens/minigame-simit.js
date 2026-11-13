@@ -69,7 +69,7 @@ function miniDraw(){
   G.fx.forEach(f => {
     if (f.splash){ const r = Math.round(2 + f.t * 8); mr(f.x - r, f.y, 1, 1, '#EAF6FF'); mr(f.x + r, f.y, 1, 1, '#EAF6FF'); mr(f.x - r / 2, f.y - 2, 1, 1, '#EAF6FF'); mr(f.x + r / 2, f.y - 2, 1, 1, '#EAF6FF'); }
     else if (f.heart){ const hx = Math.round(f.x), hy = Math.round(f.y - 10 - f.t * 14); mr(hx - 3, hy, 2, 2, '#E8384F'); mr(hx + 1, hy, 2, 2, '#E8384F'); mr(hx - 3, hy + 1, 6, 2, '#E8384F'); mr(hx - 2, hy + 3, 4, 1, '#E8384F'); mr(hx - 1, hy + 4, 2, 1, '#E8384F'); }
-    else { mo.font = '700 9px Silkscreen, "Pixelify Sans", monospace'; mo.textAlign = 'center'; mo.lineWidth = 2; mo.strokeStyle = '#2A1D14'; mo.strokeText(f.text, f.x, f.y - f.t * 10); mo.fillStyle = '#FFE135'; mo.fillText(f.text, f.x, f.y - f.t * 10); }
+    else { mo.font = '700 9px "Pixelify Sans", monospace'; mo.textAlign = 'center'; mo.lineWidth = 2; mo.strokeStyle = '#2A1D14'; mo.strokeText(f.text, f.x, f.y - f.t * 10); mo.fillStyle = '#FFE135'; mo.fillText(f.text, f.x, f.y - f.t * 10); }
   });
   mr(0, 172, MW, 2, '#2B3442'); for (let x = 2; x < MW; x += 12) mr(x, 166, 1, 6, '#2B3442'); mr(0, 166, MW, 1, '#2B3442');
   mr(0, 174, MW, 26, '#F4F4F4'); mr(0, 196, MW, 4, '#2B3442');

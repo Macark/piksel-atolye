@@ -116,7 +116,9 @@ $('#shareX').onclick = () => $('#shareClose').click();
 $('#setupX').onclick = () => $('#backBtn').click();
 $('#addX').onclick = () => $('#addClose').click();
 $('#shopX').onclick = () => $('#shopClose').click();
-$('#shareBtn').onclick = () => { if (shareFor !== viewArt){ shareOpt.emo = []; emoSel = -1; shareFor = viewArt; } buildShareChips(); renderShare(); $('#share').classList.add('on'); $('#shareGo').focus(); };
+// Paylaşım mesajı: hazır bir öneriyle dolu gelir; oyuncu düzenleyebilir, silebilir ya da kendisi yazabilir.
+const shareDefault = () => { const nm = viewCtx.id && ITEMS[viewCtx.id] ? trx(ITEMS[viewCtx.id].name) : ($('#capIn').value || '').trim(); return nm ? TL('Piksel Atölye\'de "{0}" resmini kare kare boyadım! 🎨', nm) : TL('Piksel Atölye\'de kare kare boyadım! 🎨'); };
+$('#shareBtn').onclick = () => { if (shareFor !== viewArt){ shareOpt.emo = []; emoSel = -1; shareFor = viewArt; $('#shareText').value = shareDefault(); } buildShareChips(); renderShare(); $('#share').classList.add('on'); $('#shareGo').focus(); };
 document.querySelectorAll('#fmtSeg button').forEach(b => b.onclick = () => { shareFmt = b.dataset.f; renderShare(); });
 $('#shareClose').onclick = () => $('#share').classList.remove('on');
 $('#shareGo').onclick = async () => {
@@ -124,7 +126,10 @@ $('#shareGo').onclick = async () => {
   try {
     const blob = await new Promise(r => shareCanvas.toBlob(r, 'image/png'));
     const file = new File([blob], 'piksel-atolye.png', { type:'image/png' });
-    if (navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], title:trx('Piksel Atölye') }); return; }
+    const text = $('#shareText').value.trim(), data = { files:[file], title:trx('Piksel Atölye') };
+    if (text) data.text = text; // bazı uygulamalar (ör. Instagram) resimle birlikte metni almaz; WhatsApp, Mesajlar vb. alır
+    if (navigator.canShare && navigator.canShare(data)){ await navigator.share(data); return; }
+    if (navigator.canShare && navigator.canShare({ files:[file] })){ delete data.text; await navigator.share(data); return; }
   } catch(e){ if (e && e.name === 'AbortError') return; }
   msg('Bu önizlemede paylaşım menüsü açılamıyor. Resme basılı tutup kaydet, sonra istediğin uygulamada paylaş. Gerçek uygulamada bu buton doğrudan Instagram ve WhatsApp’ı açar.');
 };

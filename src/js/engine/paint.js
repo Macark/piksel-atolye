@@ -29,8 +29,8 @@ function buildPal(){
   const p = $('#pal'); p.innerHTML = '';
   A.pal.forEach((c, j) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'sw';
-    const ink = lum(A.rgb[j]) > 140 ? '#1A1410' : '#FFFFFF';
-    b.innerHTML = `<b style="background:${c};color:${ink};flex-direction:column;line-height:1">${j + 1}${DB.cb ? `<span class="cbm" style="color:${ink}">${CBSYM[j % CBSYM.length]}</span>` : ''}</b><small></small>`;
+    const ink = inkFor(A.rgb[j]), halo = ink === INK_DARK ? 'rgba(255,255,255,.55)' : 'rgba(0,0,0,.6)';
+    b.innerHTML = `<b style="background:${c};color:${ink};--halo:${halo};flex-direction:column;line-height:1">${j + 1}${DB.cb ? `<span class="cbm" style="color:${ink}">${CBSYM[j % CBSYM.length]}</span>` : ''}</b><small></small>`;
     b.onclick = () => { if (sel === j && remain[j] > 0) seek(j); else { sel = j; refreshPal(); dirty = true; } };
     p.append(b);
   });
@@ -134,7 +134,6 @@ function fillCell(i, live){
   const x = i % A.n + .5, y = Math.floor(i / A.n) + .5, c = A.pal[j];
   for (let k = 0; k < 4; k++){ const a = Math.random() * TAU, sp = 2 + Math.random() * 3; parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 2, life: 0.45, max: 0.45, c: k ? c : '#FFFFFF' }); }
   if (parts.length > 500) parts.splice(0, parts.length - 500);
-  if (live && combo > 0 && combo % 10 === 0) floats.push({ x, y: y - 0.6, t0: now, text: 'x' + combo });
   if (navigator.vibrate && !DB.noVibe) try { navigator.vibrate(4); } catch(err){}
   $('#tip').classList.add('off');
   updateProg();

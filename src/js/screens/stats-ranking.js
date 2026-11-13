@@ -12,15 +12,19 @@ function openRank(mode){
   const ds0 = dailyState(); rankMode = typeof mode === 'string' ? mode : (rankMode || (ds0.done && ds0.pw ? 'free' : 'pure'));
   document.querySelectorAll('#rankTabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === rankMode)));
   const rows = dailyBoard(rankMode), mi = rows.findIndex(x => x.me), L = $('#rankList'); L.innerHTML = '';
-  const kind = rankMode === 'pure' ? 'Güçsüz sıralama: hiç güç kullanmadan bitirenler yarışır. ' : 'Serbest sıralama: güç kullanan ve kullanmayan herkes yarışır. ';
-  const mine = mi >= 0 ? TL('Bugün {0} kişi arasında {1}. sıradasın. ', rows.length, mi + 1) : (ds0.done && ds0.pw && rankMode === 'pure' ? 'Bugün güç kullandığın için bu sıralamada yoksun, Serbest sıralamaya bak. ' : 'Günün resmini bitirince sen de sıralamaya girersin. ');
-  $('#rankNote').textContent = trx(kind) + trx(mine) + trx('Örnek sıralamadır: gerçek uygulamada o gün boyayan bütün oyuncular burada görünür.');
+  const kind = rankMode === 'pure' ? 'Hiç güç kullanmadan bitirenler yarışır.' : 'Güç kullanan ve kullanmayan herkes yarışır.';
+  const mine = mi >= 0 ? TL('Bugün {0} kişi arasında {1}. sıradasın.', rows.length, mi + 1) : (ds0.done && ds0.pw && rankMode === 'pure' ? 'Bugün güç kullandığın için bu sıralamada yoksun, Serbest sıralamaya bak.' : 'Günün resmini bitirince sen de sıralamaya girersin.');
+  $('#rankNote').textContent = trx(kind) + ' ' + trx(mine);
+  $('#rankFoot').textContent = trx('Örnek sıralamadır: gerçek uygulamada o gün boyayan bütün oyuncular burada görünür.');
   const show = new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]); if (mi >= 0){ show.add(mi); if (mi > 0) show.add(mi - 1); if (mi < rows.length - 1) show.add(mi + 1); }
   let prev = -1;
+  L.insertAdjacentHTML('beforeend', `<div class="rk rkh"><span>${trx('SIRA')}</span><span>${trx('OYUNCU')}</span><span>${trx('SÜRE')}</span></div>`);
   [...show].sort((a, b) => a - b).forEach(i => {
-    if (prev >= 0 && i > prev + 1) L.insertAdjacentHTML('beforeend', '<div class="rk" style="justify-items:center;grid-template-columns:1fr"><span class="muted">...</span></div>');
-    const x = rows[i], d = document.createElement('div'); d.className = 'rk' + (x.me ? ' me' : '');
-    d.innerHTML = `<span>${i + 1}.</span><span></span><span>${fmtT(x.t)}</span>`; d.children[1].textContent = x.name + (x.pw ? ' (güçle)' : '');
+    if (prev >= 0 && i > prev + 1) L.insertAdjacentHTML('beforeend', '<div class="rkgap" aria-hidden="true">⋯</div>');
+    const x = rows[i], d = document.createElement('div'); d.className = 'rk' + (x.me ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : '') + (L.querySelectorAll('.rk').length % 2 === 0 ? ' z' : '');
+    d.innerHTML = `<span class="rn">${i + 1}</span><span class="rnm"><span></span></span><span class="rt">${fmtT(x.t)}</span>`;
+    d.querySelector('.rnm span').textContent = x.me ? trx('SEN') : x.name;
+    if (x.pw){ const t = document.createElement('small'); t.className = 'rtag'; t.textContent = trx('güçle'); d.querySelector('.rnm').append(t); }
     L.append(d); prev = i;
   });
   $('#rank').classList.add('on'); $('#rankX').focus();

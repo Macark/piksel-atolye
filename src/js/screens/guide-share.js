@@ -100,12 +100,12 @@ function renderCard(art, cap){
   const u = 9, sp = [[pad + S - 46, pad - 26], [pad - 26, pad + S - 46], [pad - 26, pad - 26], [pad + S - 46, pad + S - 46]];
   sts.slice(0, 4).forEach((id, q) => drawSticker(g, id, sp[q][0], sp[q][1], u));
   g.fillStyle = ink; g.textAlign = 'center'; g.textBaseline = 'middle';
-  let fs = 46; g.font = `700 ${fs}px Silkscreen, "Pixelify Sans", monospace`;
-  while (g.measureText(cap).width > W2 - 90 && fs > 20){ fs -= 2; g.font = `700 ${fs}px Silkscreen, "Pixelify Sans", monospace`; }
+  let fs = 46; g.font = `700 ${fs}px "Pixelify Sans", monospace`;
+  while (g.measureText(cap).width > W2 - 90 && fs > 20){ fs -= 2; g.font = `700 ${fs}px "Pixelify Sans", monospace`; }
   g.fillText(cap, W2 / 2, S + pad + 72);
   const pal = art.pal, gap = 6, d = Math.max(8, Math.min(22, Math.floor((W2 - 120) / pal.length) - gap)), tw = pal.length * (d + gap) - gap;
   let x = (W2 - tw) / 2; pal.forEach(col => { g.fillStyle = (fr === 'film' || fr === 'cadilar') ? '#FFF7EA' : '#2A1D14'; g.fillRect(x - 2, S + pad + 114, d + 4, d + 4); g.fillStyle = col; g.fillRect(x, S + pad + 116, d, d); x += d + gap; });
-  g.fillStyle = brand; g.font = '700 22px Silkscreen, "Pixelify Sans", monospace'; g.fillText('PİKSEL ATÖLYE', W2 / 2, S + pad + 164);
+  g.fillStyle = brand; g.font = '700 22px "Pixelify Sans", monospace'; g.fillText('PİKSEL ATÖLYE', W2 / 2, S + pad + 164);
   cardBaseURL = k.toDataURL('image/png');
   const emo = (viewRec && viewRec.emo) || [];
   g.textAlign = 'center'; g.textBaseline = 'middle';
@@ -272,9 +272,9 @@ function renderShareBase(){
   g.textAlign = 'center'; g.textBaseline = 'middle';
   if (story){
     const out = (t, y, col, font) => { g.font = font; g.lineJoin = 'round'; g.lineWidth = 10; g.strokeStyle = 'rgba(14,11,9,0.75)'; g.strokeText(t, W3 / 2, y); g.fillStyle = col; g.fillText(t, W3 / 2, y); };
-    out('PİKSEL ATÖLYE', 190, '#FFE135', '700 76px Silkscreen, "Pixelify Sans", monospace');
-    out('Kare kare ben boyadım', 1690, '#FFF7EA', '700 58px Silkscreen, "Pixelify Sans", monospace');
-    out('Sen de kendi fotoğrafını boya', 1770, '#F3E6D2', '400 38px Silkscreen, "Pixelify Sans", monospace');
+    out('PİKSEL ATÖLYE', 190, '#FFE135', '700 76px "Pixelify Sans", monospace');
+    out('Kare kare ben boyadım', 1690, '#FFF7EA', '700 58px "Pixelify Sans", monospace');
+    out('Sen de kendi fotoğrafını boya', 1770, '#F3E6D2', '400 38px "Pixelify Sans", monospace');
   }
   applyShFilter(g, W3, H3);
   shBase = k; shBaseURL = k.toDataURL('image/png');

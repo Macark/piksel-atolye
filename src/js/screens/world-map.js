@@ -31,7 +31,7 @@ function drawWorldFrame(t){
     leg(k, (x0, y0, x1, y1) => { dash(x0, y0, x1, y1, col, off); if (x1 > 720 || x1 < 0){ const sh = x1 > 720 ? -720 : 720; dash(x0 + sh, y0, x1 + sh, y1, col, off); } });
   }
   CLOUDS.forEach(cl => { const x = ((cl.x + t * cl.sp) % 800) - 40, w = cl.w * 6; g.fillStyle = 'rgba(255,255,255,0.7)'; g.fillRect(Math.round(x), Math.round(cl.y), w, 5); g.fillRect(Math.round(x) + 6, Math.round(cl.y) - 4, w - 12, 4); g.fillStyle = 'rgba(255,255,255,0.35)'; g.fillRect(Math.round(x) + 3, Math.round(cl.y) + 5, w - 6, 2); });
-  g.textBaseline = 'middle'; g.lineJoin = 'round'; g.font = '700 11px Silkscreen, "Pixelify Sans", monospace';
+  g.textBaseline = 'middle'; g.lineJoin = 'round'; g.font = '700 11px "Pixelify Sans", monospace';
   CITIES.forEach((c, k) => {
     const [x, y] = pts[k], has = !!DB.tickets[c.id], done = cityDone(c), cur = k === mapCur, sz = cur ? 16 : 12;
     if (cur){ const kk = (t % 1.4) / 1.4; g.strokeStyle = `rgba(240,185,58,${(1 - kk).toFixed(2)})`; g.lineWidth = 2; const rr3 = 10 + kk * 12; g.strokeRect(Math.round(x - rr3), Math.round(y - rr3), Math.round(rr3 * 2), Math.round(rr3 * 2)); }

@@ -108,8 +108,12 @@ function openBadges(sel){
     const on = !!DB.badges[b.id], d = document.createElement('button'); d.type = 'button';
     d.className = 'bcell' + (on ? '' : ' off'); d.setAttribute('aria-pressed', String(b.id === bSel));
     d.append(badgeCanvas(b, on));
-    const nm = document.createElement('span'); nm.textContent = b.name; d.append(nm);
-    if (!on && b.goal > 1){ const bar = document.createElement('div'); bar.className = 'bbar'; bar.innerHTML = `<i style="width:${Math.min(100, Math.floor(b.v() / b.goal * 100))}%"></i>`; d.append(bar); }
+    const nm = document.createElement('span'); nm.className = 'bname'; nm.textContent = b.name; d.append(nm);
+    // Alt satır her hücrede aynı yükseklikte: kazanıldıysa onay, değilse ilerleme çubuğu (hizalar bozulmasın)
+    const ft = document.createElement('div'); ft.className = 'bfoot';
+    if (on) ft.textContent = '✓ KAZANILDI';
+    else { const pr = Math.min(100, Math.floor(b.v() / b.goal * 100)); if (pr > 0) d.classList.add('prog'); ft.innerHTML = `<div class="bbar"><i style="width:${pr}%"></i></div>`; }
+    d.append(ft);
     d.setAttribute('aria-label', `${b.name}, ${on ? 'kazanıldı' : 'henüz kazanılmadı'}`);
     d.onclick = () => openBadges(b.id);
     G.append(d);

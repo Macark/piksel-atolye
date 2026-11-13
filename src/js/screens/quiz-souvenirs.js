@@ -53,7 +53,7 @@ function souvBox(groups, title, desc){
   const box = document.createElement('div'); box.className = 'passport box'; box.style.marginTop = '16px';
   const all = groups.flatMap(c => c.items.filter(it => SOUV[it.id]).map(it => ({ c, it })));
   const n = all.filter(x => DB.souv[x.it.id]).length;
-  box.innerHTML = `<h3>${title || 'HATIRA BAVULU'} <small class="muted" style="font-size:14px">${n}/${all.length}</small></h3><p class="muted" style="font-size:13px;margin:-4px 0 10px">${desc || 'Her resmi bitirince rehber bir soru sorar. Bilirsen buraya bir hatıra girer.'}</p><div class="souvs"></div>`;
+  box.innerHTML = `<h3>${title || 'HATIRA BAVULU'} <small class="muted" style="font-size:14px">${n}/${all.length}</small></h3><p class="muted" style="font-size:14px;margin:-4px 0 10px">${desc || 'Her resmi bitirince rehber bir soru sorar. Bilirsen buraya bir hatıra girer.'}</p><div class="souvs"></div>`;
   all.forEach(({ c, it }) => {
     const got = !!DB.souv[it.id], d = document.createElement('div'); d.className = 'souv' + (got ? ' got' : '');
     d.style.setProperty('--sc', c.color);

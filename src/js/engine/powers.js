@@ -18,11 +18,11 @@ const COINSM = COINSVG;
 function buildPowers(){
   const w = $('#pw'); w.innerHTML = `<span class="coinmini">${COINSVG}<span class="coinN">${DB.coins}</span></span>`;
   if (mode !== 'paint' || !A || !A.idx) return;
-  const tour = !!(A.id && ITEMS[A.id] && ITEMS[A.id].album.kind === 'city');
+  // Bütün güçler her resimde görünür; açılmamışlar kilitli (🔒), dokununca nerede açıldığı yazar.
   let shown = 0;
   Object.values(POWERS).forEach(p => {
     const open = !!DB.tickets[p.city];
-    const rent = !open && isDaily && p.id !== 'neon'; if (!open && !tour && !rent) return;
+    const rent = !open && isDaily && p.id !== 'neon';
     shown++;
     const b = document.createElement('button'); b.type = 'button';
     b.className = 'pwb box' + (open || rent ? '' : ' locked') + ((p.id === 'bomba' && bombArmed) || (p.id === 'kova' && kovaArmed) || (p.id === 'neon' && DB.neon) ? ' on' : '');
@@ -54,7 +54,7 @@ function openPwInfo(){
 function pay(c){ DB.coins -= c; save(); setCoins(); }
 function usePower(id){
   const p = POWERS[id];
-  const rent = !DB.tickets[p.city]; if (rent && !(isDaily && id !== 'neon')){ msg(TL('{0}, {1} biletini alınca açılır. {2}', p.name, cityLabel(p.city), p.desc)); return; }
+  const rent = !DB.tickets[p.city]; if (rent && !(isDaily && id !== 'neon')){ msg(TL('{0}, {1} biletini alınca açılır. {2}', p.name, cityLabel(p.city), p.desc) + (p.id !== 'neon' ? ' ' + TL('O zamana kadar günün resminde iki kat fiyatla kullanabilirsin: {0} coin.', p.cost * 2) : '')); return; }
   const cost = rent ? p.cost * 2 : p.cost;
   if (mode !== 'paint') return;
   if (id === 'neon'){ DB.neon = !DB.neon; save(); buildPowers(); dirty = true; return; }

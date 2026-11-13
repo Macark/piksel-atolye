@@ -26,9 +26,11 @@ function render(){
   const replay = mode === 'replay', rp = replay ? Math.floor(order.length * Math.min(1, replayT / 4.2)) : 0;
   const shown = replay ? new Uint8Array(n * n) : null;
   if (replay) for (let k = 0; k < rp; k++) shown[order[k]] = 1;
-  const numbers = !replay && s >= (DB.bigNum ? 11 : 15) * dpr, grid = !replay && s >= 9 * dpr, cbm = !replay && DB.cb && s >= 12 * dpr;
+  // Sayılar kare en az 10 (büyük numarada 8) ekran pikseli olunca çizilir; rakam her zaman karenin içine sığacak
+  // boyutta seçildiği için üst üste binmez. Daha küçükte seçili rengin karelerine o rengin noktası konur (selDot).
+  const numbers = !replay && s >= (DB.bigNum ? 8 : 10) * dpr, selDot = !replay && !numbers, grid = !replay && s >= 9 * dpr, cbm = !replay && DB.cb && s >= 12 * dpr;
   const neon = !replay && DB.neon, bevel = !replay && s >= 12 * dpr, shimmer = !replay && now - colorDoneT < 0.8, pops = [];
-  g.font = `700 ${Math.floor(s * (DB.bigNum ? 0.62 : 0.46))}px Silkscreen, "Pixelify Sans", ui-monospace, monospace`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = `700 ${Math.floor(s * (DB.bigNum ? 0.62 : 0.46))}px "Pixelify Sans", ui-monospace, monospace`; g.textAlign = 'center'; g.textBaseline = 'middle';
   for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++){
     const i = y * n + x, cx = view.ox + x * s, cy = view.oy + y * s, c = A.rgb[A.idx[i]];
     const on = replay ? shown[i] : painted[i];
@@ -45,7 +47,8 @@ function render(){
       const isSel = !replay && A.idx[i] === sel;
       g.fillStyle = isSel ? '#B7B0A4' : `rgb(${base|0},${(base - 3)|0},${(base - 9)|0})`;
       g.fillRect(cx, cy, s + 0.5, s + 0.5);
-      if (numbers) drawNum(g, A.idx[i] + 1, cx, cy, s, isSel ? '#1A1410' : '#7E766A');
+      if (numbers) drawNum(g, A.idx[i] + 1, cx, cy, s, isSel ? '#1A1410' : '#6E665B');
+      else if (selDot && isSel){ const d = Math.max(1, Math.round(s * 0.5)), o = (s - d) / 2; g.fillStyle = A.pal[A.idx[i]]; g.fillRect(cx + o, cy + o, d, d); }
     }
   }
   if (grid){
@@ -69,7 +72,7 @@ function render(){
   for (const f of floats){
     const t = (now - f.t0) / 1.0; if (t > 1) continue;
     const X = view.ox + f.x * s, Y = view.oy + f.y * s - t * 40 * dpr, fs = (f.big ? 22 : 18) * dpr;
-    g.font = `700 ${fs}px Silkscreen, "Pixelify Sans", ui-monospace, monospace`; g.globalAlpha = 1 - t * t;
+    g.font = `700 ${fs}px "Pixelify Sans", ui-monospace, monospace`; g.globalAlpha = 1 - t * t;
     g.lineWidth = 4 * dpr; g.strokeStyle = '#1A1410'; g.strokeText(f.text, X, Y); g.fillStyle = f.big ? '#FFE135' : '#FFFFFF'; g.fillText(f.text, X, Y);
     g.globalAlpha = 1;
   }

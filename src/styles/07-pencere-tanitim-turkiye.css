@@ -11,7 +11,7 @@
 .gthole{position:fixed;border-radius:4px;box-shadow:0 0 0 9999px rgba(10,8,6,.72);outline:3px solid var(--gold);outline-offset:3px;transition:all .25s ease;pointer-events:none}
 .gthole.center{left:50%!important;top:45%!important;width:0!important;height:0!important;outline:0}
 .gtbox{position:fixed;left:16px;right:16px;max-width:420px;margin:0 auto;padding:14px 16px;transition:top .25s ease}
-.gthead{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:700}
+.gthead{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--muted);font-weight:700}
 .gtskip{background:none;border:0;font:inherit;font-weight:700;color:var(--muted);text-decoration:underline;padding:4px}
 #gtText{font-size:15px;line-height:1.4;margin:8px 0 12px;white-space:pre-line}
 .gtbtns{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
@@ -23,19 +23,19 @@
 .home .tours .btn{justify-content:center}
 .trwrap{background:#1E3350}
 .trwrap canvas{display:block;width:840px!important;height:364px!important;max-width:none!important;image-rendering:pixelated;touch-action:pan-x pan-y}
-.trsub{font-size:13px;color:var(--muted);margin-top:8px}
+.trsub{font-size:14px;color:var(--muted);margin-top:8px}
 .illist{display:flex;flex-direction:column;gap:10px;margin-top:16px}
 .ilcard.locked{opacity:.72}
 .trpick{margin-top:12px;border-color:var(--gold)}
 .trpick select{width:100%;padding:12px 10px;font:inherit;font-size:16px;border:3px solid var(--line);background:var(--panel);color:var(--ink)}
-.linkbtn{background:none;border:0;padding:0 2px;font:inherit;font-size:13px;color:var(--accent);text-decoration:underline;cursor:pointer}
+.linkbtn{background:none;border:0;padding:0 2px;font:inherit;font-size:14px;color:var(--accent);text-decoration:underline;cursor:pointer}
 .ilcard{display:grid;grid-template-columns:auto 64px 1fr;gap:12px;align-items:center;padding:10px 12px;text-align:left;border-left:10px solid var(--ic)}
 .ilcard .pl{font-size:22px;font-weight:700;padding:4px 6px;border:3px solid var(--line);background:var(--bg);font-variant-numeric:tabular-nums}
 .ilcard canvas{width:64px;height:64px;image-rendering:pixelated;border:2px solid var(--line)}
 .ilcard b{display:block;font-size:17px}
-.ilcard small{display:block;font-size:13px;color:var(--muted);margin-top:3px}
+.ilcard small{display:block;font-size:14px;color:var(--muted);margin-top:3px}
 .regs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.regs span{display:flex;align-items:center;gap:6px;padding:5px 8px;border:2px solid var(--line);font-size:12px;font-weight:700;background:var(--panel)}
+.regs span{display:flex;align-items:center;gap:6px;padding:5px 8px;border:2px solid var(--line);font-size:13px;font-weight:700;background:var(--panel)}
 .regs i{width:10px;height:10px;background:var(--rc);border:1px solid var(--line)}
 .regs small{font-weight:400;color:var(--muted)}
 .replaybar{position:absolute;left:50%;top:12px;transform:translateX(-50%);display:none}
@@ -43,3 +43,7 @@
 .replaybar button{padding:8px 14px;font-size:16px;font-weight:700}
 @media (prefers-reduced-motion:reduce){.tip{transition:none}}
 
+/* Yazı tipi önizlemesi (?yazi=duz): uzun metinler sade yazı tipiyle; başlık ve butonlar pikselli kalır */
+.f-duz p,.f-duz small,.f-duz .fact,.f-duz .qopt,.f-duz .hint2,.f-duz .note,.f-duz .lede,.f-duz #gtText,.f-duz .gtip span,.f-duz .pwrow p,.f-duz .rnm,.f-duz .setrow small,.f-duz .uprow small{font-family:Nunito,system-ui,sans-serif;font-weight:600;letter-spacing:0}
+.f-duz p b,.f-duz .fact b{font-weight:800}
+.f-duz .btn small,.f-duz .tile small,.f-duz .card .nm{font-family:Nunito,system-ui,sans-serif;font-weight:700;letter-spacing:0}
