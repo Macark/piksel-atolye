@@ -43,7 +43,16 @@
 .replaybar button{padding:8px 14px;font-size:16px;font-weight:700}
 @media (prefers-reduced-motion:reduce){.tip{transition:none}}
 
-/* Yazı tipi önizlemesi (?yazi=duz): uzun metinler sade yazı tipiyle; başlık ve butonlar pikselli kalır */
-.f-duz p,.f-duz small,.f-duz .fact,.f-duz .qopt,.f-duz .hint2,.f-duz .note,.f-duz .lede,.f-duz #gtText,.f-duz .gtip span,.f-duz .pwrow p,.f-duz .rnm,.f-duz .setrow small,.f-duz .uprow small{font-family:Nunito,system-ui,sans-serif;font-weight:600;letter-spacing:0}
-.f-duz p b,.f-duz .fact b{font-weight:800}
-.f-duz .btn small,.f-duz .tile small,.f-duz .card .nm{font-family:Nunito,system-ui,sans-serif;font-weight:700;letter-spacing:0}
+/* Uzun metinler: piksel yazıda okunabilirlik (biraz büyük, satır arası açık, harfler hafif aralıklı) */
+.fact{font-size:16px;line-height:1.5;letter-spacing:.3px}
+.qq{line-height:1.35}
+.qopt{font-size:16px;line-height:1.3}
+.qres{font-size:16px;line-height:1.4}
+.gtip{font-size:15px;line-height:1.4}
+#gtText{font-size:16px;line-height:1.5;letter-spacing:.3px}
+.guide p{line-height:1.45}
+.htslide p{font-size:17px;line-height:1.5}
+.pwrow p{font-size:15px;line-height:1.4}
+.pwrow small,.setrow small,.coupon small,.bdetail small{line-height:1.35}
+.bdetail p{font-size:15px;line-height:1.4}
+.rnote,.sptxt span,.trsub,.colsum .csub{line-height:1.45}

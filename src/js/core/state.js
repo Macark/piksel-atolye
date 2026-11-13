@@ -1,9 +1,4 @@
 const $ = s => document.querySelector(s);
-// Yazı tipi önizlemesi (geçici karar aracı): adres sonuna ?yazi=duz eklenirse uzun metinler sade yazı tipiyle (Nunito) gösterilir.
-// Ali iki seçeneği karşılaştırınca biri kalıcı olacak, bu blok kaldırılacak.
-(() => { try { if (new URLSearchParams(location.search).get('yazi') !== 'duz') return; } catch(e){ return; }
-  const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap'; document.head.append(l);
-  document.documentElement.classList.add('f-duz'); })();
 const KEY = 'piksel-atolye-v1';
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ return {}; } }
 let DB = load(); DB.coins = DB.coins || 0; DB.tickets = DB.tickets || { istanbul:true }; DB.stamps = DB.stamps || {}; DB.ilDone = DB.ilDone || {}; DB.trOpen = DB.trOpen || {}; DB.gallery = DB.gallery || []; DB.done = DB.done || {}; DB.wip = DB.wip || {}; DB.muted = !!DB.muted; DB.stars = DB.stars || {}; DB.albumsDone = DB.albumsDone || {}; DB.neon = !!DB.neon; DB.frames = DB.frames || { polaroid:true }; DB.stats = DB.stats || { pics:Object.keys(DB.done || {}).length + (DB.gallery || []).length, cells:0, time:0, taps:0, wrong:0, daily:{}, bestStreak:0 };
