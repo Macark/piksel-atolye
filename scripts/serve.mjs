@@ -9,7 +9,7 @@ import { build } from './build.mjs';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
 const PORT = +process.env.PORT || 5173;
-const TYPES = { '.html':'text/html; charset=utf-8', '.js':'text/javascript', '.css':'text/css', '.json':'application/json', '.png':'image/png', '.svg':'image/svg+xml', '.woff2':'font/woff2' };
+const TYPES = { '.html':'text/html; charset=utf-8', '.js':'text/javascript', '.css':'text/css', '.json':'application/json', '.webmanifest':'application/manifest+json','.png':'image/png', '.svg':'image/svg+xml', '.woff2':'font/woff2' };
 
 const rebuild = () => { try { build(); console.log(new Date().toLocaleTimeString('tr-TR'), 'derlendi'); } catch (e){ console.error('Derleme hatası:', e.message); } };
 rebuild();

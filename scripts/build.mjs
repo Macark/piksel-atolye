@@ -1,6 +1,7 @@
 // Piksel Atölye derleme betiği.
 // src/index.html içindeki her "<!-- @include yol -->" satırını o dosyanın içeriğiyle değiştirir
 // ve sonucu tek dosya olarak dist/index.html'e yazar. Bağımlılık yok, sadece Node.
+// src/public/ (simgeler, manifest) dist/ içine aynen kopyalanır.
 //
 // Neden tek dosya: bütün JS parçaları tek bir <script> içinde birleşir, böylece
 // fonksiyonlar ve global değişkenler eskisi gibi birbirini görür (sıra önemli!).
@@ -29,6 +30,9 @@ export function build(){
   JSON.parse(fs.readFileSync(path.join(SRC, 'content', 'content.json'), 'utf8'));
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, html);
+  // src/public/ altındaki sabit dosyalar (simgeler, manifest) olduğu gibi dist/'e kopyalanır
+  const PUB = path.join(SRC, 'public');
+  if (fs.existsSync(PUB)) fs.cpSync(PUB, path.dirname(OUT), { recursive: true });
   return { out: OUT, files: used.length, bytes: Buffer.byteLength(html) };
 }
 
