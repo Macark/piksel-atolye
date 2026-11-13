@@ -36,6 +36,7 @@ export function loadContent(dir = CONTENT_DIR){
     upcoming: readJSON(path.join(dir, 'upcoming.json')),
     turkiye: { regions, iller },
     home: readJSON(path.join(dir, 'home.json')),
+    stickers: fs.existsSync(path.join(dir, 'stickers.json')) ? readJSON(path.join(dir, 'stickers.json')) : [],
   };
 }
 
@@ -98,6 +99,17 @@ export function checkContent(c){
   c.events.forEach(e => { group(e, 'etkinlik'); if (!md(e.start) || !md(e.end)) E.push(`etkinlik ${e.id}: tarih [ay, gün] biçiminde olmalı`); });
   group(c.daily, 'günlük'); group(c.sponsor, 'sponsor');
   checkArt(c.home, 'ana sayfa portresi', E, [32, 40, 48, 64]);
+
+  // Stickerlar: 16x16 satır dizisi, '.' saydam, her harfin rengi cols'ta
+  const stIds = new Set(['kalp', 'yildiz', 'tac', 'pati']); // koddaki eski stickerlar
+  (c.stickers || []).forEach((s, k) => {
+    const w = `sticker ${s.id || '#' + k}`;
+    if (!s.id || stIds.has(s.id)) E.push(w + ': kimlik yok ya da çakışıyor'); stIds.add(s.id);
+    if (!s.name) E.push(w + ': ad yok');
+    if (!Array.isArray(s.rows) || s.rows.length !== 16 || s.rows.some(r => typeof r !== 'string' || r.length !== 16)) return E.push(w + ': 16 satır × 16 karakter olmalı');
+    const used = new Set(s.rows.join('').replace(/\./g, ''));
+    used.forEach(ch => { if (!s.cols || !/^#[0-9a-fA-F]{6}$/.test(s.cols[ch] || '')) E.push(`${w}: "${ch}" harfinin rengi yok`); });
+  });
 
   // Türkiye Turu
   const T = c.turkiye, regs = new Set(T.regions.map(r => r.id));

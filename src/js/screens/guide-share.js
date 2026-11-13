@@ -13,11 +13,20 @@ const STICKERS = {
 };
 const QUICK = ['İyi ki doğdun!', 'Seni seviyorum', 'İyi ki varsın', 'Geçmiş olsun', 'Canım arkadaşım'];
 let viewRec = null, cardBaseURL = '';
+// İçerikteki çok renkli stickerlar (content/stickers.json): 16x16 satır, '.' saydam, harf → cols rengi.
+// Eski 4 sticker (8x8, tek renk 'X') aynen kalır; kayıtlarda sadece kimlikleri durur.
+(CONTENT.stickers || []).forEach(s => { if (!STICKERS[s.id]) STICKERS[s.id] = { name:s.name, rows:s.rows, cols:s.cols }; });
+const STICKER_MAX = 4; // kartın 4 köşesi
+// u: eski 8x8 stickerın kare boyu; 16x16 olanlar aynı alana sığacak şekilde ölçeklenir
 function drawSticker(g, id, x, y, u){
   const st = STICKERS[id]; if (!st) return;
-  g.fillStyle = '#FFFFFF'; st.m.forEach((row, r) => [...row].forEach((ch, q) => { if (ch === 'X') g.fillRect(x + q * u - 4, y + r * u - 4, u + 8, u + 8); }));
-  g.fillStyle = '#2A1D14'; st.m.forEach((row, r) => [...row].forEach((ch, q) => { if (ch === 'X') g.fillRect(x + q * u - 1, y + r * u - 1, u + 2, u + 2); }));
-  g.fillStyle = st.c; st.m.forEach((row, r) => [...row].forEach((ch, q) => { if (ch === 'X') g.fillRect(x + q * u, y + r * u, u, u); }));
+  const rows = st.rows || st.m, n = rows.length, uu = Math.max(1, Math.round(u * 8 / n)), off = Math.round((u * 8 - uu * n) / 2);
+  const col = ch => st.cols ? st.cols[ch] : (ch === 'X' ? st.c : null);
+  const each = fn => rows.forEach((row, r) => [...row].forEach((ch, q) => { const c = col(ch); if (c) fn(x + off + q * uu, y + off + r * uu, c); }));
+  const w1 = n > 8 ? Math.max(2, Math.round(uu * 0.7)) : 4, w2 = 1;
+  g.fillStyle = '#FFFFFF'; each((X, Y) => g.fillRect(X - w1, Y - w1, uu + w1 * 2, uu + w1 * 2));
+  g.fillStyle = '#2A1D14'; each((X, Y) => g.fillRect(X - w2, Y - w2, uu + w2 * 2, uu + w2 * 2));
+  each((X, Y, c) => { g.fillStyle = c; g.fillRect(X, Y, uu, uu); });
 }
 function renderCard(art, cap){
   const fr = (viewRec && viewRec.frame && DB.frames[viewRec.frame]) ? viewRec.frame : 'polaroid', sts = (viewRec && viewRec.stickers) || [];
@@ -97,7 +106,9 @@ function renderCard(art, cap){
     g.fillStyle = '#D7263D'; [[-12, 38], [12, 60], [-22, 82], [24, 86]].forEach(([dx, dy]) => g.fillRect(tx + dx, ty + dy, 9, 9));
     g.fillStyle = '#2E7DBA'; [[8, 34], [-16, 60], [2, 84]].forEach(([dx, dy]) => g.fillRect(tx + dx, ty + dy, 9, 9));
   }
-  const u = 9, sp = [[pad + S - 46, pad - 26], [pad - 26, pad + S - 46], [pad - 26, pad - 26], [pad + S - 46, pad + S - 46]];
+  // sticker boyu resmin kenarının ~%22'si; merkezi köşenin 10 px içinde
+  const u = Math.max(9, Math.round(S * 0.22 / 8)), h = u * 4, L = pad + 10 - h, R = pad + S - 10 - h;
+  const sp = [[R, L], [L, R], [L, L], [R, R]];
   sts.slice(0, 4).forEach((id, q) => drawSticker(g, id, sp[q][0], sp[q][1], u));
   g.fillStyle = ink; g.textAlign = 'center'; g.textBaseline = 'middle';
   let fs = 46; g.font = `700 ${fs}px "Pixelify Sans", monospace`;
@@ -148,9 +159,11 @@ function openDeco(){
     });
     const sc = $('#stickChips'); sc.innerHTML = '';
     Object.entries(STICKERS).forEach(([id, st]) => {
-      const on = (viewRec.stickers || []).includes(id), b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
-      b.setAttribute('aria-pressed', String(on)); b.textContent = st.name;
-      b.onclick = () => { const arr = viewRec.stickers || []; viewRec.stickers = on ? arr.filter(v => v !== id) : [...arr, id]; save(); redraw(); };
+      const on = (viewRec.stickers || []).includes(id), b = document.createElement('button'); b.type = 'button'; b.className = 'stk';
+      b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', st.name); b.title = st.name;
+      const cv = document.createElement('canvas'); cv.width = cv.height = 88; drawSticker(cv.getContext('2d'), id, 8, 8, 9); b.append(cv);
+      // en fazla 4 (kartın köşeleri): dolunca yenisi en eskisinin yerine geçer
+      b.onclick = () => { const arr = viewRec.stickers || []; viewRec.stickers = on ? arr.filter(v => v !== id) : [...arr, id].slice(-STICKER_MAX); save(); redraw(); };
       sc.append(b);
     });
     const tc = $('#textChips'); tc.innerHTML = '';

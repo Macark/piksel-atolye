@@ -73,3 +73,8 @@
 .acover small{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .acover.full small{color:var(--good);font-weight:700}
 .colsum .linkbtn{margin-top:6px;padding:0}
+/* sticker seçimi: resimli ızgara */
+.stkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px;max-height:200px;overflow-y:auto;padding:2px}
+.stk{aspect-ratio:1;padding:4px;border:3px solid var(--line);background:var(--bg);display:flex;align-items:center;justify-content:center}
+.stk canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
+.stk[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 22%,var(--panel));outline:3px solid var(--accent);outline-offset:1px}
