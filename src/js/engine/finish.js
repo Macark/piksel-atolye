@@ -20,7 +20,9 @@ function finish(){
     if (al.items.every(it => DB.done[it.id])){
       if (al.kind === 'city' && !DB.stamps[al.id]){ DB.stamps[al.id] = true; coins += 100; title = al.name + ' TAMAM!'; sub = TL('{0}: “{1}” Pasaportuna damga basıldı, +100 coin.', al.guide.name, BYE[al.id] || 'Yolun açık olsun!'); }
       else if (al.kind === 'il' && !DB.ilDone[al.id]){ DB.ilDone[al.id] = true; coins += 50; title = al.name + ' TAMAM!'; const nn = ilNb(al).filter(n => n.items.length && !n.items.some(it => DB.done[it.id])).map(n => n.name); sub = `${al.guide.name}: “${BYE[al.id] || 'Yolun açık olsun!'}” Türkiye haritanda ${al.name} renklendi, +50 coin.` + (nn.length ? ` Açılan komşular: ${nn.join(', ')}.` : ''); }
-      else if (al.kind === 'album' && !DB.albumsDone[al.id]){ DB.albumsDone[al.id] = true; coins += 50; title = 'ALBÜM TAMAM!'; sub = TL('{0} albümünü bitirdin. Albüm ödülü: +50 coin.', al.name); }
+      else if (al.kind === 'album' && !DB.albumsDone[al.id]){ DB.albumsDone[al.id] = al.items.length; coins += 50; title = 'ALBÜM TAMAM!'; sub = TL('{0} albümünü bitirdin. Albüm ödülü: +50 coin.', al.name); }
+      // Albüme yeni resimler eklenmişse (eski kayıtta true ya da daha küçük sayı): ödül tekrar verilmez, kutlama mesajı gösterilir
+      else if (al.kind === 'album' && (DB.albumsDone[al.id] === true || DB.albumsDone[al.id] < al.items.length)){ DB.albumsDone[al.id] = al.items.length; title = 'ALBÜM YİNE TAMAM!'; sub = TL('{0} albümünü yeni resimleriyle birlikte yine tamamladın.', al.name); }
       if (sub) [784, 988, 1175, 1568].forEach((f, k) => tone(f, 0.25, 0.5 + k * 0.12, 'triangle', 0.07));
     }
     ctxv = { id:A.id };
