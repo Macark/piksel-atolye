@@ -1,7 +1,7 @@
 [
  {"id":"marmara","name":"MARMARA","color":"#2E7DBA"},
  {"id":"ege","name":"EGE","color":"#1F9AA0"},
- {"id":"akdeniz","name":"AKDENİZ","color":"#E0763F"},
+ {"id":"akdeniz","name":"AKDENİZ","color":"#E0763F","guide":{"ini":"KD","name":"Kaptan Deniz","art":{"n":16,"pal":["#bfe3f2","#fbfbf6","#c98a5a","#2e5f9e","#1f2a3a","#5a3a22","#e0a526","#2a1d14"],"px":"a20b8a7b10a6b3g3b4a5e12a6c8a8chc4hca8c8a8c2f4c2a9c6a11c4a9d2b2d2b2d2a5d2b2d2b2d2b2a4b2d2b2d2b2d2a4d2b2d2b2d2b2a4b2d2b2d2b2d2a2"}}},
  {"id":"icanadolu","name":"İÇ ANADOLU","color":"#C9A227"},
  {"id":"karadeniz","name":"KARADENİZ","color":"#3E8E5A"},
  {"id":"dogu","name":"DOĞU ANADOLU","color":"#8A4FB0"},
