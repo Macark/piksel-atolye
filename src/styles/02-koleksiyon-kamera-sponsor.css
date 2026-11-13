@@ -61,3 +61,15 @@
 .hl{font-size:14px;color:var(--muted);letter-spacing:1px;margin-top:2px}
 .tabs.three{grid-template-columns:1fr 1fr 1fr}
 .tabs.three button{font-size:15px;letter-spacing:0;padding:10px 2px}
+/* albüm kapak kartları (2 sütun): ilk 4 resim 2x2 mozaik, ad, ilerleme */
+.acovers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.acover{display:flex;flex-direction:column;gap:7px;padding:8px 8px 9px;text-align:left;border-top:6px solid var(--ac)}
+.acover:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shade)}
+.acmo{display:grid;grid-template-columns:1fr 1fr;gap:3px;aspect-ratio:1;padding:3px;background:var(--line)}
+.acmo canvas{width:100%;height:100%;display:block;image-rendering:pixelated;background:#fff}
+.acover b{font-size:15px;line-height:1.15;letter-spacing:.5px;min-height:2.3em;display:flex;align-items:center}
+.acbar{display:block;height:8px;border:2px solid var(--line);background:var(--bg)}
+.acbar i{display:block;height:100%;background:var(--ac)}
+.acover small{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.acover.full small{color:var(--good);font-weight:700}
+.colsum .linkbtn{margin-top:6px;padding:0}

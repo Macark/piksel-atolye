@@ -14,7 +14,7 @@ function contCard(cv, kicker, title, sub, cta, fn){
   const go = document.createElement('button'); go.type = 'button'; go.className = 'go'; go.textContent = cta; go.onclick = fn; tx.append(go);
   d.append(w, tx); return d;
 }
-function setOriginFor(id){ const al = ITEMS[id].album; if (al.kind === 'il') origin = { screen:'il', il:al.id }; else if (al.kind === 'city') origin = { screen:'city', city:al.id }; else { collTab = al.kind === 'sponsor' ? 'deals' : 'albums'; origin = { screen:'coll', tab:collTab }; } }
+function setOriginFor(id){ const al = ITEMS[id].album; if (al.kind === 'il') origin = { screen:'il', il:al.id }; else if (al.kind === 'city') origin = { screen:'city', city:al.id }; else { collTab = al.kind === 'sponsor' ? 'deals' : 'albums'; origin = { screen:'coll', tab:collTab, album:al.kind === 'album' ? al.id : null }; } }
 function firstOpen(){
   for (const c of CITIES) if (DB.tickets[c.id]) for (const it of c.items) if (!DB.done[it.id]) return it.id;
   for (const a of ALBUMS) for (const it of a.items) if (!DB.done[it.id]) return it.id;
@@ -43,7 +43,7 @@ function renderHome(){
     hc.append(hcard(thumb(art, has ? null : new Uint8Array(art.n * art.n)), c.name, sub, () => has ? openCity(c.id) : openMap(), has ? '' : 'lock'));
   });
   const ha = $('#hAlbums'); ha.innerHTML = '';
-  ALBUMS.forEach(al => { const got = al.items.filter(it => DB.done[it.id]).length; ha.append(hcard(thumb(getArt(al.items[0].id)), al.name, TL('{0}/{1} resim', got, al.items.length), () => openColl('albums'))); });
+  ALBUMS.forEach(al => { const got = al.items.filter(it => DB.done[it.id]).length; ha.append(hcard(thumb(getArt(al.items[0].id)), al.name, TL('{0}/{1} resim', got, al.items.length), () => openColl('albums', al.id))); });
   const hm = $('#hMem'); hm.innerHTML = '';
   const add = hcard(null, 'Yeni anı', 'Fotoğraf ya da kamera', () => $('#add').classList.add('on'), 'add'); add.querySelector('.cv').textContent = '+'; hm.append(add);
   DB.gallery.slice().reverse().slice(0, 8).forEach((art, k) => {

@@ -134,7 +134,7 @@ $('#shareGo').onclick = async () => {
   msg('Bu önizlemede paylaşım menüsü açılamıyor. Resme basılı tutup kaydet, sonra istediğin uygulamada paylaş. Gerçek uygulamada bu buton doğrudan Instagram ve WhatsApp’ı açar.');
 };
 function endReplay(){ mode = 'done'; $('#replayBar').classList.remove('on'); dirty = true; $('#done').classList.add('on'); }
-function backToOrigin(){ A = null; mode = 'paint'; $('#replayBar').classList.remove('on'); if (origin.screen === 'home'){ show('home'); refreshHome(); } else if (origin.screen === 'event') openEvent(origin.id); else if (origin.screen === 'city') openCity(origin.city); else if (origin.screen === 'il') openIl(origin.il); else if (origin.screen === 'tr') openTr(); else openColl(origin.tab); }
+function backToOrigin(){ A = null; mode = 'paint'; $('#replayBar').classList.remove('on'); if (origin.screen === 'home'){ show('home'); refreshHome(); } else if (origin.screen === 'event') openEvent(origin.id); else if (origin.screen === 'city') openCity(origin.city); else if (origin.screen === 'il') openIl(origin.il); else if (origin.screen === 'tr') openTr(); else openColl(origin.tab, origin.album); }
 $('#toColl').onclick = () => { $('#done').classList.remove('on'); backToOrigin(); };
 $('#delBtn').onclick = () => { if (viewCtx.photo !== undefined) ask('Bu anı silinsin mi? Geri getirilemez.', 'SİL', () => { DB.gallery.splice(viewCtx.photo, 1); save(); $('#done').classList.remove('on'); A = null; mode = 'paint'; openColl(); }); };
 $('#paintBack').onclick = () => { if (mode === 'paint') persist(true); backToOrigin(); };
