@@ -40,6 +40,8 @@ const bg = pal[idx[0]]; // köşedeki zemin rengi
 // pad: kenar payı (Android "maskable" simgeleri kenarları kırpar, onlara daha geniş pay)
 function icon(size, padRatio){
   const cell = Math.floor(size * (1 - 2 * padRatio) / n), off = Math.floor((size - cell * n) / 2);
+  // simge resimden küçükse (ör. 32 px favicon, 48'lik resim): en yakın pikseli örnekle
+  if (cell < 1) return png(size, (x, y) => pal[idx[Math.floor(y * n / size) * n + Math.floor(x * n / size)]]);
   return png(size, (x, y) => { const gx = Math.floor((x - off) / cell), gy = Math.floor((y - off) / cell); return gx < 0 || gy < 0 || gx >= n || gy >= n ? bg : pal[idx[gy * n + gx]]; });
 }
 fs.mkdirSync(OUT, { recursive: true });

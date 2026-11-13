@@ -6,7 +6,7 @@ const EN = new Map(Object.entries({
 "İstatistik ve rozetler": "Stats and badges",
 "Ayarlar": "Settings",
 "Kare kare boya, rahatla.": "Paint square by square. Relax.",
-"Köfte: turuncu gözlü, gri kahve tüylü kedinin piksel portresi": "Köfte: pixel portrait of a grey-brown cat with orange eyes",
+"Köfte: bakır gözlü, çikolata kahvesi tüylü kedinin piksel portresi": "Köfte: pixel portrait of a chocolate-brown cat with copper eyes",
 "ETKİNLİK": "EVENT",
 "GÜNÜN RESMİ": "DAILY PICTURE",
 "DÜNYA TURU": "WORLD TOUR",
