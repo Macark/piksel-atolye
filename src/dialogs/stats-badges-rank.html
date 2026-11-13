@@ -1,0 +1,36 @@
+  <div class="ov" id="stats" style="z-index:6">
+    <div class="ovc box">
+      <div class="ovbar"><h2>İSTATİSTİK</h2><span class="grow"></span><button class="xbtn" id="statsX" type="button" aria-label="Kapat">✕</button></div>
+      <div class="tabs htabs" role="group" aria-label="Bölümler"><button type="button" data-t="stats" aria-pressed="true">İSTATİSTİK</button><button type="button" data-t="badges" aria-pressed="false">ROZETLER</button><button type="button" data-t="rank" aria-pressed="false">SIRALAMA</button></div>
+      <div class="tilesg" id="statTiles"></div>
+      <details class="muted" style="font-size:13px"><summary>Doğru dokunuş nedir?</summary><p style="margin-top:6px">Doğru dokunuş: dokunduğun karelerin yüzde kaçında doğru numarayı seçtiğin. Seçili renkten farklı bir numaraya dokunmak yanlış sayılır, parmağını sürükleyerek geçmek sayılmaz.</p></details>
+      <p class="dl">SON 7 GÜN: GÜNÜN RESMİ SÜRELERİ</p>
+      <div class="bars" id="statBars"></div>
+      <button class="btn primary" id="statsBadges" type="button" style="display:none">ROZETLERİM</button>
+      <button class="btn" id="statsRank" type="button" style="display:none">GÜNÜN SIRALAMASI</button>
+    </div>
+  </div>
+
+  <div class="ov" id="badges" style="z-index:7">
+    <div class="ovc box">
+      <div class="ovbar"><h2>ROZETLER</h2><span class="grow"></span><button class="xbtn" id="badgesX" type="button" aria-label="Kapat">✕</button></div>
+      <div class="tabs htabs" role="group" aria-label="Bölümler"><button type="button" data-t="stats" aria-pressed="false">İSTATİSTİK</button><button type="button" data-t="badges" aria-pressed="true">ROZETLER</button><button type="button" data-t="rank" aria-pressed="false">SIRALAMA</button></div>
+      <div class="bdetail" id="bDetail" aria-live="polite"></div>
+      <p class="dl" id="bCount"></p>
+      <div class="bgrid" id="bGrid"></div>
+    </div>
+  </div>
+
+  <div class="ov" id="rank" style="z-index:7">
+    <div class="ovc box">
+      <div class="ovbar"><h2>SIRALAMA</h2><span class="grow"></span><button class="xbtn" id="rankX" type="button" aria-label="Kapat">✕</button></div>
+      <div class="tabs htabs" role="group" aria-label="Bölümler"><button type="button" data-t="stats" aria-pressed="false">İSTATİSTİK</button><button type="button" data-t="badges" aria-pressed="false">ROZETLER</button><button type="button" data-t="rank" aria-pressed="true">SIRALAMA</button></div>
+      <div class="tabs" id="rankTabs" role="group" aria-label="Sıralama türü" style="padding:0">
+        <button type="button" data-m="pure" aria-pressed="true">GÜÇSÜZ</button>
+        <button type="button" data-m="free" aria-pressed="false">SERBEST</button>
+      </div>
+      <p class="muted" style="font-size:14px" id="rankNote"></p>
+      <div id="rankList"></div>
+    </div>
+  </div>
+

@@ -1,0 +1,35 @@
+.hicons{display:flex;gap:8px}
+.setlist{display:flex;flex-direction:column;gap:0;border:3px solid var(--line);background:var(--bg)}
+.setrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border:0;border-bottom:2px solid var(--line);background:none;text-align:left;font-size:16px;width:100%;min-height:52px}
+.setrow:last-child{border-bottom:0}
+.setrow small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.setrow .val{color:var(--muted);font-size:14px;white-space:nowrap}
+.tog{flex:none;width:52px;height:28px;border:3px solid var(--line);background:var(--panel);position:relative}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;background:var(--muted)}
+.tog[aria-checked="true"]{background:var(--good)}
+.tog[aria-checked="true"]::after{left:26px;background:#FFF7EA}
+.htslide{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:6px 4px}
+.htslide .ico{font-size:64px;line-height:1}
+.htslide h3{margin:0;font-size:24px;letter-spacing:1px}
+.htslide p{font-size:16px;line-height:1.45}
+.htdots{display:flex;justify-content:center;gap:8px}
+.htdots i{display:block;width:12px;height:12px;border:2px solid var(--line);background:var(--panel)}
+.htdots i.on{background:var(--accent)}
+.evcard{border-color:var(--ec)!important}
+.evcard .dtx b{color:var(--ec)!important}
+.evban{padding:14px;margin-top:6px;border-color:var(--sc)!important;text-align:center;display:flex;flex-direction:column;gap:6px}
+.evban b{font-size:24px;color:var(--sc);letter-spacing:1px}
+.evban span{font-size:15px}
+.evban small{font-size:13px;color:var(--muted)}
+.uplist{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.uprow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:3px dashed var(--shade);font-size:15px}
+.uprow small{color:var(--muted);font-size:13px;white-space:nowrap}
+.cbm{font-size:12px;line-height:1;margin-top:2px;color:var(--ink)}
+.setup{padding:18px 20px 22px;gap:14px;overflow-y:auto}
+.setup h2,.ovc h2{margin:0;font-size:30px;font-weight:700;letter-spacing:1px}
+.preview{width:100%;max-width:340px;aspect-ratio:1;align-self:center;image-rendering:pixelated;border:3px solid var(--line);box-shadow:4px 4px 0 var(--shade);background:#fff}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.seg button{padding:10px 6px;border:3px solid var(--line);background:var(--panel);font-size:17px;font-weight:700;line-height:1.15}
+.seg button small{display:block;font-size:13px;font-weight:400;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.seg button[aria-pressed="true"] small{color:var(--panel)}

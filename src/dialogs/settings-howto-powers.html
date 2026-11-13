@@ -1,0 +1,53 @@
+  <div class="ov" id="settings" style="z-index:6">
+    <div class="ovc box">
+      <div class="ovbar"><h2>AYARLAR</h2><span class="grow"></span><button class="xbtn" id="setX" type="button" aria-label="Kapat">✕</button></div>
+      <p class="dl">SES VE HİS</p>
+      <div class="setlist">
+        <div class="setrow"><span>Ses efektleri<small>Boyama sesleri ve melodiler</small></span><button class="tog" id="tgSound" type="button" role="switch" aria-label="Ses efektleri"></button></div>
+        <button class="setrow" id="rowAmb" type="button"><span>Arka plan sesi<small>Boyarken çalar</small></span><span class="val" id="valAmb"></span></button>
+        <div class="setrow"><span>Titreşim<small>Her karede minik titreşim (Android)</small></span><button class="tog" id="tgVibe" type="button" role="switch" aria-label="Titreşim"></button></div>
+      </div>
+      <p class="dl">GÖRÜNÜM</p>
+      <div class="setlist">
+        <button class="setrow" id="rowTheme" type="button"><span>Tema</span><span class="val" id="valTheme"></span></button>
+        <button class="setrow" id="rowLang" type="button"><span>Dil</span><span class="val" id="valLang">Türkçe</span></button>
+        <div class="setrow"><span>Büyük numaralar<small>Karelerdeki numaralar daha büyük ve daha erken görünür</small></span><button class="tog" id="tgBig" type="button" role="switch" aria-label="Büyük numaralar"></button></div>
+        <div class="setrow"><span>Renk körü modu<small>Her renge ayrı bir işaret eklenir</small></span><button class="tog" id="tgCb" type="button" role="switch" aria-label="Renk körü modu"></button></div>
+      </div>
+      <p class="dl">BİLDİRİMLER</p>
+      <div class="setlist">
+        <div class="setrow"><span>Günün resmi hatırlatması<small>Her akşam serini kaçırma</small></span><button class="tog" id="tgNotif" type="button" role="switch" aria-label="Günün resmi hatırlatması"></button></div>
+      </div>
+      <p class="dl">YARDIM</p>
+      <div class="setlist">
+        <button class="setrow" id="rowHow" type="button"><span>Nasıl oynanır?</span><span class="val">›</span></button>
+        <button class="setrow" id="rowPriv" type="button"><span>Gizlilik</span><span class="val">›</span></button>
+        <button class="setrow" id="rowMail" type="button"><span>Bize yaz</span><span class="val">›</span></button>
+      </div>
+      <p class="dl">HESAP</p>
+      <div class="setlist">
+        <button class="setrow" id="rowRestore" type="button"><span>Satın alımları geri yükle</span><span class="val">›</span></button>
+        <button class="setrow" id="rowReset" type="button"><span>İlerlemeyi sıfırla<small>Bütün resimler, anılar ve coinler silinir</small></span><span class="val">›</span></button>
+      </div>
+      <p class="note">Piksel Atölye, sürüm 0.9 (prototip)</p>
+    </div>
+  </div>
+
+  <div class="ov" id="howto" style="z-index:9">
+    <div class="ovc box">
+      <div class="ovbar"><h2>NASIL OYNANIR?</h2><span class="grow"></span><button class="xbtn" id="htX" type="button" aria-label="Kapat">✕</button></div>
+      <div class="htslide" id="htSlide" aria-live="polite"></div>
+      <div class="htdots" id="htDots" aria-hidden="true"></div>
+      <div class="row2"><button class="btn" id="htPrev" type="button">GERİ</button><button class="btn primary" id="htNext" type="button">İLERİ</button></div>
+    </div>
+  </div>
+
+  <div class="ov" id="pwinfo" style="z-index:8">
+    <div class="ovc box">
+      <div class="ovbar"><h2>GÜÇLER</h2><span class="grow"></span><button class="xbtn" id="pwinfoX" type="button" aria-label="Kapat">✕</button></div>
+      <p class="muted" style="font-size:14px">Güçler boyamayı kolaylaştırır ve coinle kullanılır. Dünya Turu’nda her şehir yeni bir güç açar. Günün resminde güç kullanırsan Güçsüz sıralamaya girmezsin.</p>
+      <div class="pwlist" id="pwList"></div>
+      <button class="btn primary" id="pwinfoOk" type="button">TAMAM</button>
+    </div>
+  </div>
+

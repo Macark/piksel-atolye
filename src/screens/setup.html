@@ -1,0 +1,21 @@
+  <section class="screen setup" id="setup">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>NASIL OLSUN?</h2><button class="xbtn" id="setupX" type="button" aria-label="Vazgeç">✕</button></div>
+    <canvas class="preview" id="preview" width="32" height="32" aria-label="Piksel önizleme"></canvas>
+    <p class="dl">EFEKT</p>
+    <div class="chips" id="fxChips" role="group" aria-label="Efekt"></div>
+    <p class="dl">MASKE</p>
+    <div class="chips" id="maskChips" role="group" aria-label="Maske"></div>
+    <label class="cap" id="maskCtl" hidden><span>Maskeyi yerleştirmek için önizlemede sürükle. Boyutu buradan ayarla.</span><input type="range" id="maskSize" min="20" max="100" value="50" aria-label="Maske boyutu"></label>
+    <p class="dl">BOYUT</p>
+    <div class="seg" role="group" aria-label="Boyut">
+      <button type="button" data-n="24" aria-pressed="false">HIZLI<small>24×24</small></button>
+      <button type="button" data-n="32" aria-pressed="true">NORMAL<small>32×32</small></button>
+      <button type="button" data-n="48" aria-pressed="false">DETAYLI<small>48×48</small></button>
+    </div>
+    <p class="muted" id="setupInfo"></p>
+    <div class="stack" style="margin-top:4px">
+      <button class="btn primary" id="goBtn" type="button">BOYAMAYA BAŞLA</button>
+      <button class="btn" id="backBtn" type="button">VAZGEÇ</button>
+    </div>
+  </section>
+

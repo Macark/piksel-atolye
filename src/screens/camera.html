@@ -1,0 +1,20 @@
+  <section class="screen" id="cam">
+    <div class="top">
+      <button class="icon box" id="camBack" type="button" aria-label="Ana sayfa"><svg width="20" height="20" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M4 1h1v1h-1zM3 2h1v1h-1zM2 3h1v1h-1zM1 4h8v2h-8zM2 6h1v1h-1zM3 7h1v1h-1zM4 8h1v1h-1z"></path></svg></button>
+      <span class="toptitle">KAMERA</span>
+      <button class="icon box" id="camFlip" type="button" aria-label="Kamerayı çevir">
+        <svg width="22" height="22" viewBox="0 0 11 11" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M2 1h5v1h-5zM1 2h1v3h-1zM7 0h1v1h1v1h1v1h-1v1h-1v1h-1zM4 9h5v1h-5zM9 6h1v3h-1zM3 6h1v5h-1v-1h-1v-1h-1v-1h1v-1h1z"></path></svg>
+      </button>
+    </div>
+    <div class="camwrap">
+      <canvas id="camCv" width="48" height="48" aria-label="Canlı piksel önizleme"></canvas>
+      <video id="camVid" playsinline muted></video>
+      <div class="camfall" id="camFall" hidden>
+        <p>Canlı piksel önizleme burada açılamadı. Telefonunun kamerasıyla çekip devam edebilirsin, efektleri bir sonraki ekranda seçersin.</p>
+        <label class="btn primary">KAMERAYI AÇ<input type="file" accept="image/*" capture="user" class="fileIn"></label>
+      </div>
+    </div>
+    <div class="chips" id="camFx" role="group" aria-label="Efekt" style="padding:8px 14px;justify-content:center"></div>
+    <div style="padding:6px 20px 18px"><button class="btn primary" id="shutter" type="button">ÇEK</button></div>
+  </section>
+

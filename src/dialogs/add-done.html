@@ -1,0 +1,42 @@
+  <div class="ov" id="add">
+    <div class="ovc box">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>YENİ ANI</h2><button class="xbtn" id="addX" type="button" aria-label="Kapat">✕</button></div>
+      <p>Bir fotoğraf seç ya da çek. Piksele dönüşsün, sen boya, anılarına eklensin.</p>
+      <p class="note">Fotoğrafın telefonunda kalır, hiçbir yere gönderilmez.</p>
+      <div class="row2">
+        <label class="btn primary">FOTOĞRAF<input type="file" accept="image/*" class="fileIn"></label>
+        <button class="btn" id="camBtn" type="button">KAMERA</button>
+      </div>
+      <button class="linkbtn" id="addClose" type="button" style="align-self:center">Vazgeç</button>
+    </div>
+  </div>
+
+  <div class="ov" id="done">
+    <div class="ovc box">
+      <div class="ovbar"><button class="xbtn" id="doneBack" type="button">← GERİ</button><span class="grow"></span><button class="xbtn" id="doneX" type="button" aria-label="Kapat">✕</button></div>
+      <h2 class="big" id="doneTitle">BİTTİ!</h2>
+      <div class="starsline" id="doneStars" hidden></div>
+      <p id="doneSub" hidden></p>
+      <p class="reward" id="doneCoins" hidden></p>
+      <div class="bnew" id="doneBadges" hidden></div>
+      <img class="final" id="finalImg" alt="Bitmiş piksel resim, çerçeveli hatıra kartı">
+      <div class="quiz box" id="doneQuiz" hidden></div>
+      <p class="fact" id="doneFact" hidden></p>
+      <div class="coupon" id="doneCoupon" hidden></div>
+      <label class="cap"><span>Alt yazı: tarih ya da kendi notun</span><input type="text" id="capIn" maxlength="40" autocomplete="off"></label>
+      <div class="row2">
+        <button class="btn primary" id="shareBtn" type="button">PAYLAŞ</button>
+        <button class="btn" id="decoBtn" type="button">SÜSLE</button>
+      </div>
+      <button class="btn" id="dblBtn" type="button" hidden>REKLAM İZLE, COIN’İ İKİYE KATLA</button>
+      <button class="btn" id="nextBtn" type="button">SIRADAKİ</button>
+      <div class="links">
+        <button class="linkbtn" id="rankBtn" type="button" hidden>Sıralama</button>
+        <button class="linkbtn" id="replayBtn" type="button">Boyamayı izle</button>
+        <button class="linkbtn" id="toColl" type="button">Geri dön</button>
+        <button class="linkbtn" id="againBtn" type="button" hidden>Tekrar boya</button>
+        <button class="linkbtn" id="delBtn" type="button" hidden>Sil</button>
+      </div>
+    </div>
+  </div>
+

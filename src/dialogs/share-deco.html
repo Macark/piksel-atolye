@@ -1,0 +1,55 @@
+  <div class="ov" id="share" style="z-index:6">
+    <div class="ovc box">
+      <div class="ovbar"><h2>PAYLAŞIM</h2><span class="grow"></span><button class="xbtn" id="shareX" type="button" aria-label="Kapat">✕</button></div>
+      <div class="seg" id="fmtSeg" style="grid-template-columns:1fr 1fr" role="group" aria-label="Biçim">
+        <button type="button" data-f="story" aria-pressed="true">HİKÂYE<small>9:16</small></button>
+        <button type="button" data-f="post" aria-pressed="false">GÖNDERİ<small>1:1</small></button>
+      </div>
+      <img class="shareimg" id="shareImg" alt="Sosyal medya paylaşım önizlemesi" style="max-height:38vh">
+      <div>
+        <div class="ftabs" id="shTabs" style="grid-template-columns:1fr 1fr" role="group" aria-label="Ayar">
+          <button type="button" data-p="bg" aria-pressed="true">ARKA PLAN</button>
+          <button type="button" data-p="filter" aria-pressed="false">FİLTRE</button>
+        </div>
+        <div class="tabbody">
+          <p class="hint2" id="shHint">Hikâyenin arkasına ne gelsin?</p>
+          <div class="chips bggrid" id="shBg" role="group" aria-label="Arka plan"></div>
+          <div class="chips bggrid" id="shFilter" role="group" aria-label="Filtre" hidden></div>
+          <div id="shBgExtra" style="margin-top:10px"></div>
+        </div>
+      </div>
+      <p class="muted" style="font-size:13px">Kaydetmek için resme basılı tut.</p>
+      <div class="row2">
+        <button class="btn primary" id="shareGo" type="button">PAYLAŞ</button>
+        <button class="btn" id="shareClose" type="button">KAPAT</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov" id="deco" style="z-index:6">
+    <div class="ovc box">
+      <div class="ovbar"><h2>SÜSLE</h2><span class="grow"></span><span class="count box coins"><svg width="20" height="20" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#5A3A08" d="M4 0h4v1h-4zM2 1h2v1h-2zM8 1h2v1h-2zM1 2h1v1h-1zM10 2h1v1h-1zM1 3h1v1h-1zM10 3h1v1h-1zM0 4h1v1h-1zM11 4h1v1h-1zM0 5h1v1h-1zM11 5h1v1h-1zM0 6h1v1h-1zM11 6h1v1h-1zM0 7h1v1h-1zM11 7h1v1h-1zM1 8h1v1h-1zM10 8h1v1h-1zM1 9h1v1h-1zM10 9h1v1h-1zM2 10h2v1h-2zM8 10h2v1h-2zM4 11h4v1h-4z"></path><path fill="#F0B93A" d="M4 1h4v1h-4zM2 2h1v1h-1zM5 2h4v1h-4zM4 3h5v1h-5zM1 4h1v1h-1zM3 4h2v1h-2zM7 4h3v1h-3zM1 5h1v1h-1zM3 5h1v1h-1zM8 5h2v1h-2zM1 6h3v1h-3zM8 6h2v1h-2zM1 7h4v1h-4zM7 7h3v1h-3zM2 8h7v1h-7zM3 9h5v1h-5z"></path><path fill="#FFE89A" d="M3 2h2v1h-2zM2 3h2v1h-2zM2 4h1v1h-1zM2 5h1v1h-1z"></path><path fill="#C98A1A" d="M9 2h1v1h-1zM9 3h1v1h-1zM10 4h1v1h-1zM10 5h1v1h-1zM10 6h1v1h-1zM10 7h1v1h-1zM9 8h1v1h-1zM2 9h1v1h-1zM8 9h2v1h-2zM4 10h4v1h-4z"></path><path fill="#B07B12" d="M5 4h2v1h-2zM4 5h4v1h-4zM4 6h4v1h-4zM5 7h2v1h-2z"></path></svg><span class="coinN">0</span></span><button class="xbtn primary" id="decoOk2" type="button">KAYDET</button></div>
+      <div class="shwrap" id="decoWrap"><img class="shareimg" id="decoImg" alt="Kart önizlemesi" style="max-height:34vh;image-rendering:pixelated" draggable="false"><div class="shover" id="decoOver" hidden></div></div>
+      <div class="chips" id="emoCtl" hidden style="justify-content:center">
+        <button class="chip" id="emoMinus" type="button">Küçült</button>
+        <button class="chip" id="emoPlus" type="button">Büyüt</button>
+        <button class="chip" id="emoDel" type="button">Sil</button>
+      </div>
+      <div>
+        <div class="ftabs" id="decoTabs" style="grid-template-columns:repeat(4,minmax(0,1fr))" role="group" aria-label="Süsleme türü">
+          <button type="button" data-p="fr" aria-pressed="true">ÇERÇEVE</button>
+          <button type="button" data-p="em" aria-pressed="false">EMOJİ</button>
+          <button type="button" data-p="st" aria-pressed="false">STICKER</button>
+          <button type="button" data-p="tx" aria-pressed="false">YAZI</button>
+        </div>
+        <div class="tabbody">
+          <div class="dpane" data-p="fr"><p class="hint2">Kartın çerçevesini seç. Bir kez alınan çerçeve bütün resimlerde kullanılır.</p><div class="chips" id="frameChips" role="group" aria-label="Çerçeve"></div></div>
+          <div class="dpane" data-p="em" hidden><p class="hint2">Dokun, karta eklensin. Sonra kartın üstünde sürükleyip yerleştir.</p><div class="emogrid" id="decoEmo" role="group" aria-label="Emoji"></div></div>
+          <div class="dpane" data-p="st" hidden><p class="hint2">Stickerlar resmin köşelerine yapışır. Açıp kapatabilirsin.</p><div class="chips" id="stickChips" role="group" aria-label="Sticker"></div></div>
+          <div class="dpane" data-p="tx" hidden><p class="hint2">Birine dokun, kartın alt yazısı olsun.</p><div class="chips" id="textChips" role="group" aria-label="Hazır yazılar"></div></div>
+        </div>
+      </div>
+      <button class="btn primary" id="decoOk" type="button">TAMAM</button>
+    </div>
+  </div>
+

@@ -1,0 +1,27 @@
+  <section class="screen" id="paint">
+    <button class="gtip box" id="gtip" type="button" aria-live="polite" hidden></button>
+    <div class="top">
+      <button class="icon box" id="paintBack" type="button" aria-label="Koleksiyona dön">
+        <svg width="20" height="20" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M4 1h1v1h-1zM3 2h1v1h-1zM2 3h1v1h-1zM1 4h8v2h-8zM2 6h1v1h-1zM3 7h1v1h-1zM4 8h1v1h-1z"></path></svg>
+      </button>
+      <div class="prog"><span><span id="pname">BOYAMA</span><span id="ptime" hidden>0:00</span><span id="pct">%0</span></span><div class="pbar"><i id="pfill"></i></div></div>
+      <button class="icon box" id="sndBtn" type="button" aria-label="Sesi kapat">
+        <svg width="22" height="22" viewBox="0 0 11 11" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 4h2v3h-2zM2 3h1v5h-1zM3 2h1v7h-1zM4 1h1v9h-1z"></path><path id="sndWaves" fill="currentColor" d="M6 4h1v3h-1zM8 2h1v1h-1zM9 3h1v5h-1zM8 8h1v1h-1z"></path></svg>
+      </button>
+    </div>
+    <div class="stage" id="stage">
+      <canvas id="cv" aria-label="Boyama alanı. Seçili rengin numaralı karelerine dokun, parmağını sür ya da basılı tut."></canvas>
+      <div class="zoom">
+        <button class="box" id="zIn" type="button" aria-label="Yakınlaştır">+</button>
+        <button class="box" id="zOut" type="button" aria-label="Uzaklaştır">−</button>
+        <button class="box" id="zFit" type="button" aria-label="Tamamını göster">
+          <svg width="18" height="18" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h3v1h-2v2h-1zM6 0h3v3h-1v-2h-2zM0 6h1v2h2v1h-3zM8 6h1v3h-3v-1h2z"></path></svg>
+        </button>
+      </div>
+      <div class="replaybar" id="replayBar"><button class="box" id="skipBtn" type="button">ATLA</button></div>
+      <div class="tip box" id="tip">Numaralı karelere dokun ya da parmağını sür</div>
+    </div>
+    <div class="pw" id="pw" role="group" aria-label="Güçler"></div>
+    <div class="pal" id="pal" role="group" aria-label="Renkler"></div>
+  </section>
+
