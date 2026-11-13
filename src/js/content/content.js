@@ -64,6 +64,10 @@ function dailyReward(){
   return { n, bonus:50 + Math.min(n, 7) * 10 };
 } ALBUMS.forEach(a => { a.kind = 'album'; a.items.forEach(it => { it.album = a; ITEMS[it.id] = it; }); }); CITIES.forEach(c => { c.kind = 'city'; c.items.forEach(it => { it.album = c; ITEMS[it.id] = it; }); }); IL_OPEN.forEach(c => { c.kind = 'il'; c.items.forEach(it => { it.album = c; ITEMS[it.id] = it; }); }); SPONSOR.items.forEach(it => { ITEMS[it.id] = it; });
 const TOTAL = ALBUMS.reduce((t, a) => t + a.items.length, 0);
+// Zorluk (1 kolay, 2 orta, 3 zor): ızgara boyutundan; 12+ renkte bir seviye artar. Veriye ayrıca yazılmaz.
+const LEVEL_NAME = ['', 'Kolay', 'Orta', 'Zor'];
+function itemLevel(it){ const a = it.art || {}, n = a.n || it.n, k = (a.pal || []).length; const l = n <= 24 ? 1 : n <= 32 ? 2 : 3; return Math.min(3, l + (k >= 12 ? 1 : 0)); }
+const levelHTML = l => `<span class="lvl" aria-hidden="true">${[1, 2, 3].map(k => `<i${k <= l ? ' class="on"' : ''}></i>`).join('')}</span>`;
 
 function drawExact(it){
   const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');

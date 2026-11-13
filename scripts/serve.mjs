@@ -19,8 +19,10 @@ fs.watch(path.join(ROOT, 'src'), { recursive: true }, () => { clearTimeout(t); t
 http.createServer((req, res) => {
   let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   if (p.endsWith('/')) p += 'index.html';
-  const f = path.join(DIST, path.normalize(p));
-  if (!f.startsWith(DIST)) { res.writeHead(403).end(); return; }
+  // /tests/… yerelde test betiklerini sunar: sayfada `await eval(await (await fetch('/tests/oyun-turu.js')).text())`
+  const TESTS = path.join(ROOT, 'tests'), base = p.startsWith('/tests/') ? TESTS : DIST;
+  const f = path.join(base, path.normalize(base === TESTS ? p.slice(6) : p));
+  if (!f.startsWith(base)) { res.writeHead(403).end(); return; }
   fs.readFile(f, (err, data) => {
     if (err) { res.writeHead(404).end('yok'); return; }
     res.writeHead(200, { 'Content-Type': TYPES[path.extname(f)] || 'application/octet-stream', 'Cache-Control': 'no-store' });

@@ -1,0 +1,15 @@
+[
+ {"id":"il06","plaka":6,"name":"ANKARA","region":"icanadolu","geo":[39.93,32.86]},
+ {"id":"il18","plaka":18,"name":"ÇANKIRI","region":"icanadolu","geo":[40.6,33.62]},
+ {"id":"il26","plaka":26,"name":"ESKİŞEHİR","region":"icanadolu","geo":[39.78,30.52]},
+ {"id":"il38","plaka":38,"name":"KAYSERİ","region":"icanadolu","geo":[38.73,35.48]},
+ {"id":"il40","plaka":40,"name":"KIRŞEHİR","region":"icanadolu","geo":[39.15,34.17]},
+ {"id":"il42","plaka":42,"name":"KONYA","region":"icanadolu","geo":[37.87,32.48]},
+ {"id":"il50","plaka":50,"name":"NEVŞEHİR","region":"icanadolu","geo":[38.62,34.71]},
+ {"id":"il51","plaka":51,"name":"NİĞDE","region":"icanadolu","geo":[37.97,34.68]},
+ {"id":"il58","plaka":58,"name":"SİVAS","region":"icanadolu","geo":[39.75,37.02]},
+ {"id":"il66","plaka":66,"name":"YOZGAT","region":"icanadolu","geo":[39.82,34.81]},
+ {"id":"il68","plaka":68,"name":"AKSARAY","region":"icanadolu","geo":[38.37,34.03]},
+ {"id":"il70","plaka":70,"name":"KARAMAN","region":"icanadolu","geo":[37.18,33.22]},
+ {"id":"il71","plaka":71,"name":"KIRIKKALE","region":"icanadolu","geo":[39.85,33.51]}
+]

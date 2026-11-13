@@ -1,0 +1,20 @@
+[
+ {"id":"il05","plaka":5,"name":"AMASYA","region":"karadeniz","geo":[40.65,35.83]},
+ {"id":"il08","plaka":8,"name":"ARTVİN","region":"karadeniz","geo":[41.18,41.82]},
+ {"id":"il14","plaka":14,"name":"BOLU","region":"karadeniz","geo":[40.74,31.61]},
+ {"id":"il19","plaka":19,"name":"ÇORUM","region":"karadeniz","geo":[40.55,34.95]},
+ {"id":"il28","plaka":28,"name":"GİRESUN","region":"karadeniz","geo":[40.91,38.39]},
+ {"id":"il29","plaka":29,"name":"GÜMÜŞHANE","region":"karadeniz","geo":[40.46,39.48]},
+ {"id":"il37","plaka":37,"name":"KASTAMONU","region":"karadeniz","geo":[41.38,33.78]},
+ {"id":"il52","plaka":52,"name":"ORDU","region":"karadeniz","geo":[40.98,37.88]},
+ {"id":"il53","plaka":53,"name":"RİZE","region":"karadeniz","geo":[41.02,40.52]},
+ {"id":"il55","plaka":55,"name":"SAMSUN","region":"karadeniz","geo":[41.29,36.33]},
+ {"id":"il57","plaka":57,"name":"SİNOP","region":"karadeniz","geo":[42.03,35.15]},
+ {"id":"il60","plaka":60,"name":"TOKAT","region":"karadeniz","geo":[40.31,36.55]},
+ {"id":"il61","plaka":61,"name":"TRABZON","region":"karadeniz","geo":[41,39.72]},
+ {"id":"il67","plaka":67,"name":"ZONGULDAK","region":"karadeniz","geo":[41.45,31.79]},
+ {"id":"il69","plaka":69,"name":"BAYBURT","region":"karadeniz","geo":[40.26,40.23]},
+ {"id":"il74","plaka":74,"name":"BARTIN","region":"karadeniz","geo":[41.64,32.34]},
+ {"id":"il78","plaka":78,"name":"KARABÜK","region":"karadeniz","geo":[41.2,32.62]},
+ {"id":"il81","plaka":81,"name":"DÜZCE","region":"karadeniz","geo":[40.84,31.16]}
+]

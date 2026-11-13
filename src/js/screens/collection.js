@@ -27,18 +27,20 @@ function renderAlbums(list){
     sec.innerHTML = `<div class="ahead"><h3>${al.name}</h3>${got === al.items.length ? '<span class="stamp">TAMAMLANDI</span>' : `<span>${got}/${al.items.length}</span>`}</div><div class="abar"><i style="width:${got / al.items.length * 100}%"></i></div><div class="cards"></div>`;
     const cards = sec.querySelector('.cards');
     al.items.forEach(it => {
-      const art = getArt(it.id), done = !!DB.done[it.id], w = DB.wip[it.id];
+      const n = it.n, done = !!DB.done[it.id], w = DB.wip[it.id];
       const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
       const pic = document.createElement('div'); pic.className = 'pic';
       const c = document.createElement('canvas');
-      drawArt(c, art, done ? null : (w ? maskOf(w.painted) : new Uint8Array(art.n * art.n)));
-      pic.append(c);
+      // resim verisi ancak küçük resim görünür olunca (ya da resme dokununca) çözülür
+      drawArtLazy(c, n, () => { const art = getArt(it.id); drawArt(c, art, done ? null : (w ? maskOf(w.painted) : new Uint8Array(art.n * art.n))); });
+      const lvl = itemLevel(it);
+      pic.append(c); pic.insertAdjacentHTML('beforeend', levelHTML(lvl));
       if (done) pic.insertAdjacentHTML('beforeend', '<span class="badge" aria-hidden="true">✓</span>');
-      else if (w){ const p = Math.round(w.order.length / (art.n * art.n) * 100); pic.insertAdjacentHTML('beforeend', `<span class="wip"><i style="width:${p}%"></i></span>`); }
+      else if (w){ const p = Math.round(w.order.length / (n * n) * 100); pic.insertAdjacentHTML('beforeend', `<span class="wip"><i style="width:${p}%"></i></span>`); }
       const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = it.name; if (done && DB.stars[it.id]) nm.insertAdjacentHTML('beforeend', '<br><span class="stars">' + starStr(DB.stars[it.id]) + '</span>');
       b.append(pic, nm);
       b.setAttribute('aria-label', `${it.name}, ${done ? 'boyandı' : w ? 'yarım kaldı' : 'boyanmadı'}`);
-      b.onclick = () => done ? viewDone({ ...art, order:DB.done[it.id].order }, it.name.toLocaleUpperCase('tr'), { id:it.id }) : startBuiltin(it.id);
+      b.onclick = () => done ? viewDone({ ...getArt(it.id), order:DB.done[it.id].order }, it.name.toLocaleUpperCase('tr'), { id:it.id }) : startBuiltin(it.id);
       cards.append(b);
     });
     list.append(sec);

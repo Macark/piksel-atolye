@@ -56,13 +56,24 @@ function convert(n){
 }
 function drawArt(canvas, art, painted){
   canvas.width = art.n; canvas.height = art.n;
-  const g = canvas.getContext('2d'), im = g.createImageData(art.n, art.n), pal = art.pal.map(unhex);
-  for (let i = 0; i < art.n * art.n; i++){
-    let c = pal[art.idx[i]];
-    if (painted && !painted[i]){ const l = lum(c); c = [242 - (255 - l) * 0.2, 238 - (255 - l) * 0.2, 230 - (255 - l) * 0.2]; }
-    im.data.set([c[0], c[1], c[2], 255], i * 4);
+  const g = canvas.getContext('2d'), im = g.createImageData(art.n, art.n), d = im.data, pal = art.pal.map(unhex);
+  // boyanmamış kareler için soluk renkler bir kez hesaplanır (her pikselde yeni dizi yok)
+  const pale = painted ? pal.map(c => { const k = (255 - lum(c)) * 0.2; return [242 - k, 238 - k, 230 - k]; }) : null;
+  for (let i = 0, o = 0; i < art.n * art.n; i++, o += 4){
+    const j = art.idx[i], c = painted && !painted[i] ? pale[j] : pal[j];
+    d[o] = c[0]; d[o + 1] = c[1]; d[o + 2] = c[2]; d[o + 3] = 255;
   }
   g.putImageData(im, 0, 0);
+}
+// Küçük resimler ekrana yaklaşınca çizilir: 500+ resimde de albüm ekranı hemen açılsın.
+// Canvas boyutu baştan verilir (sayfa kaymasın); `draw` görünür olunca bir kez çağrılır.
+const lazyIO = typeof IntersectionObserver === 'function' ? new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return; const c = e.target; lazyIO.unobserve(c); const f = c._lazy; c._lazy = null; delete c.dataset.lazy; if (f) f();
+}), { rootMargin:'400px 0px' }) : null;
+function drawArtLazy(canvas, n, draw){
+  canvas.width = canvas.height = n;
+  if (!lazyIO) return draw();
+  canvas._lazy = draw; canvas.dataset.lazy = '1'; lazyIO.observe(canvas);
 }
 const maskOf = s => { const m = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) m[i] = s.charCodeAt(i) === 49 ? 1 : 0; return m; };
 

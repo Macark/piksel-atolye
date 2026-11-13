@@ -1,4 +1,4 @@
-// Uygulama simgelerini içerikteki Köfte portresinden (content.json > home) üretir.
+// Uygulama simgelerini içerikteki Köfte portresinden (src/content/home.json) üretir.
 // Çıktı: src/public/icons/*.png. Kullanım: node scripts/make-icons.mjs
 // Bağımlılık yok: PNG, Node'un zlib'i ile elle yazılıyor.
 import fs from 'node:fs';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'src', 'public', 'icons');
-const content = JSON.parse(fs.readFileSync(path.join(ROOT, 'src', 'content', 'content.json'), 'utf8'));
+const home = JSON.parse(fs.readFileSync(path.join(ROOT, 'src', 'content', 'home.json'), 'utf8'));
 
 // oyundaki decodeArt ile aynı çözüm
 const ALPH = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -34,7 +34,7 @@ function png(size, px){ // px(x, y) -> [r,g,b]
   return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw, { level: 9 })), chunk('IEND', Buffer.alloc(0))]);
 }
 
-const art = content.home, n = art.n, idx = decode(art), pal = art.pal.map(rgb);
+const art = home, n = art.n, idx = decode(art), pal = art.pal.map(rgb);
 const bg = pal[idx[0]]; // köşedeki zemin rengi
 // Her piksel tam sayı büyüklükte, kalan boşluk zemin rengiyle dolar (keskin piksel görünümü).
 // pad: kenar payı (Android "maskable" simgeleri kenarları kırpar, onlara daha geniş pay)

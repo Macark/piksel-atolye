@@ -1,0 +1,6 @@
+{"id":"yilbasi","name":"YILBAŞI","name_en":"NEW YEAR","color":"#B3261E","start":[12,15],"end":[1,5],"frame":"yilbasi","reward":200,"items":[
+ {"id":"e_kardan","name":"Kardan Adam","name_en":"Snowman","art":{"n":24,"pal":["#1b1b1b","#1b2a5a","#c8102e","#eaf3ff","#ffffff"],"px":"b34a4b20a4b20a4b18a8b3eb15e2b20e6b18e6b17e2ae2ae2b16de3ce2db17e6b19e4b18c8b5eb10e6ceb15e7ce2b14e7ce2b14e10b14e10b14e10b15e8b8d9e6d20e2d59"}},
+ {"id":"e_hediye","name":"Hediye Kutusu","name_en":"Gift Box","art":{"n":24,"pal":["#2f5a36","#c8102e","#e0303f","#d99a1e","#f2b33d"],"px":"a129de4da17e8a15e4d2e4a11c4e2cd2ce2c3a9e15a9c7e2c6a10b6e2b6a10b6e2b6a10b6e2b6a10b6e2b6a10b6e2b6a10b6e2b6a10b6e2b6a10b6e2b6a10b6e2b6a10b6e2b6a77"}},
+ {"id":"e_cam","name":"Süslü Çam","name_en":"Christmas Tree","art":{"n":32,"pal":["#1b2a5a","#c8102e","#7a4a2a","#2f9a50","#f2b33d","#eaf3ff"],"px":"a15da31d2a30d2a29de2da28de2da27d2e2d2a26d6a26d6a25d8a24d8a23d2b2d6a22d10a22d10a22d10a21d12a20d12a19d3ed10a18d3ed5b2d3a18d14a18d14a17d16a16d16a15d4bd8ed4a14d3b2d8ed4a13d20a20c3a29c3a29c3a15f128"}},
+ {"id":"e_kakao","name":"Sıcak Kakao","name_en":"Hot Cocoa","art":{"n":24,"pal":["#6b3a1e","#c8102e","#f2d9d0","#ffffff"],"px":"c36dc21dcdcdc19dcdcdc19dcdcdc41adad2a2c15a2d2a3d2a2c13b2a7b2c13b11c13b14c10b11c2bc10d11c2b2c9b11c2b2c9b11c2b2c9b14c10b12c12b11c13b11c13b11c103"}}
+]}

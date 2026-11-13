@@ -1,0 +1,10 @@
+[
+ {"id":"il01","plaka":1,"name":"ADANA","region":"akdeniz","geo":[37,35.32]},
+ {"id":"il07","plaka":7,"name":"ANTALYA","region":"akdeniz","geo":[36.89,30.71]},
+ {"id":"il15","plaka":15,"name":"BURDUR","region":"akdeniz","geo":[37.72,30.29]},
+ {"id":"il31","plaka":31,"name":"HATAY","region":"akdeniz","geo":[36.2,36.16]},
+ {"id":"il32","plaka":32,"name":"ISPARTA","region":"akdeniz","geo":[37.76,30.55]},
+ {"id":"il33","plaka":33,"name":"MERSİN","region":"akdeniz","geo":[36.8,34.64]},
+ {"id":"il46","plaka":46,"name":"KAHRAMANMARAŞ","region":"akdeniz","geo":[37.58,36.94]},
+ {"id":"il80","plaka":80,"name":"OSMANİYE","region":"akdeniz","geo":[37.07,36.25]}
+]

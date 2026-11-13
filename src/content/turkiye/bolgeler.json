@@ -1,0 +1,9 @@
+[
+ {"id":"marmara","name":"MARMARA","color":"#2E7DBA"},
+ {"id":"ege","name":"EGE","color":"#1F9AA0"},
+ {"id":"akdeniz","name":"AKDENİZ","color":"#E0763F"},
+ {"id":"icanadolu","name":"İÇ ANADOLU","color":"#C9A227"},
+ {"id":"karadeniz","name":"KARADENİZ","color":"#3E8E5A"},
+ {"id":"dogu","name":"DOĞU ANADOLU","color":"#8A4FB0"},
+ {"id":"guneydogu","name":"GÜNEYDOĞU ANADOLU","color":"#C8321E","guide":{"ini":"LE","name":"Rehber Leyla","art":{"n":16,"pal":["#3a2418","#c8321e","#c98a5a","#d9a066","#f2b33d","#f7d9b0"],"px":"f36a8f8a8f8a8f8a2d5af8a2d5af8adad2adaf8ad6af8ed2b2d2ef8ad6af8a3c2a3f11c2f10b10f6beb2eb2eb2f6b10f3"}}}
+]

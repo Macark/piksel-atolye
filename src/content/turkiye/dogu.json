@@ -1,0 +1,16 @@
+[
+ {"id":"il04","plaka":4,"name":"AĞRI","region":"dogu","geo":[39.72,43.05]},
+ {"id":"il12","plaka":12,"name":"BİNGÖL","region":"dogu","geo":[38.88,40.5]},
+ {"id":"il13","plaka":13,"name":"BİTLİS","region":"dogu","geo":[38.4,42.11]},
+ {"id":"il23","plaka":23,"name":"ELAZIĞ","region":"dogu","geo":[38.67,39.22]},
+ {"id":"il24","plaka":24,"name":"ERZİNCAN","region":"dogu","geo":[39.75,39.49]},
+ {"id":"il25","plaka":25,"name":"ERZURUM","region":"dogu","geo":[39.9,41.27]},
+ {"id":"il30","plaka":30,"name":"HAKKARİ","region":"dogu","geo":[37.57,43.74]},
+ {"id":"il36","plaka":36,"name":"KARS","region":"dogu","geo":[40.6,43.1]},
+ {"id":"il44","plaka":44,"name":"MALATYA","region":"dogu","geo":[38.35,38.31]},
+ {"id":"il49","plaka":49,"name":"MUŞ","region":"dogu","geo":[38.75,41.51]},
+ {"id":"il62","plaka":62,"name":"TUNCELİ","region":"dogu","geo":[39.11,39.55]},
+ {"id":"il65","plaka":65,"name":"VAN","region":"dogu","geo":[38.5,43.38]},
+ {"id":"il75","plaka":75,"name":"ARDAHAN","region":"dogu","geo":[41.11,42.7]},
+ {"id":"il76","plaka":76,"name":"IĞDIR","region":"dogu","geo":[39.92,44.04]}
+]

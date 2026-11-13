@@ -1,0 +1,9 @@
+{"id":"daily","name":"GÜNÜN RESMİ","name_en":"DAILY PICTURE","items":[
+ {"id":"d_kalp","name":"Kalp","name_en":"Heart","art":{"n":24,"pal":["#e8384f","#f48fb1","#ffe4ec"],"px":"c151a10c12a3ba10c10a2b2a10c10a2b2a10c9a4ba10c10a14c10a14c11a12c13a10c15a8c17a6c18a6c19a4c21a2c107"}},
+ {"id":"d_mantar","name":"Mantar","name_en":"Mushroom","art":{"n":24,"pal":["#b01e30","#d7263d","#7bb86f","#cfefd9","#f7ebd5","#ffffff"],"px":"d153b6d15b7f2b3d11b8f3b3d9b3ef2b3f2b5d8b3f3b10d7b8fb4f2b3d6b8fb9d6a18d13e4d20e4d20e4d20e4d20e4d20e4d10c10e4c82"}},
+ {"id":"d_papatya","name":"Papatya","name_en":"Daisy","art":{"n":24,"pal":["#3e8e3e","#4fa64f","#f2b33d","#bfe3f2","#ffffff"],"px":"d107e2d22e2d18e3de2de2d16e8d17ec4ed15e4c4e4d12e4c4e4d15ec4ed17e8d15e3de2de2d16ed2e2d2ed19e2d22a2d22a2d22a2db3d18a2b3d19ab3d20a2d22a2d22a2d11"}},
+ {"id":"d_balon","name":"Balonlar","name_en":"Balloons","art":{"n":24,"pal":["#6b5a48","#8a4fb0","#2e7dba","#e8558f","#7fb8e6","#f7a6c8","#fff1d6"],"px":"g84c4g19c6g13d4gce2c3g12d6ce2c4g11df2d2c8g11dfd4c5b2g11d6c4b4g10d6c3bf2b3g9d6gc2b6g10d4g4b6g18b6g12ag4ab5g18agb4g14fg6ag16fg48agagag21afg21ag24ag35"}},
+ {"id":"d_kupkek","name":"Kupkek","name_en":"Cupcake","art":{"n":24,"pal":["#d7263d","#b85a2a","#e0763f","#d9c9f7","#fff3d6"],"px":"d155a2d22a2d20e2a2e2d18e6d17e8d15e4de5d15e8d14e12d12e8be3d13e10d15cbe4c2d16cbcbcbc2d16cbcbcbc2d16cbcbcbc2d17bcbcbcd18bcbcbcd57"}},
+ {"id":"d_ordek","name":"Ördek","name_en":"Duck","art":{"n":24,"pal":["#2e7dba","#5b9bd0","#f2b33d","#8fd3ff","#ffd84d"],"px":"d183e4d19e6d18e3ae2d18e6cd12e11cd7e2de12d10e5c2e6d11e3c6e5d10e2c7e5d10e2c6e6d5a5e3c3e7a13e10a10b5ae5a51b3a52"}},
+ {"id":"d_kaktus","name":"Kaktüs","name_en":"Cactus","art":{"n":24,"pal":["#a8431e","#3e8e5a","#c4552c","#e8558f","#f7d9b0"],"px":"e131d2e21bd2be20b4e20b4e2be17b4eb3e13be2b4eb3e12b3eb4eb3e12b3eb8e12b3eb8e12b8e17be2b4e20b4e17a9e16c8e17c6e18c6e18c6e18c6e33"}}
+]}

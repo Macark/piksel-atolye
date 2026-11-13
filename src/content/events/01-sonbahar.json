@@ -1,0 +1,6 @@
+{"id":"sonbahar","name":"SONBAHAR ŞENLİĞİ","name_en":"AUTUMN FESTIVAL","color":"#D9661A","start":[11,1],"end":[11,30],"frame":"sonbahar","reward":150,"items":[
+ {"id":"e_yaprak","name":"Akçaağaç Yaprağı","name_en":"Maple Leaf","art":{"n":24,"pal":["#d9461a","#f28c28","#e89471","#f7e3c8"],"px":"d107a2d22a2d18a2dca2d2a2d15a3b2a3d16ab6ad15a2b6a2d11ca5b4a5d10ca4b4a4cd11cab8acd12a5b2a5d11a14d16a2d203"}},
+ {"id":"e_semsiye","name":"Yağmurda Şemsiye","name_en":"Umbrella in the Rain","art":{"n":24,"pal":["#4a3a2a","#c8102e","#9ab0c8","#f2b33d","#dde7f2"],"px":"c61ec13ec6d4c17b3d4b3c13b4d4b4c11db4d3b5dc8ecd2b4d2b4d2c9d4b3d2b3d4c8d6bd2bd6c8d7b2d7c195ec13ec19acac22a2c60"}},
+ {"id":"e_kestane","name":"Kestane Kebap","name_en":"Roasted Chestnuts","art":{"n":24,"pal":["#3a2a3a","#7a3e1e","#9d5f33","#c4552c","#d9a05b","#f2ede3"],"px":"a106ba22b6a18be2beba17cbeb2ecba15bcebe2becba13d2e2d4e2d2a13f10a14f10a15f8a16f8a17f6a18f6a19f4a20f4a20f4a21f2a22f2a83"}},
+ {"id":"e_balkabagi","name":"Balkabağı","name_en":"Pumpkin","art":{"n":24,"pal":["#5a7a2a","#6baf3a","#e0763f","#f28c28","#c9a27a","#f7e3c8"],"px":"f155a2b4f18ab4f15c2d2a2d2c2f13c2d2c4d2c2f10c3d3c4d3c2f9c3d3c4d3c3f7c4d3c4d3c4f6c3d4c4d4c3f6c3d4c4d4c3f6c4d3c4d3c4f7c3d3c4d3c3f8c3d3c4d3c3f9c3d2c4d2c3f5e7c2d2c2d2c2e17cd2ce82"}}
+]}

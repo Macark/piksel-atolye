@@ -1,0 +1,10 @@
+[
+ {"id":"il03","plaka":3,"name":"AFYONKARAHİSAR","region":"ege","geo":[38.76,30.54]},
+ {"id":"il09","plaka":9,"name":"AYDIN","region":"ege","geo":[37.84,27.85]},
+ {"id":"il20","plaka":20,"name":"DENİZLİ","region":"ege","geo":[37.78,29.09]},
+ {"id":"il35","plaka":35,"name":"İZMİR","region":"ege","geo":[38.42,27.14]},
+ {"id":"il43","plaka":43,"name":"KÜTAHYA","region":"ege","geo":[39.42,29.98]},
+ {"id":"il45","plaka":45,"name":"MANİSA","region":"ege","geo":[38.61,27.43]},
+ {"id":"il48","plaka":48,"name":"MUĞLA","region":"ege","geo":[37.22,28.36]},
+ {"id":"il64","plaka":64,"name":"UŞAK","region":"ege","geo":[38.68,29.41]}
+]

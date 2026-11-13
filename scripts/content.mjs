@@ -1,0 +1,131 @@
+// İçerik: src/content/ altındaki dosyaları tek içerik nesnesinde birleştirir ve denetler.
+//
+// src/content/
+//   meta.json                sürüm
+//   home.json                ana sayfa Köfte portresi
+//   daily.json, sponsor.json, upcoming.json
+//   albums/NN-<id>.json      her albüm ayrı dosya; NN sırayı belirler
+//   cities/NN-<id>.json      Dünya Turu şehirleri
+//   events/NN-<id>.json      etkinlikler
+//   turkiye/bolgeler.json    7 bölge (renk, rehber)
+//   turkiye/<bölge>.json     o bölgenin illeri; birleşince plaka sırasına dizilir
+//
+// Kullanım: import { loadContent, checkContent, formatGroup } from './content.mjs'
+// Tek başına: node scripts/content.mjs  → denetler, sonucu yazar.
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+export const CONTENT_DIR = path.join(ROOT, 'src', 'content');
+
+const readJSON = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e){ throw new Error(path.relative(ROOT, f) + ': ' + e.message); } };
+const dirJSON = d => fs.existsSync(d) ? fs.readdirSync(d).filter(f => f.endsWith('.json')).sort().map(f => readJSON(path.join(d, f))) : [];
+
+export function loadContent(dir = CONTENT_DIR){
+  const meta = readJSON(path.join(dir, 'meta.json'));
+  const regions = readJSON(path.join(dir, 'turkiye', 'bolgeler.json'));
+  const iller = regions.flatMap(r => { const f = path.join(dir, 'turkiye', r.id + '.json'); return fs.existsSync(f) ? readJSON(f) : []; }).sort((a, b) => a.plaka - b.plaka);
+  return {
+    version: meta.version,
+    albums: dirJSON(path.join(dir, 'albums')),
+    cities: dirJSON(path.join(dir, 'cities')),
+    events: dirJSON(path.join(dir, 'events')),
+    daily: readJSON(path.join(dir, 'daily.json')),
+    sponsor: readJSON(path.join(dir, 'sponsor.json')),
+    upcoming: readJSON(path.join(dir, 'upcoming.json')),
+    turkiye: { regions, iller },
+    home: readJSON(path.join(dir, 'home.json')),
+  };
+}
+
+// Okunur dosya biçimi: grup bilgisi üstte, her öğe tek satırda
+export function formatGroup(o){
+  if (Array.isArray(o)) return '[\n' + o.map(x => ' ' + JSON.stringify(x)).join(',\n') + '\n]\n';
+  if (o && Array.isArray(o.items)){
+    const { items, ...rest } = o, head = JSON.stringify(rest);
+    return head.slice(0, -1) + (head.length > 2 ? ',' : '') + '"items":[\n' + items.map(x => ' ' + JSON.stringify(x)).join(',\n') + '\n]}\n';
+  }
+  return JSON.stringify(o) + '\n';
+}
+
+/* ---------- denetim ---------- */
+const ALPH = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+function checkArt(a, where, E, sizes){
+  if (!a || typeof a !== 'object') return E.push(where + ': resim (art) yok');
+  if (!sizes.includes(a.n)) E.push(`${where}: ızgara boyutu ${a.n} (izinli: ${sizes.join(', ')})`);
+  if (!Array.isArray(a.pal) || !a.pal.length || a.pal.length > ALPH.length) return E.push(where + ': renk listesi (pal) hatalı');
+  a.pal.forEach((c, i) => { if (!/^#[0-9a-fA-F]{6}$/.test(c)) E.push(`${where}: renk ${i} geçersiz (${c})`); });
+  if (typeof a.px !== 'string') return E.push(where + ': piksel verisi (px) yok');
+  let cells = 0, p = 0; const s = a.px;
+  while (p < s.length){
+    const v = ALPH.indexOf(s[p++]);
+    if (v < 0) return E.push(`${where}: px içinde geçersiz harf "${s[p - 1]}"`);
+    if (v >= a.pal.length) return E.push(`${where}: px "${s[p - 1]}" rengini kullanıyor ama pal'da ${a.pal.length} renk var`);
+    let q = p; while (q < s.length && s.charCodeAt(q) >= 48 && s.charCodeAt(q) <= 57) q++;
+    cells += q > p ? +s.slice(p, q) : 1; p = q;
+  }
+  if (cells !== a.n * a.n) E.push(`${where}: px ${cells} kare, olması gereken ${a.n * a.n}`);
+}
+function checkQuiz(q, where, E){
+  if (!Array.isArray(q) || q.length !== 4 || q.some(x => typeof x !== 'string' || !x.trim())) return E.push(where + ': soru [soru, doğru, yanlış, yanlış] olmalı');
+  if (new Set(q.slice(1)).size !== 3) E.push(where + ': şıklar birbirinden farklı olmalı');
+}
+
+export function checkContent(c){
+  const E = [], W = [], ids = new Map();
+  const useId = (id, where) => { if (!id || typeof id !== 'string') return E.push(where + ': kimlik (id) yok'); if (ids.has(id)) E.push(`${where}: kimlik "${id}" ${ids.get(id)} ile çakışıyor`); else ids.set(id, where); };
+  const groupIds = new Set();
+  const group = (g, kind, opt = {}) => {
+    const gw = `${kind} ${g.id}`;
+    if (groupIds.has(kind + g.id)) E.push(gw + ': aynı kimlikte iki grup'); groupIds.add(kind + g.id);
+    if (!Array.isArray(g.items)) return E.push(gw + ': items yok');
+    g.items.forEach((it, k) => {
+      const w = `${gw} › ${it.id || '#' + k}`;
+      useId(it.id, w);
+      if (!it.name) E.push(w + ': ad (name) yok');
+      checkArt(it.art, w, E, [16, 24, 32, 40, 48, 64]);
+      if (it.quiz) checkQuiz(it.quiz, w, E);
+      if (it.quiz_en && (!Array.isArray(it.quiz_en) || it.quiz_en.length !== 4)) E.push(w + ': quiz_en 4 parça olmalı');
+      if (it.fact !== undefined && (typeof it.fact !== 'string' || !it.fact.trim())) E.push(w + ': fact boş');
+      if (it.souvenir){ if (!it.souvenir.name) E.push(w + ': hatıra adı yok'); checkArt(it.souvenir.art, w + ' (hatıra)', E, [16]); }
+      if (opt.tour){ if (!it.fact) E.push(w + ': tur resminde rehber bilgisi (fact) gerekli'); if (!it.quiz) E.push(w + ': tur resminde soru (quiz) gerekli'); if (!it.souvenir) E.push(w + ': tur resminde hatıra (souvenir) gerekli'); }
+    });
+  };
+  c.albums.forEach(a => { group(a, 'albüm'); if (!a.color) W.push(`albüm ${a.id}: renk (color) yok`); });
+  c.cities.forEach(ct => { group(ct, 'şehir', { tour:true }); if (!ct.guide || !ct.guide.name) E.push(`şehir ${ct.id}: rehber yok`); else checkArt(ct.guide.art, `şehir ${ct.id} rehber portresi`, E, [16, 24, 32]); if (!ct.map) E.push(`şehir ${ct.id}: harita konumu (map) yok`); });
+  const md = v => Array.isArray(v) && v.length === 2 && v[0] >= 1 && v[0] <= 12 && v[1] >= 1 && v[1] <= 31;
+  c.events.forEach(e => { group(e, 'etkinlik'); if (!md(e.start) || !md(e.end)) E.push(`etkinlik ${e.id}: tarih [ay, gün] biçiminde olmalı`); });
+  group(c.daily, 'günlük'); group(c.sponsor, 'sponsor');
+  checkArt(c.home, 'ana sayfa portresi', E, [32, 40, 48, 64]);
+
+  // Türkiye Turu
+  const T = c.turkiye, regs = new Set(T.regions.map(r => r.id));
+  T.regions.forEach(r => { if (r.guide && r.guide.art) checkArt(r.guide.art, `bölge ${r.id} rehber portresi`, E, [16, 24, 32]); });
+  if (T.iller.length !== 81) E.push(`Türkiye: ${T.iller.length} il var, 81 olmalı`);
+  const byPl = new Map(T.iller.map(i => [i.plaka, i]));
+  T.iller.forEach(i => {
+    const w = `il ${i.id} (${i.name})`;
+    if (i.id !== 'il' + String(i.plaka).padStart(2, '0')) E.push(w + ': kimlik plakayla uyuşmuyor');
+    if (!regs.has(i.region)) E.push(w + ': bölge "' + i.region + '" yok');
+    if (!Array.isArray(i.geo) || i.geo.length !== 2) E.push(w + ': konum (geo) yok');
+    if (i.nb){
+      i.nb.forEach(p => { if (p === i.plaka || !byPl.has(p)) E.push(`${w}: komşu listesinde geçersiz plaka ${p}`); else { const o = byPl.get(p); if (o.nb && !o.nb.includes(i.plaka)) E.push(`${w}: ${o.name} komşu diyor ama ${o.name} listesinde ${i.name} yok`); } });
+    }
+    if (i.items && i.items.length){
+      group(i, 'il', { tour:true });
+      if (!i.nb) E.push(w + ': açık ilde gerçek komşu listesi (nb) gerekli');
+      if (!i.line) E.push(w + ': rehber sözü (line) yok');
+      if (!i.bye) E.push(w + ': veda sözü (bye) yok');
+    }
+  });
+  return { errors:E, warnings:W, items:ids.size };
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)){
+  const c = loadContent(), r = checkContent(c);
+  r.warnings.forEach(w => console.log('uyarı:', w));
+  r.errors.forEach(e => console.log('HATA:', e));
+  console.log(`${r.items} resim denetlendi: ${r.errors.length} hata, ${r.warnings.length} uyarı`);
+  process.exit(r.errors.length ? 1 : 0);
+}

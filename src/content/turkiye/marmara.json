@@ -1,0 +1,13 @@
+[
+ {"id":"il10","plaka":10,"name":"BALIKESİR","region":"marmara","geo":[39.65,27.88]},
+ {"id":"il11","plaka":11,"name":"BİLECİK","region":"marmara","geo":[40.14,29.98]},
+ {"id":"il16","plaka":16,"name":"BURSA","region":"marmara","geo":[40.19,29.06]},
+ {"id":"il17","plaka":17,"name":"ÇANAKKALE","region":"marmara","geo":[40.15,26.41]},
+ {"id":"il22","plaka":22,"name":"EDİRNE","region":"marmara","geo":[41.68,26.56]},
+ {"id":"il34","plaka":34,"name":"İSTANBUL","region":"marmara","geo":[41.01,28.98]},
+ {"id":"il39","plaka":39,"name":"KIRKLARELİ","region":"marmara","geo":[41.73,27.22]},
+ {"id":"il41","plaka":41,"name":"KOCAELİ","region":"marmara","geo":[40.77,29.92]},
+ {"id":"il54","plaka":54,"name":"SAKARYA","region":"marmara","geo":[40.76,30.4]},
+ {"id":"il59","plaka":59,"name":"TEKİRDAĞ","region":"marmara","geo":[40.98,27.51]},
+ {"id":"il77","plaka":77,"name":"YALOVA","region":"marmara","geo":[40.65,29.27]}
+]
