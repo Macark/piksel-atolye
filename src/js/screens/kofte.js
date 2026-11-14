@@ -7,7 +7,7 @@
 const BK = AT.bakim, KIY_DEF = AT.kiyafet, MAMA = Object.fromEntries(BK.mamalar.map(m => [m.id, m]));
 const kClamp = v => Math.max(0, Math.min(100, v));
 const kGun = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
-// Örnek anının eski alt yazısı "Kral Köfte" idi; Ali'nin isteğiyle "Köfte" oldu (eski kayıtlarda da)
+// Örnek anının eski alt yazısı değişti; eski kayıtlarda da güncellenir
 (DB.gallery || []).forEach(p => { if (p.caption === 'Kral Köfte') p.caption = 'Köfte'; });
 function kData(){
   const k = DB.kofte = DB.kofte || {};
