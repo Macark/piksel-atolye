@@ -57,6 +57,7 @@
     ['dükkân', () => openShop()],
     ['güç bilgisi', () => openPwInfo()],
     ['tanıtım', async () => { gtOpen(); $('#gtPrev').click(); for (let i = 0; i < 14; i++){ const nx = document.querySelector('#gtour .gtbtns .btn.primary'); if (nx) nx.click(); await sleep(30); } gtClose(); }],
+    ['atölye', () => openAtolye()],
     ['ana sayfa (son)', () => { show('home'); refreshHome(); }],
   ];
   for (const [name, fn] of screens){ await step(name, async () => { closeAll(); await fn(); await sleep(40); }); }
@@ -107,7 +108,44 @@
   });
   closeAll();
 
+  // 4) Köfte'nin Atölyesi: aç, eşya al, yerleştir, resim as, rafa hatıra koy, Köfte'ye dokun, paylaş, eski kayıtla aç
+  let atolyeOk = false;
+  await step('atölye', async () => {
+    const coins0 = DB.coins; DB.coins = Math.max(DB.coins, 5000);
+    $('#atLink').click(); await sleep(60);
+    if (!$('#atolye').classList.contains('on')) throw new Error('atölye açılmadı');
+    if (!AT.slots.every(s => AT_ITEM[DB.atolye.yuva[s.id]])) throw new Error('yuvalar boş');
+    // satın alınabilir ilk eşyayı bul (sahip olunmayan, yıldız şartı olmayan)
+    const it = AT.items.find(x => x.price && !x.stars && !DB.atolye.var[x.id]) || AT.items.find(x => x.price && !x.stars);
+    atSelect(it.slot); [...document.querySelectorAll('#atItems .atitem')][AT.items.filter(x => x.slot === it.slot).indexOf(it)].click();
+    const before = DB.coins, had = !!DB.atolye.var[it.id];
+    if (!had){ if ($('#atAct').hidden) throw new Error('satın al düğmesi yok'); $('#atAct').click(); if (DB.coins !== before - it.price) throw new Error('coin düşmedi'); }
+    else if (!$('#atAct').hidden) $('#atAct').click();
+    if (DB.atolye.yuva[it.slot] !== it.id) throw new Error('eşya yerleşmedi');
+    // odaya dokununca yuva seçilsin
+    const r = $('#atRoom').getBoundingClientRect(), s0 = AT_SLOT.masa;
+    $('#atRoom').dispatchEvent(new MouseEvent('click', { bubbles:true, clientX:r.left + (s0.x + s0.w / 2) / AT.room.w * r.width, clientY:r.top + (s0.y + s0.h - 4) / AT.room.h * r.height }));
+    if (atTab !== 'masa') throw new Error('odaya dokununca yuva seçilmedi: ' + atTab);
+    // çerçeveye biten bir resim as
+    atSelect('cerceve', 0); const pics = document.querySelectorAll('#atItems .atpics .atitem');
+    if (pics.length > 1){ pics[1].click(); if (!DB.atolye.cerceve[0]) throw new Error('resim asılmadı'); }
+    // rafa hatıra
+    atSelect('raf', 0); const sv = document.querySelectorAll('#atItems .atpics .atitem');
+    if (sv.length > 1){ sv[1].click(); if (!DB.atolye.raf[0]) throw new Error('hatıra rafa konmadı'); }
+    // Köfte'ye dokun
+    const [kx, ky] = atKPos(); $('#atRoom').dispatchEvent(new MouseEvent('click', { bubbles:true, clientX:r.left + (kx + 14) / AT.room.w * r.width, clientY:r.top + (ky + 12) / AT.room.h * r.height }));
+    if ($('#atBubble').hidden) throw new Error('Köfte tepki vermedi');
+    // paylaş
+    $('#atShare').click(); await sleep(30); if (!$('#share').classList.contains('on') || !shareCanvas) throw new Error('paylaşım açılmadı'); closeAll();
+    // eski kayıt: atölye alanı olmadan
+    const keep = DB.atolye; delete DB.atolye; atCheck(); openAtolye();
+    if (!DB.atolye || !AT.slots.every(s => AT_ITEM[DB.atolye.yuva[s.id]].start)) throw new Error('eski kayıtta atölye kurulmadı');
+    DB.atolye = keep; DB.coins = coins0; save();
+    $('#atBack').click(); atolyeOk = true;
+  });
+  closeAll();
+
   window.removeEventListener('error', onErr); window.removeEventListener('unhandledrejection', onErr); console.error = ce;
   const done = ids.filter(id => DB.done[id]).length;
-  return { ok: errors.length === 0 && done === ids.length && fotoKayit === 1, foto: fotoKayit, resim: ids.length, biten: done, boyanan: painted, dogruCevap: quizOk, yanlisCevap: quizNo, hatira: Object.keys(DB.souv || {}).length, rozet: Object.keys(DB.badges || {}).length, coin: DB.coins, errors };
+  return { ok: errors.length === 0 && done === ids.length && fotoKayit === 1 && atolyeOk, foto: fotoKayit, atolye: atolyeOk, resim: ids.length, biten: done, boyanan: painted, dogruCevap: quizOk, yanlisCevap: quizNo, hatira: Object.keys(DB.souv || {}).length, rozet: Object.keys(DB.badges || {}).length, coin: DB.coins, errors };
 })();

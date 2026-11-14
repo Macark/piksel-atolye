@@ -9,6 +9,7 @@
 //   events/NN-<id>.json      etkinlikler
 //   turkiye/bolgeler.json    7 bölge (renk, rehber)
 //   turkiye/<bölge>.json     o bölgenin illeri; birleşince plaka sırasına dizilir
+//   atolye.json              Köfte'nin Atölyesi: oda, yuvalar, eşyalar (tools/cizim/atolye-veri.mjs yazar)
 //
 // Kullanım: import { loadContent, checkContent, formatGroup } from './content.mjs'
 // Tek başına: node scripts/content.mjs  → denetler, sonucu yazar.
@@ -37,6 +38,7 @@ export function loadContent(dir = CONTENT_DIR){
     turkiye: { regions, iller },
     home: readJSON(path.join(dir, 'home.json')),
     stickers: fs.existsSync(path.join(dir, 'stickers.json')) ? readJSON(path.join(dir, 'stickers.json')) : [],
+    atolye: fs.existsSync(path.join(dir, 'atolye.json')) ? readJSON(path.join(dir, 'atolye.json')) : null,
   };
 }
 
@@ -71,6 +73,43 @@ function checkArt(a, where, E, sizes){
 function checkQuiz(q, where, E){
   if (!Array.isArray(q) || q.length !== 4 || q.some(x => typeof x !== 'string' || !x.trim())) return E.push(where + ': soru [soru, doğru, yanlış, yanlış] olmalı');
   if (new Set(q.slice(1)).size !== 3) E.push(where + ': şıklar birbirinden farklı olmalı');
+}
+
+// Atölye çizimi: { w, h, rows, cols }, '.' saydam
+function checkSprite(a, where, E){
+  if (!a || !Array.isArray(a.rows) || !a.w || !a.h) return E.push(where + ': çizim yok ya da bozuk');
+  if (a.rows.length !== a.h || a.rows.some(r => typeof r !== 'string' || r.length !== a.w)) return E.push(`${where}: ${a.w}×${a.h} olmalı`);
+  new Set(a.rows.join('').replace(/\./g, '')).forEach(ch => { if (!a.cols || !/^#[0-9a-fA-F]{6}$/.test(a.cols[ch] || '')) E.push(`${where}: "${ch}" harfinin rengi yok`); });
+}
+// Rozet kimlikleri koddan okunur (ödül olarak bağlanabilsinler diye)
+function badgeIds(){ try { const s = fs.readFileSync(path.join(ROOT, 'src', 'js', 'screens', 'badges.js'), 'utf8'); return new Set([...s.matchAll(/{ id:'([a-z0-9]+)', name:/g)].map(m => m[1])); } catch(e){ return new Set(); } }
+function checkAtolye(c, E, regs){
+  const A = c.atolye, w = 'atölye', ids = new Set(), slots = new Map((A.slots || []).map(s => [s.id, s])), badges = badgeIds();
+  if (!slots.size) return E.push(w + ': yuva listesi yok');
+  ['normal', 'blink', 'tail'].forEach(k => checkSprite(A.kofte && A.kofte[k], `${w} Köfte (${k})`, E));
+  (A.items || []).forEach((it, k) => {
+    const iw = `${w} › ${it.id || '#' + k}`;
+    if (!it.id) E.push(iw + ': kimlik yok'); else if (ids.has(it.id)) E.push(iw + ': kimlik çakışıyor'); ids.add(it.id);
+    if (!it.name) E.push(iw + ': ad yok');
+    const s = slots.get(it.slot); if (!s) E.push(`${iw}: yuva "${it.slot}" yok`);
+    checkSprite(it.art, iw, E);
+    if (s && it.art && !s.tile && (it.art.w > s.w || it.art.h > s.h)) E.push(`${iw}: çizim yuvadan büyük (${it.art.w}×${it.art.h} > ${s.w}×${s.h})`);
+    const ways = [it.start, it.price, it.reward].filter(Boolean).length;
+    if (ways !== 1) E.push(iw + ': ya başlangıç, ya fiyat ya da ödül olmalı (yalnız biri)');
+    if (it.price !== undefined && !(it.price > 0)) E.push(iw + ': fiyat geçersiz');
+    if (it.reward){
+      const r = it.reward;
+      if (r.type === 'region'){ if (!regs.has(r.id)) E.push(`${iw}: ödül bölgesi "${r.id}" yok`); }
+      else if (r.type === 'badge'){ if (!badges.has(r.id)) E.push(`${iw}: ödül rozeti "${r.id}" yok`); }
+      else if (r.type === 'album'){ if (!c.albums.some(a => a.id === r.id)) E.push(`${iw}: ödül albümü "${r.id}" yok`); }
+      else E.push(`${iw}: ödül türü "${r.type}" bilinmiyor`);
+    }
+  });
+  slots.forEach((s, id) => {
+    if (!A.items.some(it => it.slot === id && it.start)) E.push(`${w}: "${id}" yuvasında başlangıç eşyası yok`);
+    const d = A.defaults && A.defaults[id], di = A.items.find(it => it.id === d);
+    if (!di || di.slot !== id || !di.start) E.push(`${w}: "${id}" yuvasının varsayılanı başlangıç eşyası olmalı`);
+  });
 }
 
 export function checkContent(c){
@@ -131,6 +170,8 @@ export function checkContent(c){
       if (!i.bye) E.push(w + ': veda sözü (bye) yok');
     }
   });
+  // Köfte'nin Atölyesi
+  if (c.atolye) checkAtolye(c, E, regs);
   return { errors:E, warnings:W, items:ids.size };
 }
 

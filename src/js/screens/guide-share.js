@@ -286,8 +286,9 @@ function renderShareBase(){
   if (story){
     const out = (t, y, col, font) => { g.font = font; g.lineJoin = 'round'; g.lineWidth = 10; g.strokeStyle = 'rgba(14,11,9,0.75)'; g.strokeText(t, W3 / 2, y); g.fillStyle = col; g.fillText(t, W3 / 2, y); };
     out('PİKSEL ATÖLYE', 190, '#FFE135', '700 76px "Pixelify Sans", monospace');
-    out('Kare kare ben boyadım', 1690, '#FFF7EA', '700 58px "Pixelify Sans", monospace');
-    out('Sen de kendi fotoğrafını boya', 1770, '#F3E6D2', '400 38px "Pixelify Sans", monospace');
+    const atl = viewCtx && viewCtx.atolye;   // atölye paylaşımında farklı yazı
+    out(trx(atl ? 'Köfte’nin atölyesini ben süsledim' : 'Kare kare ben boyadım'), 1690, '#FFF7EA', '700 58px "Pixelify Sans", monospace');
+    out(trx(atl ? 'Boyadıkça atölye güzelleşiyor' : 'Sen de kendi fotoğrafını boya'), 1770, '#F3E6D2', '400 38px "Pixelify Sans", monospace');
   }
   applyShFilter(g, W3, H3);
   shBase = k; shBaseURL = k.toDataURL('image/png');

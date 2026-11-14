@@ -31,7 +31,7 @@ function finish(){
     ctxv = { photo:DB.gallery.length - 1 };
   }
   DB.coins += coins;
-  const newB = checkBadges();
+  const newB = checkBadges(); atNotify(1600);
   save();
   viewDone(art, title, ctxv, sub, coins, stars);
   showDoneBadges(newB);

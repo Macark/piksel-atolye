@@ -79,7 +79,7 @@ function badgeToast(list){
   el.onclick = () => { el.hidden = true; openBadges(b.id); };
   badgeJingle(); clearTimeout(btT); btT = setTimeout(() => { el.hidden = true; }, 3600);
 }
-const afterBadge = () => badgeToast(checkBadges());
+const afterBadge = () => { badgeToast(checkBadges()); if (typeof atNotify === 'function') atNotify(3800); };
 function showDoneBadges(list){
   const box = $('#doneBadges'); box.innerHTML = ''; box.hidden = !list.length;
   list.forEach(b => {

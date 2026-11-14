@@ -22,6 +22,7 @@
     ['istatistik', () => openStats()], ['rozetler', () => openBadges()], ['sıralama', () => openRank()],
     ['ayarlar', () => openSettings()], ['dükkân', () => openShop()],
     ['boyama', () => startBuiltin(ALBUMS[0].items[0].id)], ['güç bilgisi', () => openPwInfo()],
+    ['atölye', () => openAtolye()], ['atölye çerçeve', () => openAtolye('cerceve')],
   ];
   for (const [n, f] of steps){ closeAll(); try { await f(); } catch (e){ out.push(n + ': HATA ' + e.message); } await sleep(60); scan(n); }
   closeAll(); backToOrigin(); show('home'); refreshHome(); await sleep(60);

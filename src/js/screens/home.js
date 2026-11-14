@@ -10,6 +10,7 @@ if (!DB.seedMem){
 }
 
 function refreshHome(){
+  if (typeof atCheck === 'function') atCheck();   // hak edilen atölye eşyaları (geriye dönük de) ve girişteki nokta
   $('#resumeBtn').hidden = !(DB.current && DB.current.idx);
   if (typeof refreshEventCard === 'function') refreshEventCard();
   const ds = dailyState(), dart = getArt(ds.id), dw = DB.wip[ds.id];
