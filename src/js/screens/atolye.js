@@ -142,10 +142,13 @@ function atRoomDraw(g, over, tm){
 const atRoomCv = $('#atRoom'), atKCv = $('#atKofte');
 let atOver = null;
 function atRender(){ atRoomDraw(atRoomCv.getContext('2d'), atOver); atKKey = ''; atKDraw(); }
-// Keskin büyütme: oda her zaman cihaz pikselinin tam sayı katıyla çizilir (bulanıklık yok)
+// Büyütme: oda ekran genişliğini doldurur (kenar boşluğuna taşar, ortalı). Tam sayı kat ekranın en az
+// %94'ünü dolduruyorsa o seçilir (her piksel eşit); yoksa genişlik doldurulur. İkisinde de "pixelated"
+// çizim olduğu için bulanıklık olmaz; yüksek yoğunluklu ekranda pikseller arasında en çok 1 cihaz pikseli fark olur.
 function atFit(){
-  const wrap = $('#atRoomWrap'), avail = $('#atolye').clientWidth - 6, dpr = window.devicePixelRatio || 1;   // gerekirse kenar boşluğuna taşar (ortalı)
-  const k = Math.max(1, Math.floor(Math.max(120, avail) * dpr / AT.room.w)), w = AT.room.w * k / dpr, h = AT.room.h * k / dpr;
+  const wrap = $('#atRoomWrap'), avail = Math.max(120, $('#atolye').clientWidth - 6), dpr = window.devicePixelRatio || 1;
+  const k = Math.max(1, Math.floor(avail * dpr / AT.room.w)), wi = AT.room.w * k / dpr;
+  const w = wi >= avail * 0.94 ? wi : Math.floor(avail * dpr) / dpr, h = Math.round(w * AT.room.h / AT.room.w * dpr) / dpr;
   wrap.style.width = w + 'px'; wrap.style.height = h + 'px';
   [atRoomCv, atKCv].forEach(c => { c.style.width = w + 'px'; c.style.height = h + 'px'; });
 }
