@@ -9,6 +9,7 @@
 // fonksiyonlar ve global değişkenler eskisi gibi birbirini görür (sıra önemli!).
 // Kullanım: node scripts/build.mjs [--watch]
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContent, checkContent } from './content.mjs';
@@ -34,12 +35,17 @@ export function build(){
     if (!body.endsWith('\n')) throw new Error(m[1] + ' satır sonuyla bitmeli');
     return body.slice(0, -1);
   }).join('\n');
+  // Sürüm kimliği: sayfanın içeriğinden. Oyun dist/version.txt'yi okuyup kendi kimliğiyle karşılaştırır;
+  // farklıysa "yeni sürüm hazır" uyarısı çıkar (telefon eski sayfayı önbellekte tutabiliyor).
+  const buildId = crypto.createHash('sha1').update(html).digest('hex').slice(0, 12);
+  const page = html.split('__PA_BUILD__').join(buildId);
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
-  fs.writeFileSync(OUT, html);
+  fs.writeFileSync(OUT, page);
+  fs.writeFileSync(path.join(path.dirname(OUT), 'version.txt'), buildId);
   // src/public/ altındaki sabit dosyalar (simgeler, manifest) olduğu gibi dist/'e kopyalanır
   const PUB = path.join(SRC, 'public');
   if (fs.existsSync(PUB)) fs.cpSync(PUB, path.dirname(OUT), { recursive: true });
-  return { out: OUT, files: used.length, bytes: Buffer.byteLength(html), items: chk.items, warnings: chk.warnings };
+  return { out: OUT, files: used.length, bytes: Buffer.byteLength(page), items: chk.items, warnings: chk.warnings };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)){

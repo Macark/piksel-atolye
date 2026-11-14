@@ -63,3 +63,7 @@
 .coach.down::after{top:auto;bottom:-11px;border-bottom:0;border-top:8px solid var(--gold)}
 @media (prefers-reduced-motion:reduce){.coach{animation:none}}
 .gtskip{margin-left:auto}
+/* yeni sürüm uyarısı (web sürümü) */
+.updbar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:10px;width:min(92%,400px);padding:8px 8px 8px 14px;font-size:15px}
+.updbar span{flex:1}
+.updbar .btn{width:auto;padding:8px 14px;font-size:15px}

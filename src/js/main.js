@@ -28,3 +28,21 @@ drawArt($('#demo'), HOME_ART);
 setMute(); refreshHome();
 setTimeout(afterBadge, 900);
 wakeLoop();
+
+/* Yeni sürüm uyarısı (web sürümü): telefon eski sayfayı ~10 dk önbellekte tutabiliyor. Açılışta,
+   uygulamaya geri dönünce ve 10 dakikada bir sunucudaki version.txt okunur; bu sayfanın kimliğinden
+   farklıysa "Yeni sürüm hazır · YENİLE" çıkar. Kayıt localStorage'da olduğu için yenilemek ilerlemeyi silmez. */
+const PA_BUILD = (document.querySelector('meta[name="pa-build"]') || {}).content || '';
+let updNew = '', updDismiss = '';
+async function checkUpdate(){
+  if (!/^[0-9a-f]{12}$/.test(PA_BUILD) || !/^https?:$/.test(location.protocol)) return;
+  try {
+    const r = await fetch('version.txt?t=' + Date.now(), { cache:'no-store' }); if (!r.ok) return;
+    const v = (await r.text()).trim(); if (!/^[0-9a-f]{12}$/.test(v) || v === PA_BUILD) return;
+    updNew = v; $('#updBar').hidden = updDismiss === v;
+  } catch(e){}
+}
+$('#updBtn').onclick = () => { if (A && mode === 'paint') persist(true); location.replace(location.pathname + '?v=' + updNew); };
+$('#updX').onclick = () => { updDismiss = updNew; $('#updBar').hidden = true; };
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdate(); });
+setTimeout(checkUpdate, 3000); setInterval(checkUpdate, 10 * 60 * 1000);
