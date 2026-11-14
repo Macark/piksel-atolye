@@ -192,13 +192,19 @@ export function koltuk(){
 // Köfte koltukta yayılmış (fotoğraftaki gibi): sırtı hasıra yaslı, arka bacaklar uzanmış, kuyruk öne sarkık
 function yayil(o = {}){
   const d = T(52, 54);
+  // arkadaki bacak (biraz koyu): kalçadan dizle bükülüp öne uzanır
+  d.sEll(17, 37, 4.5, 3.4, F); d.poly([[14, 36], [7, 39], [7, 43], [15, 41]], F[0]); d.sEll(7, 41.5, 3.4, 2.4, FL);
   d.sEll(29, 27, 13, 9, F);                                                                                // gövde (arkaya yaslı)
   d.ell(31, 29, 7, 5.5, FL[0]);                                                                            // açık göğüs
-  d.poly([[18, 30], [4, 32], [3, 35], [18, 36]], F[1]); d.sEll(4, 33.5, 3, 2, FL);                         // uzanan arka bacak
-  d.poly([[22, 33], [10, 37], [10, 40], [24, 37]], F[0]); d.sEll(10, 38.5, 3, 2, FL);                      // diğer arka bacak
-  d.poly([[38, 26], [46, 27], [47, 30], [39, 31]], F[1]); d.sEll(46, 28.5, 3, 2, FL);                      // kol dayanağındaki ön pati
-  for (let k = 0; k <= 12; k++){ const t = k / 12, x = 20 - 10 * t - 3 * Math.sin(t * 3), y = 33 + 18 * t; d.ell(x, y, 2.6 + t * 0.8, 2.2, k % 3 ? F[1] : F[2]); }   // koltuğun önünden sarkan kabarık kuyruk
-  d.sEll(9, 50, 3.6, 3, F);
+  // öndeki arka bacak: dolgun kalça, dizden bükülen bacak, açık renk pati
+  d.sEll(20, 32, 8.5, 6, F); d.ell(18, 30, 4, 2, F[2]);                                                    // kalça
+  d.poly([[13, 32], [6, 34], [4, 37], [6, 39], [14, 37]], F[1]); d.line(6, 35, 13, 33, F[2]);               // bacak
+  d.sEll(4, 37, 3.2, 2.6, FL); d.px(3, 38, '#7A5A50').px(5, 38, '#7A5A50');                                // pati (parmak çizgileri)
+  // ön pati kol dayanağında
+  d.sEll(41, 26, 4, 3.4, F); d.poly([[42, 25], [47, 26], [48, 30], [42, 30]], F[1]); d.sEll(47, 28.5, 3, 2.2, FL); d.px(48, 29, '#7A5A50');
+  // koltuğun önünden sarkan kabarık kuyruk
+  for (let k = 0; k <= 12; k++){ const t = k / 12, x = 22 - 10 * t - 3 * Math.sin(t * 3), y = 36 + 15 * t; d.ell(x, y, 2.6 + t * 0.8, 2.2, k % 3 ? F[1] : F[2]); }
+  d.sEll(11, 50, 3.6, 3, F);
   bas(d, 33, 13 + (o.breath || 0), o);
   return d.outline(K.ol).done();
 }
