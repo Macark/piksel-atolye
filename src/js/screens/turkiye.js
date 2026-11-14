@@ -82,7 +82,7 @@ function openTr(change){
   const L0 = $('#trList'); L0.innerHTML = '';
   if (!DB.trHome || change === true){ trPicker(L0, change === true); }
   const doneN = ILLER.filter(ilDone).length;
-  L0.insertAdjacentHTML('beforeend', `<div class="tourhead box"><div class="row"><b>İLLER</b><span>${doneN}/${ILLER.length} il tamam</span></div><div class="abar" style="--ac:#B3261E;margin-top:8px"><i style="width:${doneN / ILLER.length * 100}%"></i></div><p class="trsub">${IL_OPEN.length} ilin resimleri hazır, diğerleri yakında. ${DB.trHome ? `Memleketin: ${ILLER.find(i => i.id === DB.trHome).name} 🏠 <button type="button" class="linkbtn" id="trChange">değiştir</button>` : ''}</p></div>`);
+  L0.insertAdjacentHTML('beforeend', `<div class="tourhead box"><div class="row"><b>İLLER</b><span>${doneN}/${ILLER.length} il tamam</span></div><div class="abar" style="--ac:#B3261E;margin-top:8px"><i style="width:${doneN / ILLER.length * 100}%"></i></div><p class="trsub">${IL_OPEN.length < ILLER.length ? `${IL_OPEN.length} ilin resimleri hazır, diğerleri yakında. ` : 'Bütün illerin resimleri hazır. '}${DB.trHome ? `Memleketin: ${ILLER.find(i => i.id === DB.trHome).name} 🏠 <button type="button" class="linkbtn" id="trChange">değiştir</button>` : ''}</p></div>`);
   const tc = L0.querySelector('#trChange'); if (tc) tc.onclick = () => openTr(true);
   const wrap = document.createElement('div'); wrap.className = 'mapwrap trwrap'; wrap.style.marginTop = '12px';
   const mc = document.createElement('canvas'); mc.setAttribute('role', 'img'); mc.setAttribute('aria-label', 'Piksel Türkiye haritası; bitirdiğin iller bölge rengine boyanır');
