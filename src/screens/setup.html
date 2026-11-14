@@ -1,26 +1,31 @@
   <section class="screen setup" id="setup">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>HAZIRLA</h2><button class="xbtn" id="setupX" type="button" aria-label="Vazgeç">✕</button></div>
-    <canvas class="preview" id="preview" width="32" height="32" aria-label="Önizleme"></canvas>
+    <div class="pvwrap" id="pvWrap">
+      <canvas class="preview" id="preview" width="32" height="32" aria-label="Önizleme"></canvas>
+      <span class="eyeh" hidden aria-hidden="true"></span><span class="eyeh" hidden aria-hidden="true"></span>
+    </div>
     <div class="seg pvseg" id="pvMode" role="group" aria-label="Önizleme">
       <button type="button" data-v="pix" aria-pressed="true">PİKSEL HÂLİ</button>
       <button type="button" data-v="org" aria-pressed="false">FOTOĞRAF</button>
     </div>
-    <label class="slide"><span class="dl">PİKSEL YOĞUNLUĞU <b id="denVal"></b></span>
-      <input type="range" id="denIn" min="0" max="5" step="1" value="2" aria-label="Piksel yoğunluğu">
-      <span class="slidelab"><small>Az kare, çabuk biter</small><small>Çok kare, daha ayrıntılı</small></span>
-    </label>
+    <p class="dl">AYRINTI <b class="dlv" id="denVal"></b></p>
+    <div class="chips hstrip denstrip" id="denChips" role="group" aria-label="Ayrıntı"></div>
+    <p class="muted fxdesc">Az kare çabuk biter, çok kare daha ayrıntılı olur.</p>
     <p class="dl">ZORLUK</p>
     <div class="seg" id="lvlSeg" role="group" aria-label="Zorluk">
-      <button type="button" data-k="6" aria-pressed="false">KOLAY<small>az renk</small></button>
-      <button type="button" data-k="10" aria-pressed="true">ORTA<small>orta renk</small></button>
-      <button type="button" data-k="16" aria-pressed="false">ZOR<small>çok renk</small></button>
+      <button type="button" data-k="8" aria-pressed="false">KOLAY<small>az renk</small></button>
+      <button type="button" data-k="12" aria-pressed="true">ORTA<small>orta renk</small></button>
+      <button type="button" data-k="18" aria-pressed="false">ZOR<small>çok renk</small></button>
     </div>
     <p class="dl">EFEKT</p>
     <div class="chips hstrip fxstrip" id="fxChips" role="group" aria-label="Efekt"></div>
     <p class="muted fxdesc" id="fxDesc"></p>
     <p class="dl">AKSESUAR</p>
     <div class="chips hstrip" id="maskChips" role="group" aria-label="Aksesuar"></div>
-    <label class="cap" id="maskCtl" hidden><span>Yerleştirmek için önizlemede sürükle. Boyutu buradan ayarla.</span><input type="range" id="maskSize" min="20" max="100" value="50" aria-label="Aksesuar boyutu"></label>
+    <div class="maskctl" id="maskCtl" hidden>
+      <p class="muted" id="eyeHint">İki yuvarlağı gözlerinin üstüne sürükle, aksesuar yüzüne otursun.</p>
+      <label class="cap"><span>Boyut</span><input type="range" id="maskSize" min="70" max="140" value="100" aria-label="Aksesuar boyutu"></label>
+    </div>
     <p class="muted" id="setupInfo"></p>
     <div class="stack" style="margin-top:4px">
       <button class="btn primary" id="goBtn" type="button">BOYAMAYA BAŞLA</button>

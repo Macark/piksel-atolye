@@ -36,7 +36,7 @@
 .camview{position:relative;width:min(100%,54vh);aspect-ratio:1;border:3px solid var(--line);box-shadow:4px 4px 0 var(--shade);background:#000;overflow:hidden}
 #camVid{width:100%;height:100%;object-fit:cover;display:block}
 .camview.mirror #camVid{transform:scaleX(-1)}
-#camOv{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none}
+.camguide{position:absolute;left:28%;right:28%;top:16%;bottom:20%;border:3px dashed rgba(255,255,255,.75);border-radius:50%;pointer-events:none}
 .camhint{position:absolute;left:0;right:0;bottom:8px;margin:0;text-align:center;color:#fff;font-weight:700;font-size:15px;text-shadow:0 1px 0 #000,0 -1px 0 #000,1px 0 0 #000,-1px 0 0 #000}
 #add .btn{flex-direction:column;gap:3px}
 #add .btn small{font-size:14px;font-weight:400;letter-spacing:0;color:var(--muted)}

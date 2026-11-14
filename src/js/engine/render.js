@@ -17,10 +17,33 @@ function drawNum(g, num, cx, cy, s, col){
   const sp = numSprite(num, u, col);
   g.drawImage(sp, Math.round(cx + (s - sp.width) / 2), Math.round(cy + (s - sp.height) / 2));
 }
+// Masa zemini: ortası hafif aydınlık, çok silik piksel noktaları. Ekrana sabittir (tablo kayarken
+// zemin yerinde durur, göz yormaz). Boyut ya da tema değişince bir kez çizilir, her karede tek kopya.
+let deskCv = null, deskKey = '', deskCol = null;
+function desk(){
+  const cs = getComputedStyle(stage), bg = cs.backgroundColor, key = cv.width + 'x' + cv.height + bg + dpr;
+  if (key === deskKey) return deskCv;
+  deskKey = key; deskCv = deskCv || document.createElement('canvas'); deskCv.width = cv.width; deskCv.height = cv.height;
+  const g = deskCv.getContext('2d'), W = cv.width, H = cv.height, rs = getComputedStyle(document.documentElement);
+  const dark = lum((bg.match(/[0-9.]+/g) || [0, 0, 0]).map(Number)) < 100;
+  deskCol = { panel:rs.getPropertyValue('--panel').trim() || '#FFF7EA', line:rs.getPropertyValue('--line').trim() || '#2A1D14', shadow:dark ? 'rgba(0,0,0,0.45)' : 'rgba(42,29,20,0.22)' };
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  const rg = g.createRadialGradient(W / 2, H * 0.45, 0, W / 2, H * 0.45, Math.max(W, H) * 0.7);
+  rg.addColorStop(0, dark ? 'rgba(255,236,214,0.07)' : 'rgba(255,255,255,0.35)'); rg.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, W, H);
+  const step = Math.round(14 * dpr), d = Math.max(1, Math.round(2 * dpr));
+  g.fillStyle = dark ? 'rgba(255,236,214,0.05)' : 'rgba(42,29,20,0.07)';
+  for (let y = step / 2; y < H; y += step) for (let x = step / 2; x < W; x += step) g.fillRect(Math.round(x), Math.round(y), d, d);
+  return deskCv;
+}
 function render(){
   const g = ctx, n = A.n, s = view.s;
-  g.fillStyle = getComputedStyle(stage).backgroundColor; g.fillRect(0, 0, cv.width, cv.height);
-  g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(view.ox + 6 * dpr, view.oy + 6 * dpr, n * s, n * s);
+  g.drawImage(desk(), 0, 0);
+  // tablo çerçevesi: kâğıt rengi kenar, koyu çizgi ve piksel gölge
+  const pad = Math.round(Math.max(4 * dpr, Math.min(12 * dpr, s * 0.4))), lw = Math.max(2, Math.round(2 * dpr)), W = n * s;
+  g.fillStyle = deskCol.shadow; g.fillRect(view.ox - pad + 5 * dpr, view.oy - pad + 5 * dpr, W + pad * 2, W + pad * 2);
+  g.fillStyle = deskCol.line; g.fillRect(view.ox - pad - lw, view.oy - pad - lw, W + (pad + lw) * 2, W + (pad + lw) * 2);
+  g.fillStyle = deskCol.panel; g.fillRect(view.ox - pad, view.oy - pad, W + pad * 2, W + pad * 2);
   const x0 = Math.max(0, Math.floor(-view.ox / s)), y0 = Math.max(0, Math.floor(-view.oy / s));
   const x1 = Math.min(n, Math.ceil((cv.width - view.ox) / s)), y1 = Math.min(n, Math.ceil((cv.height - view.oy) / s));
   const replay = mode === 'replay', rp = replay ? Math.floor(order.length * Math.min(1, replayT / 4.2)) : 0;

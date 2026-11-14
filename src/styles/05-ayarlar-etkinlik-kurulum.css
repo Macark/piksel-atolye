@@ -27,7 +27,15 @@
 .cbm{font-size:13px;line-height:1;margin-top:2px;color:var(--ink)}
 .setup{padding:18px 20px 22px;gap:14px;overflow-y:auto}
 .setup h2,.ovc h2{margin:0;font-size:30px;font-weight:700;letter-spacing:1px}
-.preview{width:100%;max-width:340px;aspect-ratio:1;align-self:center;image-rendering:pixelated;border:3px solid var(--line);box-shadow:4px 4px 0 var(--shade);background:#fff}
+.pvwrap{position:relative;width:100%;max-width:340px;align-self:center;touch-action:none}
+.preview{display:block;width:100%;aspect-ratio:1;image-rendering:pixelated;border:3px solid var(--line);box-shadow:4px 4px 0 var(--shade);background:#fff}
+.eyeh{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.65),inset 0 0 0 2px rgba(0,0,0,.65);pointer-events:none}
+.eyeh::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;background:#fff;box-shadow:0 0 0 1px #000}
+.dlv{color:var(--ink);margin-left:6px}
+.denchip{flex-direction:column;gap:3px;padding:5px 6px;font-size:13px}
+.denchip canvas{width:58px;height:58px;image-rendering:pixelated;border:2px solid var(--line);display:block}
+.maskctl{display:flex;flex-direction:column;gap:8px;margin-top:-4px}
+.maskctl p{font-size:14px}
 .seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .seg button{padding:10px 6px;border:3px solid var(--line);background:var(--panel);font-size:17px;font-weight:700;line-height:1.15}
 .seg button small{display:block;font-size:14px;font-weight:400;color:var(--muted)}
@@ -35,11 +43,6 @@
 .seg button[aria-pressed="true"] small{color:var(--panel)}
 .pvseg{grid-template-columns:repeat(2,minmax(0,1fr));max-width:340px;width:100%;align-self:center}
 .pvseg button{padding:7px 6px;font-size:15px}
-.slide{display:flex;flex-direction:column;gap:4px}
-.slide .dl b{color:var(--ink);font-variant-numeric:tabular-nums}
-.slide input{width:100%}
-.slidelab{display:flex;justify-content:space-between;gap:8px;color:var(--muted)}
-.slidelab small{font-size:13px}
 .setup>*{flex-shrink:0}
 .fxstrip .chip{padding:6px 9px 6px 6px;font-size:14px}
 .fxchip canvas{width:26px;height:26px;image-rendering:pixelated;border:2px solid var(--line);flex:none}

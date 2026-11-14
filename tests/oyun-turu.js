@@ -70,11 +70,18 @@
     pg.fillStyle = '#222'; pg.fillRect(270, 220, 20, 14); pg.fillRect(350, 220, 20, 14); pg.fillStyle = '#c0504a'; pg.fillRect(295, 320, 50, 10);
     // galeri yolu
     src = squareFrom(pic, 640, 480); openSetup();
-    if (fx !== 'normal' || mask.id !== 'yok' || setupN !== 28 || setupK !== 10) throw new Error('varsayılanlar dengeli değil');
-    for (let v = 0; v < DEN.length; v++){ const d = $('#denIn'); d.value = v; d.dispatchEvent(new Event('input')); await sleep(20); }
+    if (fx !== 'normal' || mask.id !== 'yok' || setupN !== 32 || setupK !== 12) throw new Error('varsayılanlar dengeli değil');
+    if (document.querySelectorAll('#denChips canvas').length !== DEN.length) throw new Error('ayrıntı önizlemeleri eksik');
+    for (let v = 0; v < DEN.length; v++){ document.querySelectorAll('#denChips .chip')[v].click(); if (setupArt.n !== DEN[v]) throw new Error('ayrıntı seçimi çalışmadı'); }
     for (const b of document.querySelectorAll('#lvlSeg button')) b.click();
     for (const id of Object.keys(FX)) [...document.querySelectorAll('#fxChips .chip')][Object.keys(FX).indexOf(id)].click();
     for (const b of [...document.querySelectorAll('#maskChips .chip')]) b.click();
+    [...document.querySelectorAll('#maskChips .chip')].find(b => b.textContent === trx('Köpek')).click();
+    if (document.querySelector('.eyeh').hidden) throw new Error('göz noktaları görünmedi');
+    { const w = $('#pvWrap'), r = $('#preview').getBoundingClientRect(), ev = (t, x, y) => w.dispatchEvent(new PointerEvent(t, { bubbles:true, pointerId:1, clientX:r.left + x * r.width, clientY:r.top + y * r.height }));
+      ev('pointerdown', 0.4, 0.44); ev('pointermove', 0.38, 0.4); ev('pointerup', 0.38, 0.4); await sleep(40);
+      if (Math.abs(mask.eyes[0][0] - 0.38) > 0.01) throw new Error('göz noktası sürüklenmedi'); }
+    { const plain = convCached(setupArt.n, setupK); if (plain.idx.every((v, i) => plain.pal[v] === setupArt.pal[setupArt.idx[i]])) throw new Error('aksesuar resme eklenmedi'); }
     for (const b of document.querySelectorAll('#pvMode button')) b.click();
     const before = DB.gallery.length;
     $('#goBtn').click(); for (let i = 0; i < A.idx.length; i++) fillCell(i, false); finish();
@@ -87,10 +94,9 @@
       let tk = 0; const tick = setInterval(() => { pg.fillStyle = tk++ % 2 ? '#6a9ad0' : '#6b9ad0'; pg.fillRect(0, 0, 4, 4); }, 50);   // akış kare üretsin
       try {
         await openCam(); await sleep(300);
-        [...document.querySelectorAll('#camAcc .chip')].find(b => b.textContent === trx('Köpek')).click();
-        if ($('#camHint').hidden) throw new Error('yüz çerçevesi ipucu görünmedi');
+        if ($('#camView').hidden) throw new Error('kamera görüntüsü açılmadı');
         $('#shutter').click(); await sleep(50);
-        if (!$('#setup').classList.contains('on') || mask.id !== 'kopek' || camStream) throw new Error('kameradan hazırlama ekranına geçiş bozuk');
+        if (!$('#setup').classList.contains('on') || mask.id !== 'yok' || camStream) throw new Error('kameradan hazırlama ekranına geçiş bozuk');
       } finally { clearInterval(tick); navigator.mediaDevices.getUserMedia = gum; stopCam(); }
     }
     mask.id = 'yok'; show('home'); refreshHome();

@@ -64,7 +64,7 @@ function resize(){
   dpr = Math.min(3, window.devicePixelRatio || 1);
   const old = fitS;
   cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
-  fitS = Math.min(cv.width, cv.height) * 0.94 / (A ? A.n : 32);
+  fitS = Math.min(cv.width, cv.height) * 0.9 / (A ? A.n : 32);
   if (A && view.s === old) fit();
   dirty = true;
 }

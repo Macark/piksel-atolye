@@ -1,7 +1,7 @@
 /* ---------- effects, camera, coin shop ---------- */
 // Efekt kimlikleri kayıtlarda yok; ad ve açıklama sadece arayüzde.
 const FX = {
-  normal:{ name:'Normal', desc:'Fotoğrafın kendi renkleri, biraz canlandırılmış.' },
+  normal:{ name:'Normal', desc:'Fotoğrafın kendi renkleri.' },
   canli:{ name:'Canlı', desc:'Renkleri daha parlak ve doygun yapar.' },
   sb:{ name:'Siyah beyaz', desc:'Fotoğrafı gri tonlara çevirir.' },
   sepya:{ name:'Sepya', desc:'Eski fotoğraf gibi sıcak kahverengi tonlar.' },
@@ -20,7 +20,7 @@ function fxColor(r, g, b){
     case 'gameboy': return GBC[Math.max(0, Math.min(3, Math.floor(l / 64)))];
     case 'pop': return POPC[Math.max(0, Math.min(3, Math.floor(l / 64)))];
     case 'buz': return [r * 0.78, g * 1.02 + 6, b * 1.2 + 14];
-    default: { const R = l + (r - l) * 1.22, G = l + (g - l) * 1.22, B = l + (b - l) * 1.22; return [(R - 128) * 1.08 + 128, (G - 128) * 1.08 + 128, (B - 128) * 1.08 + 128]; }
+    default: return [l + (r - l) * 1.1, l + (g - l) * 1.1, l + (b - l) * 1.1];
   }
 }
 // Efekt düğmeleri: her biri fotoğrafın küçük bir örneğini o efektle gösterir.
@@ -47,60 +47,24 @@ function fxThumbBase(){
   fxThumb = g.getImageData(0, 0, 16, 16).data; fxThumbSrc = src; return fxThumb;
 }
 
-/* Kamera: normal görüntü (pikselleştirme yok). Aksesuar 96 piksellik bir katmanda çizilir.
-   Tarayıcı yüz bulmayı destekliyorsa (FaceDetector) aksesuar yüze gider; desteklemiyorsa
-   sabit durur ve kullanıcı yüzünü çerçeveye getirir. */
-let camStream = null, camFacing = 'user', faceDet = null, faceTimer = 0, faceSeen = 0;
-const camVid = $('#camVid'), camOv = $('#camOv'), camOvG = camOv.getContext('2d');
-const MASK_HOME = { x:0.5, y:0.45, s:0.5 };
-function maskHome(){ Object.assign(mask, MASK_HOME); }
+/* Kamera: sade, normal görüntü. Aksesuarlar çekimden sonra, hazırlama ekranında eklenir
+   (canlı aksesuar telefonu yorar ve doğal durmuyordu). Kesikli çerçeve yüzü ortalamaya yardım eder. */
+let camStream = null, camFacing = 'user';
+const camVid = $('#camVid');
 async function openCam(){
   $('#add').classList.remove('on'); show('cam'); $('#camFall').hidden = true; $('#camView').hidden = false; $('#shutter').disabled = false;
-  $('#camView').classList.toggle('mirror', camFacing === 'user'); maskHome(); faceSeen = 0;
-  buildMaskChips($('#camAcc'), drawCamOv); drawCamOv();
+  $('#camView').classList.toggle('mirror', camFacing === 'user');
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('no camera');
-    camStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:camFacing, width:{ ideal:720 }, height:{ ideal:720 } }, audio:false });
+    camStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:camFacing, width:{ ideal:1280 }, height:{ ideal:1280 } }, audio:false });
     camVid.srcObject = camStream; await camVid.play();
-    startFace();
   } catch(e){ stopCam(); $('#camView').hidden = true; $('#camFall').hidden = false; $('#shutter').disabled = true; }
 }
-function stopCam(){ clearTimeout(faceTimer); faceTimer = 0; if (camStream){ camStream.getTracks().forEach(t => t.stop()); camStream = null; } try { camVid.srcObject = null; } catch(e){} }
-function startFace(){
-  if (!('FaceDetector' in window)) return;
-  try { faceDet = faceDet || new FaceDetector({ fastMode:true, maxDetectedFaces:1 }); } catch(e){ return; }
-  const tick = async () => {
-    faceTimer = 0; if (!camStream) return;
-    if (mask.id !== 'yok' && camVid.videoWidth){
-      try { const f = await faceDet.detect(camVid); if (f.length){ faceFromBox(f[0].boundingBox); faceSeen = performance.now(); } }
-      catch(e){ return; }                                   // desteklenmiyorsa sessizce sabit çerçeveye kal
-      drawCamOv();
-    }
-    if (camStream) faceTimer = setTimeout(tick, 120);
-  };
-  tick();
-}
-function faceFromBox(b){
-  const vw = camVid.videoWidth, vh = camVid.videoHeight, sq = Math.min(vw, vh), ox = (vw - sq) / 2, oy = (vh - sq) / 2;
-  let cx = (b.x + b.width / 2 - ox) / sq; if (camFacing === 'user') cx = 1 - cx;
-  const t = { x:cx, y:(b.y + b.height * 0.42 - oy) / sq, s:b.width / sq };
-  const k = performance.now() - faceSeen < 600 ? 0.5 : 1;  // titremesin diye yumuşat
-  mask.x += (t.x - mask.x) * k; mask.y += (t.y - mask.y) * k; mask.s += (t.s - mask.s) * k;
-}
-function drawCamOv(){
-  const N = 96, g = camOvG; g.clearRect(0, 0, N, N);
-  const on = mask.id !== 'yok' && MASKS[mask.id], auto = performance.now() - faceSeen < 1000;
-  if (on && !auto){
-    maskHome();
-    g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 1; g.setLineDash([3, 3]);
-    g.beginPath(); g.ellipse(N * 0.5, N * 0.53, N * 0.2, N * 0.27, 0, 0, TAU); g.stroke(); g.setLineDash([]);
-  }
-  if (on) MASKS[mask.id].draw(g, mask.x * N, mask.y * N, mask.s * N);
-  $('#camHint').hidden = !on || auto;
-}
+function stopCam(){ if (camStream){ camStream.getTracks().forEach(t => t.stop()); camStream = null; } try { camVid.srcObject = null; } catch(e){} }
 function camFrame(ctx, size){
   const vw = camVid.videoWidth, vh = camVid.videoHeight; if (!vw) return false;
   const sq = Math.min(vw, vh); ctx.save(); if (camFacing === 'user'){ ctx.translate(size, 0); ctx.scale(-1, 1); }
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(camVid, (vw - sq) / 2, (vh - sq) / 2, sq, sq, 0, 0, size, size); ctx.restore(); return true;
 }
 $('#shutter').onclick = () => {

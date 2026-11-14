@@ -1,10 +1,17 @@
 /* ---------- settings + how to play ---------- */
-const THEMES = { auto:'Otomatik', dark:'Koyu', light:'Açık' };
-function applyTheme(){ const t = DB.theme || 'auto'; if (t === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t; }
+// Tema: oyunun kendi koyu teması varsayılan; telefon açık modda olsa da oyun aynı görünür.
+// Açık tema ya da "Telefona uy" sadece oyuncu Ayarlar'dan seçerse.
+const THEMES = { dark:'Koyu', light:'Açık', auto:'Telefona uy' };
+function applyTheme(){
+  const t = THEMES[DB.theme] ? DB.theme : 'dark', root = document.documentElement;
+  if (t === 'auto') delete root.dataset.theme; else root.dataset.theme = t;
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = getComputedStyle(root).getPropertyValue('--bg').trim();
+}
+if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 function setTog(id, on){ $(id).setAttribute('aria-checked', String(!!on)); }
 function openSettings(){
   setTog('#tgSound', !DB.muted); setTog('#tgVibe', !DB.noVibe); setTog('#tgNotif', !!DB.notif); setTog('#tgBig', !!DB.bigNum); setTog('#tgCb', !!DB.cb); $('#valAmb').textContent = AMB[DB.amb || 'muzik'];
-  $('#valTheme').textContent = THEMES[DB.theme || 'auto'];
+  $('#valTheme').textContent = THEMES[THEMES[DB.theme] ? DB.theme : 'dark'];
   $('#settings').classList.add('on'); $('#setX').focus();
 }
 $('#setBtn').onclick = openSettings;
@@ -12,7 +19,7 @@ $('#setX').onclick = () => $('#settings').classList.remove('on');
 $('#tgSound').onclick = () => { DB.muted = !DB.muted; save(); setMute(); setTog('#tgSound', !DB.muted); if (!DB.muted) tone(660, 0.1); };
 $('#tgVibe').onclick = () => { DB.noVibe = !DB.noVibe; save(); setTog('#tgVibe', !DB.noVibe); if (!DB.noVibe && navigator.vibrate) try { navigator.vibrate(20); } catch(e){} };
 $('#tgNotif').onclick = () => { DB.notif = !DB.notif; save(); setTog('#tgNotif', DB.notif); if (DB.notif) msg('Hatırlatma açıldı. Gerçek uygulamada her akşam, günün resmini boyamadıysan telefonuna bir bildirim gelir.'); };
-$('#rowTheme').onclick = () => { const k = Object.keys(THEMES), i = k.indexOf(DB.theme || 'auto'); DB.theme = k[(i + 1) % k.length]; save(); applyTheme(); $('#valTheme').textContent = THEMES[DB.theme]; };
+$('#rowTheme').onclick = () => { const k = Object.keys(THEMES), i = k.indexOf(THEMES[DB.theme] ? DB.theme : 'dark'); DB.theme = k[(i + 1) % k.length]; save(); applyTheme(); $('#valTheme').textContent = THEMES[DB.theme]; };
 $('#rowAmb').onclick = () => { const k = Object.keys(AMB), i = k.indexOf(DB.amb || 'muzik'); DB.amb = k[(i + 1) % k.length]; save(); $('#valAmb').textContent = AMB[DB.amb]; if (DB.amb === 'off') ambStop(); else if (!DB.muted){ ambStart(); setTimeout(() => { if (!$('#paint').classList.contains('on')) ambStop(); }, 4000); } };
 $('#tgBig').onclick = () => { DB.bigNum = !DB.bigNum; save(); setTog('#tgBig', DB.bigNum); dirty = true; };
 $('#tgCb').onclick = () => { DB.cb = !DB.cb; save(); setTog('#tgCb', DB.cb); dirty = true; if (A && A.idx) buildPal(); };

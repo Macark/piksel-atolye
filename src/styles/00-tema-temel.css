@@ -9,12 +9,12 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#1D1714; --panel:#2B221D; --ink:#F3E6D2; --muted:#BBA88F; --line:#0E0B09;
-    --accent:#E0763F; --accent-ink:#1D1714; --tour2:#2BAAB0; --good:#5DB77B; --shade:#0E0B09; --stage:#151110; --gold:#F0B93A; color-scheme:dark;
+    --accent:#E0763F; --accent-ink:#1D1714; --tour2:#2BAAB0; --good:#5DB77B; --shade:#0E0B09; --stage:#1A1411; --gold:#F0B93A; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#1D1714; --panel:#2B221D; --ink:#F3E6D2; --muted:#BBA88F; --line:#0E0B09;
-  --accent:#E0763F; --accent-ink:#1D1714; --tour2:#2BAAB0; --good:#5DB77B; --shade:#0E0B09; --stage:#151110; --gold:#F0B93A; color-scheme:dark;
+  --accent:#E0763F; --accent-ink:#1D1714; --tour2:#2BAAB0; --good:#5DB77B; --shade:#0E0B09; --stage:#1A1411; --gold:#F0B93A; color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:inherit}
 html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
