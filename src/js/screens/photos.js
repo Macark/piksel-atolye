@@ -7,8 +7,8 @@ function squareFrom(img, w, h){
   g.drawImage(img, (w - s) / 2, h > w ? (h - s) * 0.3 : (h - s) / 2, s, s, 0, 0, 512, 512);
   return c;
 }
-function convert(n){
-  const k = n <= 24 ? 10 : n <= 32 ? 12 : 16, B = 8, M = n * B;
+function convert(n, kk){
+  const k = kk || (n <= 24 ? 10 : n <= 32 ? 12 : 16), B = n > 40 ? 6 : 8, M = n * B;
   const c = document.createElement('canvas'); c.width = c.height = M; const g = c.getContext('2d');
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.drawImage(srcMasked(), 0, 0, M, M);
   const d = g.getImageData(0, 0, M, M).data, px = [];

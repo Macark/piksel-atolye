@@ -1,9 +1,13 @@
 /* loop */
-let lastTs = 0;
+// Döngü sadece boyama ekranı açıkken döner; diğer ekranlarda durur (pil ve işlemci için). show('paint') yeniden başlatır.
+let lastTs = 0, loopOn = false;
+const paintScr = $('#paint');
+function wakeLoop(){ if (loopOn) return; loopOn = true; lastTs = 0; requestAnimationFrame(loop); }
 function loop(ts){
+  if (!paintScr.classList.contains('on')){ loopOn = false; lastTs = 0; return; }
   requestAnimationFrame(loop);
   const dt = lastTs ? Math.min(1 / 20, (ts - lastTs) / 1000) : 0; lastTs = ts; now += dt;
-  if (!A || !$('#paint').classList.contains('on')) return;
+  if (!A) return;
   if (mode === 'replay'){ replayT += dt; dirty = true; if (replayT > 5) endReplay(); }
   if (mode === 'paint'){
     if (order.length && left > 0){ if (now - lastHit < 8) DB.stats.time += dt; if (isDaily){ elapsed += dt; $('#ptime').textContent = fmtT(elapsed); } }
@@ -23,4 +27,4 @@ if (document.fonts && document.fonts.load) { document.fonts.load('700 16px "Pixe
 drawArt($('#demo'), HOME_ART);
 setMute(); refreshHome();
 setTimeout(afterBadge, 900);
-requestAnimationFrame(loop);
+wakeLoop();

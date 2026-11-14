@@ -38,6 +38,22 @@ const MASKS = {
     rr(g, x - u*0.5, y - u*0.1, u*0.44, u*0.28, u*0.05, '#111111'); rr(g, x + u*0.06, y - u*0.1, u*0.44, u*0.28, u*0.05, '#111111');
     rect(g, x - u*0.44, y - u*0.05, u*0.12, u*0.05, '#FFFFFF'); rect(g, x + u*0.12, y - u*0.05, u*0.12, u*0.05, '#FFFFFF');
   }},
+  kalp:{ name:'Kalp gözlük', draw(g, x, y, u){
+    const h = (cx, cy, r) => { circ(g, cx - r*0.5, cy - r*0.2, r*0.55, '#E8384F'); circ(g, cx + r*0.5, cy - r*0.2, r*0.55, '#E8384F'); poly(g, [cx - r*1.02, cy - r*0.05, cx + r*1.02, cy - r*0.05, cx, cy + r*0.95], '#E8384F'); circ(g, cx - r*0.55, cy - r*0.35, r*0.16, '#FFB3C0'); };
+    h(x - u*0.26, y, u*0.2); h(x + u*0.26, y, u*0.2); rect(g, x - u*0.08, y - u*0.06, u*0.16, u*0.04, '#B8233A');
+  }},
+  sapka:{ name:'Parti şapkası', draw(g, x, y, u){
+    poly(g, [x - u*0.28, y - u*0.36, x + u*0.28, y - u*0.36, x + u*0.04, y - u*0.98], '#2E7DBA');
+    [0.5, 0.66, 0.82].forEach(k => { const w = (0.98 - k) / 0.62 * u*0.28; rect(g, x - w + u*0.02, y - u*k, w*2, u*0.06, '#F2B33D'); });
+    circ(g, x + u*0.04, y - u*0.99, u*0.09, '#E8384F'); rect(g, x - u*0.32, y - u*0.39, u*0.64, u*0.06, '#E8384F');
+  }},
+  biyik:{ name:'Bıyık', draw(g, x, y, u){
+    ell(g, x - u*0.13, y + u*0.3, u*0.16, u*0.07, '#3A2416', -0.25); ell(g, x + u*0.13, y + u*0.3, u*0.16, u*0.07, '#3A2416', 0.25);
+    circ(g, x - u*0.27, y + u*0.25, u*0.05, '#3A2416'); circ(g, x + u*0.27, y + u*0.25, u*0.05, '#3A2416');
+  }},
+  yildiz:{ name:'Yıldızlar', draw(g, x, y, u){
+    [[-0.56, -0.36, 0.11, '#F2C14E'], [-0.34, -0.64, 0.08, '#FFFFFF'], [0, -0.76, 0.12, '#F2C14E'], [0.34, -0.64, 0.08, '#FFFFFF'], [0.56, -0.36, 0.11, '#F2C14E']].forEach(([dx, dy, r, c]) => star(g, x + u*dx, y + u*dy, u*r, c));
+  }},
 };
 const mask = { id:'yok', x:0.5, y:0.45, s:0.5 };
 function srcMasked(){
@@ -45,25 +61,25 @@ function srcMasked(){
   const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
   g.drawImage(src, 0, 0, 512, 512); MASKS[mask.id].draw(g, mask.x * 512, mask.y * 512, mask.s * 512); return c;
 }
-function buildMaskChips(){
-  const box = $('#maskChips'); box.innerHTML = '';
+function buildMaskChips(box, onChange){
+  box = box || $('#maskChips'); onChange = onChange || renderSetup; box.innerHTML = '';
   Object.entries(MASKS).forEach(([id, m]) => {
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = m.name;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = trx(m.name);
     b.setAttribute('aria-pressed', String(mask.id === id));
-    b.onclick = () => { mask.id = id; buildMaskChips(); renderSetup(); };
+    b.onclick = () => { mask.id = id; buildMaskChips(box, onChange); onChange(); };
     box.append(b);
   });
-  $('#maskCtl').hidden = mask.id === 'yok';
+  const ctl = $('#maskCtl'); if (box.id === 'maskChips') ctl.hidden = mask.id === 'yok';
 }
 (() => {
   const pv = $('#preview'); let drag = false, raf = 0;
   const move = e => {
-    if (!drag || mask.id === 'yok') return;
+    if (!drag || mask.id === 'yok' || pvMode !== 'pix') return;
     const r = pv.getBoundingClientRect();
     mask.x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); mask.y = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
     if (!raf) raf = requestAnimationFrame(() => { raf = 0; renderSetup(); });
   };
-  pv.addEventListener('pointerdown', e => { if (mask.id === 'yok') return; drag = true; pv.setPointerCapture(e.pointerId); move(e); });
+  pv.addEventListener('pointerdown', e => { if (mask.id === 'yok' || pvMode !== 'pix') return; drag = true; pv.setPointerCapture(e.pointerId); move(e); });
   pv.addEventListener('pointermove', move);
   ['pointerup', 'pointercancel'].forEach(n => pv.addEventListener(n, () => { drag = false; }));
   $('#maskSize').addEventListener('input', e => { mask.s = e.target.value / 100; renderSetup(); });

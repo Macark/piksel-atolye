@@ -62,7 +62,42 @@
   for (const [name, fn] of screens){ await step(name, async () => { closeAll(); await fn(); await sleep(40); }); }
   closeAll();
 
+  // 3) Fotoğraf akışı: sahte fotoğraf ve sahte kamera akışı (gerçek kameraya dokunmaz)
+  let fotoKayit = 0;
+  await step('fotoğraf', async () => {
+    const pic = document.createElement('canvas'); pic.width = 640; pic.height = 480; const pg = pic.getContext('2d');
+    pg.fillStyle = '#6a9ad0'; pg.fillRect(0, 0, 640, 480); pg.fillStyle = '#f0c8a0'; pg.beginPath(); pg.ellipse(320, 250, 110, 140, 0, 0, 7); pg.fill();
+    pg.fillStyle = '#222'; pg.fillRect(270, 220, 20, 14); pg.fillRect(350, 220, 20, 14); pg.fillStyle = '#c0504a'; pg.fillRect(295, 320, 50, 10);
+    // galeri yolu
+    src = squareFrom(pic, 640, 480); openSetup();
+    if (fx !== 'normal' || mask.id !== 'yok' || setupN !== 28 || setupK !== 10) throw new Error('varsayılanlar dengeli değil');
+    for (let v = 0; v < DEN.length; v++){ const d = $('#denIn'); d.value = v; d.dispatchEvent(new Event('input')); await sleep(20); }
+    for (const b of document.querySelectorAll('#lvlSeg button')) b.click();
+    for (const id of Object.keys(FX)) [...document.querySelectorAll('#fxChips .chip')][Object.keys(FX).indexOf(id)].click();
+    for (const b of [...document.querySelectorAll('#maskChips .chip')]) b.click();
+    for (const b of document.querySelectorAll('#pvMode button')) b.click();
+    const before = DB.gallery.length;
+    $('#goBtn').click(); for (let i = 0; i < A.idx.length; i++) fillCell(i, false); finish();
+    fotoKayit = DB.gallery.length - before; if (fotoKayit !== 1) throw new Error('fotoğraf anılara kaydedilmedi');
+    closeAll(); backToOrigin();
+    // kamera yolu
+    const gum = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+    if (navigator.mediaDevices){
+      navigator.mediaDevices.getUserMedia = async () => pic.captureStream(10);
+      let tk = 0; const tick = setInterval(() => { pg.fillStyle = tk++ % 2 ? '#6a9ad0' : '#6b9ad0'; pg.fillRect(0, 0, 4, 4); }, 50);   // akış kare üretsin
+      try {
+        await openCam(); await sleep(300);
+        [...document.querySelectorAll('#camAcc .chip')].find(b => b.textContent === trx('Köpek')).click();
+        if ($('#camHint').hidden) throw new Error('yüz çerçevesi ipucu görünmedi');
+        $('#shutter').click(); await sleep(50);
+        if (!$('#setup').classList.contains('on') || mask.id !== 'kopek' || camStream) throw new Error('kameradan hazırlama ekranına geçiş bozuk');
+      } finally { clearInterval(tick); navigator.mediaDevices.getUserMedia = gum; stopCam(); }
+    }
+    mask.id = 'yok'; show('home'); refreshHome();
+  });
+  closeAll();
+
   window.removeEventListener('error', onErr); window.removeEventListener('unhandledrejection', onErr); console.error = ce;
   const done = ids.filter(id => DB.done[id]).length;
-  return { ok: errors.length === 0 && done === ids.length, resim: ids.length, biten: done, boyanan: painted, dogruCevap: quizOk, yanlisCevap: quizNo, hatira: Object.keys(DB.souv || {}).length, rozet: Object.keys(DB.badges || {}).length, coin: DB.coins, errors };
+  return { ok: errors.length === 0 && done === ids.length && fotoKayit === 1, foto: fotoKayit, resim: ids.length, biten: done, boyanan: painted, dogruCevap: quizOk, yanlisCevap: quizNo, hatira: Object.keys(DB.souv || {}).length, rozet: Object.keys(DB.badges || {}).length, coin: DB.coins, errors };
 })();

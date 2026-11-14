@@ -9,7 +9,7 @@ function save(){
     try { localStorage.setItem(KEY, JSON.stringify(DB)); return; } catch(e){ if (!DB.gallery.length) return; DB.gallery.shift(); }
   }
 }
-function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); if (typeof ambStart === 'function'){ if (id === 'paint'){ if (!ambNodes) ambStart(); } else ambStop(); } const nav = document.querySelector('#nav'); if (nav){ nav.hidden = !['home', 'map', 'coll', 'city'].includes(id); updateNav(id); } }
+function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); if (id === 'paint' && typeof wakeLoop === 'function') wakeLoop(); if (typeof ambStart === 'function'){ if (id === 'paint'){ if (!ambNodes) ambStart(); } else ambStop(); } const nav = document.querySelector('#nav'); if (nav){ nav.hidden = !['home', 'map', 'coll', 'city'].includes(id); updateNav(id); } }
 function msg(t){ $('#msgText').textContent = t; $('#msg').classList.add('on'); $('#msgOk').focus(); }
 $('#msgOk').onclick = () => $('#msg').classList.remove('on');
 function ask(text, yes, fn){ $('#askText').textContent = text; $('#askYes').textContent = yes; $('#askYes').onclick = () => { $('#ask').classList.remove('on'); fn(); }; $('#ask').classList.add('on'); $('#askYes').focus(); }

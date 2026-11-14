@@ -1,5 +1,14 @@
 /* ---------- effects, camera, coin shop ---------- */
-const FX = { normal:'Normal', canli:'Canlı', sb:'Siyah beyaz', sepya:'Sepya', gameboy:'Game Boy', pop:'Pop art', buz:'Buz' };
+// Efekt kimlikleri kayıtlarda yok; ad ve açıklama sadece arayüzde.
+const FX = {
+  normal:{ name:'Normal', desc:'Fotoğrafın kendi renkleri, biraz canlandırılmış.' },
+  canli:{ name:'Canlı', desc:'Renkleri daha parlak ve doygun yapar.' },
+  sb:{ name:'Siyah beyaz', desc:'Fotoğrafı gri tonlara çevirir.' },
+  sepya:{ name:'Sepya', desc:'Eski fotoğraf gibi sıcak kahverengi tonlar.' },
+  gameboy:{ name:'Retro yeşil', desc:'Dört yeşil tonla eski oyun ekranı görünümü.' },
+  pop:{ name:'Pop art', desc:'Dört canlı renkle afiş görünümü.' },
+  buz:{ name:'Buz', desc:'Soğuk, mavimsi tonlar.' },
+};
 let fx = 'normal';
 const GBC = [[15,56,15],[48,98,48],[139,172,15],[155,188,15]], POPC = [[27,31,74],[232,56,79],[242,193,78],[255,247,234]];
 function fxColor(r, g, b){
@@ -14,48 +23,96 @@ function fxColor(r, g, b){
     default: { const R = l + (r - l) * 1.22, G = l + (g - l) * 1.22, B = l + (b - l) * 1.22; return [(R - 128) * 1.08 + 128, (G - 128) * 1.08 + 128, (B - 128) * 1.08 + 128]; }
   }
 }
+// Efekt düğmeleri: her biri fotoğrafın küçük bir örneğini o efektle gösterir.
 function buildFxChips(box, onChange){
   box.innerHTML = '';
-  Object.entries(FX).forEach(([id, name]) => {
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = name;
+  const th = fxThumbBase();
+  Object.entries(FX).forEach(([id, f]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip fxchip';
     b.setAttribute('aria-pressed', String(fx === id));
+    if (th){ const c = document.createElement('canvas'); c.width = c.height = 16; const g = c.getContext('2d'), im = g.createImageData(16, 16), d = im.data;
+      const keep = fx; fx = id; for (let i = 0; i < th.length; i += 4){ const v = fxColor(th[i], th[i+1], th[i+2]); d[i] = Math.max(0, Math.min(255, v[0])); d[i+1] = Math.max(0, Math.min(255, v[1])); d[i+2] = Math.max(0, Math.min(255, v[2])); d[i+3] = 255; } fx = keep;
+      g.putImageData(im, 0, 0); b.append(c); }
+    b.append(trx(f.name));
     b.onclick = () => { fx = id; buildFxChips(box, onChange); if (onChange) onChange(); };
     box.append(b);
   });
+  const dsc = $('#fxDesc'); if (dsc) dsc.textContent = trx(FX[fx].desc);
 }
-let camStream = null, camRaf = 0, camFacing = 'user';
-const camVid = $('#camVid'), camCv = $('#camCv'), camG = camCv.getContext('2d', { willReadFrequently:true });
+let fxThumb = null, fxThumbSrc = null;
+function fxThumbBase(){
+  if (!src) return null; if (fxThumbSrc === src) return fxThumb;
+  const c = document.createElement('canvas'); c.width = c.height = 16; const g = c.getContext('2d');
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, 16, 16);
+  fxThumb = g.getImageData(0, 0, 16, 16).data; fxThumbSrc = src; return fxThumb;
+}
+
+/* Kamera: normal görüntü (pikselleştirme yok). Aksesuar 96 piksellik bir katmanda çizilir.
+   Tarayıcı yüz bulmayı destekliyorsa (FaceDetector) aksesuar yüze gider; desteklemiyorsa
+   sabit durur ve kullanıcı yüzünü çerçeveye getirir. */
+let camStream = null, camFacing = 'user', faceDet = null, faceTimer = 0, faceSeen = 0;
+const camVid = $('#camVid'), camOv = $('#camOv'), camOvG = camOv.getContext('2d');
+const MASK_HOME = { x:0.5, y:0.45, s:0.5 };
+function maskHome(){ Object.assign(mask, MASK_HOME); }
 async function openCam(){
-  $('#add').classList.remove('on'); show('cam'); buildFxChips($('#camFx')); $('#camFall').hidden = true; $('#shutter').disabled = false;
+  $('#add').classList.remove('on'); show('cam'); $('#camFall').hidden = true; $('#camView').hidden = false; $('#shutter').disabled = false;
+  $('#camView').classList.toggle('mirror', camFacing === 'user'); maskHome(); faceSeen = 0;
+  buildMaskChips($('#camAcc'), drawCamOv); drawCamOv();
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('no camera');
     camStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:camFacing, width:{ ideal:720 }, height:{ ideal:720 } }, audio:false });
     camVid.srcObject = camStream; await camVid.play();
-    cancelAnimationFrame(camRaf); camRaf = requestAnimationFrame(camLoop);
-  } catch(e){ stopCam(); $('#camFall').hidden = false; $('#shutter').disabled = true; }
+    startFace();
+  } catch(e){ stopCam(); $('#camView').hidden = true; $('#camFall').hidden = false; $('#shutter').disabled = true; }
 }
-function stopCam(){ cancelAnimationFrame(camRaf); camRaf = 0; if (camStream){ camStream.getTracks().forEach(t => t.stop()); camStream = null; } try { camVid.srcObject = null; } catch(e){} }
+function stopCam(){ clearTimeout(faceTimer); faceTimer = 0; if (camStream){ camStream.getTracks().forEach(t => t.stop()); camStream = null; } try { camVid.srcObject = null; } catch(e){} }
+function startFace(){
+  if (!('FaceDetector' in window)) return;
+  try { faceDet = faceDet || new FaceDetector({ fastMode:true, maxDetectedFaces:1 }); } catch(e){ return; }
+  const tick = async () => {
+    faceTimer = 0; if (!camStream) return;
+    if (mask.id !== 'yok' && camVid.videoWidth){
+      try { const f = await faceDet.detect(camVid); if (f.length){ faceFromBox(f[0].boundingBox); faceSeen = performance.now(); } }
+      catch(e){ return; }                                   // desteklenmiyorsa sessizce sabit çerçeveye kal
+      drawCamOv();
+    }
+    if (camStream) faceTimer = setTimeout(tick, 120);
+  };
+  tick();
+}
+function faceFromBox(b){
+  const vw = camVid.videoWidth, vh = camVid.videoHeight, sq = Math.min(vw, vh), ox = (vw - sq) / 2, oy = (vh - sq) / 2;
+  let cx = (b.x + b.width / 2 - ox) / sq; if (camFacing === 'user') cx = 1 - cx;
+  const t = { x:cx, y:(b.y + b.height * 0.42 - oy) / sq, s:b.width / sq };
+  const k = performance.now() - faceSeen < 600 ? 0.5 : 1;  // titremesin diye yumuşat
+  mask.x += (t.x - mask.x) * k; mask.y += (t.y - mask.y) * k; mask.s += (t.s - mask.s) * k;
+}
+function drawCamOv(){
+  const N = 96, g = camOvG; g.clearRect(0, 0, N, N);
+  const on = mask.id !== 'yok' && MASKS[mask.id], auto = performance.now() - faceSeen < 1000;
+  if (on && !auto){
+    maskHome();
+    g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 1; g.setLineDash([3, 3]);
+    g.beginPath(); g.ellipse(N * 0.5, N * 0.53, N * 0.2, N * 0.27, 0, 0, TAU); g.stroke(); g.setLineDash([]);
+  }
+  if (on) MASKS[mask.id].draw(g, mask.x * N, mask.y * N, mask.s * N);
+  $('#camHint').hidden = !on || auto;
+}
 function camFrame(ctx, size){
   const vw = camVid.videoWidth, vh = camVid.videoHeight; if (!vw) return false;
   const sq = Math.min(vw, vh); ctx.save(); if (camFacing === 'user'){ ctx.translate(size, 0); ctx.scale(-1, 1); }
   ctx.drawImage(camVid, (vw - sq) / 2, (vh - sq) / 2, sq, sq, 0, 0, size, size); ctx.restore(); return true;
 }
-function camLoop(){
-  camRaf = requestAnimationFrame(camLoop);
-  if (!camFrame(camG, 48)) return;
-  const im = camG.getImageData(0, 0, 48, 48), d = im.data, raw = fx === 'gameboy' || fx === 'pop';
-  const q = v => raw ? v : Math.round(Math.max(0, Math.min(255, v)) / 51) * 51;
-  for (let i = 0; i < d.length; i += 4){ const c = fxColor(d[i], d[i+1], d[i+2]); d[i] = q(c[0]); d[i+1] = q(c[1]); d[i+2] = q(c[2]); }
-  camG.putImageData(im, 0, 0);
-}
 $('#shutter').onclick = () => {
   const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
   if (!camFrame(g, 512)) return;
-  src = c; tone(880, 0.08); openSetup();
+  src = c; tone(880, 0.08); openSetup(true);
 };
 $('#camFlip').onclick = () => { camFacing = camFacing === 'user' ? 'environment' : 'user'; stopCam(); openCam(); };
 $('#camBack').onclick = () => { stopCam(); show('home'); refreshHome(); };
 $('#camBtn').onclick = () => { ac(); openCam(); };
+// Uygulama arka plana geçince kamerayı kapat (pil), geri gelince kamera ekranındaysak yeniden aç.
+document.addEventListener('visibilitychange', () => { const on = $('#cam').classList.contains('on'); if (document.hidden){ if (camStream) stopCam(); } else if (on && !camStream) openCam(); });
 
 let needAfter = null;
 function needCoins(text, after){ needAfter = after || null; $('#needText').textContent = text; $('#needAd').hidden = adLeft() <= 0; $('#need').classList.add('on'); }

@@ -33,3 +33,14 @@
 .seg button small{display:block;font-size:14px;font-weight:400;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
 .seg button[aria-pressed="true"] small{color:var(--panel)}
+.pvseg{grid-template-columns:repeat(2,minmax(0,1fr));max-width:340px;width:100%;align-self:center}
+.pvseg button{padding:7px 6px;font-size:15px}
+.slide{display:flex;flex-direction:column;gap:4px}
+.slide .dl b{color:var(--ink);font-variant-numeric:tabular-nums}
+.slide input{width:100%}
+.slidelab{display:flex;justify-content:space-between;gap:8px;color:var(--muted)}
+.slidelab small{font-size:13px}
+.setup>*{flex-shrink:0}
+.fxstrip .chip{padding:6px 9px 6px 6px;font-size:14px}
+.fxchip canvas{width:26px;height:26px;image-rendering:pixelated;border:2px solid var(--line);flex:none}
+.fxdesc{margin:-6px 0 0;font-size:14px;min-height:1.3em}

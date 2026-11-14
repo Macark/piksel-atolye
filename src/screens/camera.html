@@ -7,14 +7,17 @@
       </button>
     </div>
     <div class="camwrap">
-      <canvas id="camCv" width="48" height="48" aria-label="Canlı piksel önizleme"></canvas>
-      <video id="camVid" playsinline muted></video>
+      <div class="camview" id="camView">
+        <video id="camVid" playsinline muted></video>
+        <canvas id="camOv" width="96" height="96" aria-hidden="true"></canvas>
+        <p class="camhint" id="camHint" hidden>Yüzünü çerçeveye getir</p>
+      </div>
       <div class="camfall" id="camFall" hidden>
-        <p>Canlı piksel önizleme burada açılamadı. Telefonunun kamerasıyla çekip devam edebilirsin, efektleri bir sonraki ekranda seçersin.</p>
-        <label class="btn primary">KAMERAYI AÇ<input type="file" accept="image/*" capture="user" class="fileIn"></label>
+        <p>Kamera burada açılamadı. Telefonunun kamerasıyla çekebilir ya da galeriden bir fotoğraf seçebilirsin.</p>
+        <label class="btn primary">TELEFON KAMERASI<input type="file" accept="image/*" capture="user" class="fileIn"></label>
+        <label class="btn">GALERİDEN SEÇ<input type="file" accept="image/*" class="fileIn"></label>
       </div>
     </div>
-    <div class="chips" id="camFx" role="group" aria-label="Efekt" style="padding:8px 14px;justify-content:center"></div>
+    <div class="chips hstrip" id="camAcc" role="group" aria-label="Aksesuar" style="padding:8px 14px"></div>
     <div style="padding:6px 20px 18px"><button class="btn primary" id="shutter" type="button">ÇEK</button></div>
   </section>
-
