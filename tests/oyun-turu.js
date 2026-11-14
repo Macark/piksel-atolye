@@ -56,7 +56,7 @@
     ['nasıl oynanır', () => { openHowto(); closeHowto(); }],
     ['dükkân', () => openShop()],
     ['güç bilgisi', () => openPwInfo()],
-    ['tanıtım', async () => { gtOpen(); for (let i = 0; i < 14; i++){ const nx = document.querySelector('#gtour .gtbtns .btn.primary'); if (nx) nx.click(); await sleep(30); } gtClose(); }],
+    ['tanıtım', async () => { gtOpen(); $('#gtPrev').click(); for (let i = 0; i < 14; i++){ const nx = document.querySelector('#gtour .gtbtns .btn.primary'); if (nx) nx.click(); await sleep(30); } gtClose(); }],
     ['ana sayfa (son)', () => { show('home'); refreshHome(); }],
   ];
   for (const [name, fn] of screens){ await step(name, async () => { closeAll(); await fn(); await sleep(40); }); }

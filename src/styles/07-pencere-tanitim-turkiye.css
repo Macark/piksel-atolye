@@ -56,3 +56,10 @@
 .pwrow small,.setrow small,.coupon small,.bdetail small{line-height:1.35}
 .bdetail p{font-size:15px;line-height:1.4}
 .rnote,.sptxt span,.trsub,.colsum .csub{line-height:1.45}
+/* ilk boyama ipucu: ekranı kapatmaz, okla ilgili yeri gösterir */
+.coach{position:absolute;left:50%;transform:translateX(-50%);z-index:7;width:min(92%,380px);padding:10px 12px;font-size:15px;line-height:1.4;border-color:var(--gold);box-shadow:4px 4px 0 var(--line);animation:btin .45s steps(5) both}
+.coach p{margin:0}
+.coach::after{content:"";position:absolute;left:50%;top:-11px;margin-left:-8px;border:8px solid transparent;border-bottom-color:var(--gold);border-top:0}
+.coach.down::after{top:auto;bottom:-11px;border-bottom:0;border-top:8px solid var(--gold)}
+@media (prefers-reduced-motion:reduce){.coach{animation:none}}
+.gtskip{margin-left:auto}

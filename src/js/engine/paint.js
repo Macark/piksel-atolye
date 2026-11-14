@@ -22,7 +22,7 @@ function startPaint(art, saved){
   elapsed = (saved && saved.elapsed) || 0; usedPower = !!(saved && saved.pw); isDaily = !!(A.id && ITEMS[A.id] && ITEMS[A.id].album.kind === 'daily'); $('#ptime').hidden = !isDaily; $('#ptime').textContent = fmtT(elapsed); $('#tip').textContent = 'Numaralı karelere dokun ya da parmağını sür';
   $('#pname').textContent = A.name.toLocaleUpperCase('tr');
   buildPal(); buildPowers(); show('paint'); resize(); fit(); updateProg(); persist(true);
-  $('#tip').classList.toggle('off', order.length > 0);
+  $('#tip').classList.toggle('off', order.length > 0); coachHook('start');
   if (left === 0) finish();
 }
 function buildPal(){
@@ -31,7 +31,7 @@ function buildPal(){
     const b = document.createElement('button'); b.type = 'button'; b.className = 'sw';
     const ink = inkFor(A.rgb[j]), halo = ink === INK_DARK ? 'rgba(255,255,255,.55)' : 'rgba(0,0,0,.6)';
     b.innerHTML = `<b style="background:${c};color:${ink};--halo:${halo};flex-direction:column;line-height:1">${j + 1}${DB.cb ? `<span class="cbm" style="color:${ink}">${CBSYM[j % CBSYM.length]}</span>` : ''}</b><small></small>`;
-    b.onclick = () => { if (sel === j && remain[j] > 0) seek(j); else { sel = j; refreshPal(); dirty = true; } };
+    b.onclick = () => { if (sel === j && remain[j] > 0) seek(j); else { sel = j; refreshPal(); dirty = true; coachHook('sel'); } };
     p.append(b);
   });
   refreshPal();
@@ -130,7 +130,7 @@ function paintAt(px, py, tap){
 function fillCell(i, live){
   if (painted[i]) return;
   const j = A.idx[i];
-  painted[i] = 1; popT[i] = now; order.push(i); remain[j]--; left--; dirty = true; lastHit = now; DB.stats.cells++; if (gtipAt && left <= gtipAt){ gtipAt = 0; showGuideTip(); }
+  painted[i] = 1; popT[i] = now; order.push(i); remain[j]--; left--; dirty = true; lastHit = now; DB.stats.cells++; if (gtipAt && left <= gtipAt){ gtipAt = 0; showGuideTip(); } if (coachStep) coachHook('cell');
   const x = i % A.n + .5, y = Math.floor(i / A.n) + .5, c = A.pal[j];
   for (let k = 0; k < 4; k++){ const a = Math.random() * TAU, sp = 2 + Math.random() * 3; parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 2, life: 0.45, max: 0.45, c: k ? c : '#FFFFFF' }); }
   if (parts.length > 500) parts.splice(0, parts.length - 500);
