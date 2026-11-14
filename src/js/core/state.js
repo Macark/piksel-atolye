@@ -6,7 +6,7 @@ let REAL_DB = null;
 function save(){
   if (REAL_DB) return;
   for (let k = 0; k < 30; k++){
-    try { localStorage.setItem(KEY, JSON.stringify(DB)); return; } catch(e){ if (!DB.gallery.length) return; DB.gallery.shift(); }
+    try { const j = JSON.stringify(DB); localStorage.setItem(KEY, j); if (NATIVE) nativeBackup(j); return; } catch(e){ if (!DB.gallery.length) return; DB.gallery.shift(); }
   }
 }
 function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); if (id === 'paint' && typeof wakeLoop === 'function') wakeLoop(); if (typeof ambStart === 'function'){ if (id === 'paint'){ if (!ambNodes) ambStart(); } else ambStop(); } const nav = document.querySelector('#nav'); if (nav){ nav.hidden = !['home', 'map', 'coll', 'city'].includes(id); updateNav(id); } }

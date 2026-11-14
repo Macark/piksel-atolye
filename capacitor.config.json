@@ -1,0 +1,22 @@
+{
+  "appId": "com.macark.pikselatolye",
+  "appName": "Piksel Atölye",
+  "webDir": "dist",
+  "backgroundColor": "#1D1714",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#1D1714"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 600,
+      "launchAutoHide": true,
+      "backgroundColor": "#1D1714",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "overlaysWebView": true
+    }
+  }
+}

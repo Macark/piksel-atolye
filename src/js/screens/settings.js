@@ -5,7 +5,9 @@ const THEMES = { dark:'Koyu', light:'Açık', auto:'Telefona uy' };
 function applyTheme(){
   const t = THEMES[DB.theme] ? DB.theme : 'dark', root = document.documentElement;
   if (t === 'auto') delete root.dataset.theme; else root.dataset.theme = t;
-  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = getComputedStyle(root).getPropertyValue('--bg').trim();
+  const bg = getComputedStyle(root).getPropertyValue('--bg').trim();
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = bg;
+  if (NATIVE) nativeTheme(bg.toLowerCase() === '#1d1714');
 }
 if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 function setTog(id, on){ $(id).setAttribute('aria-checked', String(!!on)); }

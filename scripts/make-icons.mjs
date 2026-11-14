@@ -49,3 +49,14 @@ function icon(size, view, padRatio){
 fs.mkdirSync(OUT, { recursive: true });
 const list = [['apple-touch-icon.png', 180, 42, 0.04], ['icon-192.png', 192, 42, 0.04], ['icon-512.png', 512, 42, 0.04], ['icon-maskable-512.png', 512, 42, 0.2], ['favicon-32.png', 32, 42, 0]];
 for (const [f, s, v, p] of list){ fs.writeFileSync(path.join(OUT, f), icon(s, v, p)); console.log(f, s + 'px'); }
+
+// iOS uygulaması (Capacitor, ios/ klasörü varsa): 1024'lük simge ve açılış ekranı.
+// Açılış ekranı: koyu zemin, ortada Köfte (ekran kenarlardan kırpılsa da Köfte görünür kalır).
+const IOS = path.join(ROOT, 'ios', 'App', 'App', 'Assets.xcassets');
+if (fs.existsSync(IOS)){
+  fs.writeFileSync(path.join(IOS, 'AppIcon.appiconset', 'AppIcon-512@2x.png'), icon(1024, 42, 0.04));
+  const S = 2732, cell = 20, off = Math.floor((S - cell * n) / 2), dark = [0x1D, 0x17, 0x14];
+  const splash = png(S, (x, y) => { const gx = Math.floor((x - off) / cell), gy = Math.floor((y - off) / cell); return gx < 0 || gy < 0 || gx >= n || gy >= n ? dark : pal[idx[gy * n + gx]]; });
+  for (const f of ['splash-2732x2732.png', 'splash-2732x2732-1.png', 'splash-2732x2732-2.png']) fs.writeFileSync(path.join(IOS, 'Splash.imageset', f), splash);
+  console.log('iOS simgesi 1024px ve açılış ekranı yazıldı');
+}
