@@ -96,6 +96,25 @@ function checkAtolye(c, E, regs){
   checkSprite(A.chair && A.chair.art, w + ' koltuk', E);
   ['koltuk', 'yayil', 'zemin', 'kap', 'yatak'].forEach(k => { if (!A.spots || !Array.isArray(A.spots[k])) E.push(`${w}: Köfte'nin "${k}" noktası yok`); });
   if (!A.lights || !A.lights.tavan) E.push(w + ': tavan ışığı yok');
+  // Köfte'nin bakımı: mamalar, seviyeler, kıyafetler, efektler
+  const B = A.bakim;
+  if (!B) E.push(w + ': bakım (bakim) verisi yok');
+  else {
+    const mamaIds = new Set(B.mamalar.map(m => m.id));
+    B.mamalar.forEach(m => { if (!(m.tok > 0)) E.push(`${w} mama ${m.id}: tokluk değeri yok`); if (!m.ozel && !(m.price > 0)) E.push(`${w} mama ${m.id}: fiyat yok`); if (!A.fx || !A.fx['mama_' + m.id]) E.push(`${w} mama ${m.id}: çizimi yok`); else checkSprite(A.fx['mama_' + m.id], `${w} mama ${m.id}`, E); });
+    let prev = -1;
+    B.seviyeler.forEach((s, i) => {
+      const sw = `${w} dostluk seviyesi ${s.lv}`;
+      if (s.lv !== i + 1) E.push(sw + ': seviyeler 1den başlayıp sırayla gitmeli');
+      if (!(s.puan > prev)) E.push(sw + ': puan eşiği artmalı'); prev = s.puan;
+      if (s.kiyafet && !(A.kiyafet && A.kiyafet[s.kiyafet])) E.push(`${sw}: kıyafet "${s.kiyafet}" yok`);
+      if (s.esya && !A.items.some(it => it.id === s.esya && it.reward && it.reward.type === 'dostluk' && it.reward.id === s.lv)) E.push(`${sw}: eşya "${s.esya}" bu seviyeye bağlı bir ödül eşyası değil`);
+      Object.keys(s.mama || {}).forEach(m => { if (!mamaIds.has(m)) E.push(`${sw}: mama "${m}" yok`); });
+    });
+    Object.keys(B.hediye.oran).forEach(k => { if (k !== 'coin' && !mamaIds.has(k)) E.push(`${w} hediye: mama "${k}" yok`); });
+  }
+  Object.entries(A.kiyafet || {}).forEach(([id, k]) => { if (!['boyun', 'bas'].includes(k.yer)) E.push(`${w} kıyafet ${id}: yer boyun ya da bas olmalı`); checkSprite(k.art, `${w} kıyafet ${id}`, E); });
+  ['top', 'kalp', 'hediye'].forEach(f => checkSprite(A.fx && A.fx[f], `${w} efekt ${f}`, E));
   Object.keys(A.lights || {}).forEach(k => { if (k !== 'tavan' && !A.items.some(it => it.id === k)) E.push(`${w}: ışık "${k}" olmayan bir eşyaya bağlı`); });
   (A.items || []).forEach((it, k) => {
     const iw = `${w} › ${it.id || '#' + k}`;
@@ -112,6 +131,8 @@ function checkAtolye(c, E, regs){
       if (r.type === 'region'){ if (!regs.has(r.id)) E.push(`${iw}: ödül bölgesi "${r.id}" yok`); }
       else if (r.type === 'badge'){ if (!badges.has(r.id)) E.push(`${iw}: ödül rozeti "${r.id}" yok`); }
       else if (r.type === 'album'){ if (!c.albums.some(a => a.id === r.id)) E.push(`${iw}: ödül albümü "${r.id}" yok`); }
+      else if (r.type === 'dostluk'){ if (!(A.bakim && A.bakim.seviyeler.some(s => s.lv === r.id))) E.push(`${iw}: dostluk seviyesi ${r.id} yok`); }
+      else if (r.type === 'event'){ if (!c.events.some(e => e.id === r.id)) E.push(`${iw}: ödül etkinliği "${r.id}" yok`); }
       else E.push(`${iw}: ödül türü "${r.type}" bilinmiyor`);
     }
   });

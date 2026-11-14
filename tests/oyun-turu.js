@@ -142,6 +142,21 @@
     ['sit', 'walk', 'lie', 'lounge', 'sleep', 'eat', 'yawn', 'happy', 'sad'].forEach(m => { kSet(m, 1000); atKKey = ''; atKDraw(); });
     for (const part of ['sabah', 'gun', 'aksam', 'gece']) for (const season of ['kis', 'ilkbahar', 'yaz', 'sonbahar']){ atTimeTest = { part, season }; atRender(); }
     atTimeTest = null; atRender();
+    // Köfte'nin bakımı: besle, sev, top oyna, uyut, seviye atla
+    const K = kData(), W = ms => sleep(ms);
+    K.tok = 20; K.mama.kuru = Math.max(1, K.mama.kuru || 0); kFeed('kuru'); for (let i = 0; i < 90 && kFeeding; i++) await W(120);
+    if (!(K.tok > 50)) throw new Error('besleme tokluğu artırmadı: ' + K.tok);
+    const m0 = K.mut; K.bugun.sevMut = 0; for (let i = 0; i < 4; i++) kStroke(); if (!(K.mut > m0) && m0 < 100) throw new Error('sevme mutluluğu artırmadı');
+    kSet('sit', 9000); K.ener = 80; const e0 = K.ener; kBallMode = true; kThrow(70, 165);
+    for (let i = 0; i < 140 && (KFX.flying || ['walk', 'carry'].includes(KS.mode)); i++) await W(100);
+    if (!(K.ener < e0)) throw new Error('top oyunu enerji harcamadı'); kBallMode = false;
+    K.ener = 10; kIdle(); for (let i = 0; i < 100 && KS.mode !== 'sleep'; i++) await W(100);
+    if (KS.mode !== 'sleep') throw new Error('enerji bitince uyumadı: ' + KS.mode);
+    const keepD = [K.dost, K.lv]; K.lv = 1; K.dost = BK.seviyeler[1].puan - 1; kDost('resim');
+    if (K.lv !== 2) throw new Error('dostluk seviyesi atlamadı'); [K.dost, K.lv] = [Math.max(keepD[0], K.dost), Math.max(keepD[1], K.lv)];
+    const kiy = Object.keys(K.acik.kiyafet)[0]; if (kiy){ K.giy[KIY_DEF[kiy].yer] = kiy; atKFr = null; atKDraw(); }
+    // eski kayıt: Köfte alanı olmadan
+    const keepK = DB.kofte; delete DB.kofte; kData(); kTick(true); if (!DB.kofte || Math.round(DB.kofte.tok) !== BK.baslangic.tok || !(DB.kofte.mama.kuru >= 1)) throw new Error('eski kayıtta Köfte kurulmadı'); DB.kofte = keepK;
     // paylaş
     $('#atShare').click(); await sleep(30); if (!$('#share').classList.contains('on') || !shareCanvas) throw new Error('paylaşım açılmadı'); closeAll();
     // eski kayıt: atölye alanı olmadan

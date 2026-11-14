@@ -99,3 +99,24 @@
 .atitem.empty .atpic{background:repeating-linear-gradient(45deg,var(--panel) 0 6px,var(--bg) 6px 12px)}
 .atempty{grid-column:1/-1;font-size:14px}
 .attoastimg{width:44px;height:auto;image-rendering:pixelated;flex:none}
+/* Köfte'nin bakımı */
+.kpanel{display:flex;flex-direction:column;gap:8px}
+.kbars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.kbar{display:flex;flex-direction:column;gap:3px;font-size:12px;font-weight:700}
+.kbar small{font-size:12px}
+.kbar i{display:block;height:10px;border:2px solid var(--line);background:linear-gradient(90deg,var(--kc,#3E8E5A) var(--v,50%),var(--panel) 0)}
+.kbar:nth-child(1) i{--kc:#E0A526}.kbar:nth-child(2) i{--kc:#E8558F}.kbar:nth-child(3) i{--kc:#2E9AC8}
+.kbar.low small::after{content:" !";color:#E8384F}
+.kdost{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;font-size:13px}
+.kdost i{display:block;height:8px;border:2px solid var(--line);background:linear-gradient(90deg,var(--gold) var(--v,0%),var(--panel) 0)}
+.kdost small{color:var(--muted);font-variant-numeric:tabular-nums}
+.kacts .btn{padding:9px 6px;font-size:16px}
+.kgrid{display:flex;flex-direction:column;gap:8px}
+.kgrid .dl{margin:4px 0 0}
+.kmama{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:6px 10px;border:3px solid var(--line);background:var(--panel);text-align:left}
+.kmama span{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.kmama small{font-size:12px;color:var(--muted)}
+.kmama i{font-style:normal;font-weight:700;font-size:14px;padding:4px 8px;border:2px solid var(--line);background:var(--accent);color:var(--accent-ink)}
+.kmama:disabled{opacity:.6}.kmama:disabled i{background:var(--panel);color:var(--muted)}
+.kkiy{flex-wrap:wrap}
+.kkiy .chip.lock{opacity:.6}

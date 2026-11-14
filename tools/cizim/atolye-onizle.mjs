@@ -20,7 +20,7 @@ const pw = S.pencere; rect(pw.x - 3, pw.y - 3, pw.w + 6, pw.h + 6, '#ECE8E0'); a
 D.frames.forEach(([x, y], k) => { rect(x - 2, y - 2, 26, 26, '#6E4426'); rect(x - 2, y - 2, 26, 1, '#9A6838'); rect(x, y, 22, 22, ['#F2C43A', '#3AB0C0', '#E58FA6', '#8ACC6A'][k]); });
 const sh = D.shelf; rect(sh.x, sh.y, sh.w, 4, '#9A6838'); rect(sh.x, sh.y, sh.w, 1, '#C08A52'); rect(sh.x + 6, sh.y + 4, 3, 4, '#6E4426'); rect(sh.x + sh.w - 9, sh.y + 4, 3, 4, '#6E4426');
 sh.spots.forEach(([x, y]) => rect(x + 3, y + 4, 10, 12, '#C8A040'));
-['tavan', 'kose', 'masa', 'masaustu', 'hali', 'yatak', 'oyuncak', 'mama'].forEach(at);
+['somine', 'aski', 'sus', 'tavan', 'kose', 'masa', 'masaustu', 'hali', 'yatak', 'oyuncak', 'su', 'mama'].forEach(at);
 blit(D.chair.art, D.chair.x, D.chair.y);
 const kp = D.spots[yer]; blit(D.kofte[poz][0], yer === 'zemin' ? kp[0] + 40 : kp[0], kp[1]);
 const SC = 3; writePng('atolye-oda.png', W * SC, H * SC, (x, y) => buf[Math.floor(y / SC) * W + Math.floor(x / SC)]);

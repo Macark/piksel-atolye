@@ -8,8 +8,8 @@
 const AT = CONTENT.atolye;
 const AT_ITEM = Object.fromEntries(AT.items.map(i => [i.id, i]));
 const AT_SLOT = Object.fromEntries(AT.slots.map(s => [s.id, s]));
-const AT_DRAW = ['tavan', 'kose', 'masa', 'masaustu', 'hali', 'yatak', 'oyuncak', 'mama'];   // çizim sırası (arkadan öne)
-const AT_TABS = [...AT.slots.map(s => ({ id:s.id, name:s.name })), { id:'cerceve', name:'Çerçeveler' }, { id:'raf', name:'Raf' }];
+const AT_DRAW = ['somine', 'aski', 'sus', 'tavan', 'kose', 'masa', 'masaustu', 'hali', 'yatak', 'oyuncak', 'su', 'mama'];   // çizim sırası (arkadan öne)
+const AT_TABS = [{ id:'kofte', name:'Köfte' }, ...AT.slots.map(s => ({ id:s.id, name:s.name })), { id:'cerceve', name:'Çerçeveler' }, { id:'raf', name:'Raf' }];
 
 function atData(){
   const a = DB.atolye = DB.atolye || {};
@@ -26,12 +26,16 @@ function atRewardOk(r){
   if (r.type === 'region'){ const all = ILLER.filter(i => i.region === r.id); return all.length > 0 && all.every(ilDone); }
   if (r.type === 'badge') return !!(DB.badges && DB.badges[r.id]);
   if (r.type === 'album') return !!(DB.albumsDone && DB.albumsDone[r.id]);
+  if (r.type === 'dostluk') return !!(DB.kofte && DB.kofte.lv >= r.id);
+  if (r.type === 'event') return !!(DB.eventsDone && DB.eventsDone[r.id]);
   return false;
 }
 function atRewardText(r){
   if (r.type === 'region') return TL('{0} bölgesindeki bütün illeri bitirince kazanılır.', TR_REG[r.id] ? trx(TR_REG[r.id].name) : r.id);
   if (r.type === 'badge'){ const b = BADGES.find(x => x.id === r.id); return TL('“{0}” rozetini kazanınca gelir: {1}', b ? trx(b.name) : r.id, b ? trx(b.how) : ''); }
   if (r.type === 'album'){ const al = ALBUMS.find(x => x.id === r.id); return TL('{0} albümünü bitirince kazanılır.', al ? trx(al.name) : r.id); }
+  if (r.type === 'dostluk') return TL('Köfte’yle dostluk seviyesi {0} olunca gelir.', r.id);
+  if (r.type === 'event'){ const ev = EVENTS.find(x => x.id === r.id); return TL('{0} etkinliğini bitirince kazanılır.', ev ? trx(ev.name) : r.id); }
   return '';
 }
 // Hak edilen ödül eşyalarını ver (eski oyunculara geriye dönük de). Yeni gelenleri döndürür.
@@ -108,7 +112,7 @@ function atWindowFx(g, s, tm){
 // Gece: oda kararır, lambaların çevresi sıcak ışıkla aydınlanır (basamaklı, piksel görünümünde)
 function atNight(g, a){
   const W = AT.room.w, H = AT.room.h, im = g.getImageData(0, 0, W, H), d = im.data;
-  const L = [AT.lights.tavan, ...['kose', 'masaustu'].map(id => AT.lights[a.yuva[id]]).filter(Boolean)];
+  const L = [AT.lights.tavan, ...['kose', 'masaustu', 'somine'].map(id => AT.lights[a.yuva[id]]).filter(Boolean)];
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
     let t = 0; L.forEach(([lx, ly, lr]) => { const v = 1 - Math.hypot(x - lx, (y - ly) * 1.15) / lr; if (v > t) t = v; });
     t = Math.ceil(Math.max(0, t) * 3) / 3;                                                   // 3 basamak
@@ -136,6 +140,7 @@ function atRoomDraw(g, over, tm){
   rect(g, sh.x + 6, sh.y + 4, 3, 4, '#6E4426'); rect(g, sh.x + sh.w - 9, sh.y + 4, 3, 4, '#6E4426');
   sh.spots.forEach(([x, y], k) => { const id = a.raf[k]; if (id && SOUV[id] && DB.souv[id]){ const c = document.createElement('canvas'); drawArt(c, decodeArt(SOUV[id].art, id)); g.drawImage(c, x, y); } });
   AT_DRAW.forEach(id => atPlace(g, pick(id), AT_SLOT[id]));
+  if (typeof kAskiDraw === 'function') kAskiDraw(g);                                                                         // askıdaki kıyafetler
   g.drawImage(atSprite(AT.chair.art), AT.chair.x, AT.chair.y);                                                                // Köfte'nin hasır koltuğu (sabit)
   if (tm.part === 'gece') atNight(g, { yuva:{ ...a.yuva, ...(over || {}) } });
 }
@@ -172,6 +177,7 @@ function kToChair(rest){                                                        
 }
 function kDown(then){ const [, fy] = ZEMIN(); if (KS.y !== fy){ KS.y = fy; KS.x = KOLTUK()[0] - 6; } then(); }
 function kIdle(){
+  if (typeof kNeedIdle === 'function' && kNeedIdle()) return;                                    // uyku, açlık önce gelir (kofte.js)
   const night = atTime().part === 'gece', r = Math.random(), onChair = kOnChair();
   if (onChair){ if (KS.mode === 'lounge' && r < (night ? 0.6 : 0.3)) return kChairPose('sleep'); if (KS.mode === 'lounge' && r < 0.55) return kChairPose('lie'); return kDown(() => kSet('sit', 2500)); }
   const [x0, fy, x1] = ZEMIN();
@@ -179,10 +185,11 @@ function kIdle(){
   if (r < 0.58) return kToChair('lie');
   if (r < (night ? 0.8 : 0.66)) return kToChair('sleep');
   if (r < 0.76) return kSet('yawn', 900, () => kSet('sit', 3000));
+  if (typeof kTrick === 'function' && r < 0.84 && kTrick()) return;                               // açılan hareketler (dans, yuvarlanma)
   kSet('sit', 4000 + Math.random() * 5000);
 }
 function kStep(now){
-  const dt = Math.min(0.2, (now - atLast) / 1000 || 0); atLast = now;
+  const dt = Math.max(0, Math.min(0.2, (now - atLast) / 1000 || 0)); atLast = Math.max(atLast, now);
   if (KS.mode === 'walk'){
     const dx = KS.tx - KS.x, dy = KS.ty - KS.y, dist = Math.hypot(dx, dy), v = 34 * dt;
     if (dist <= v){ KS.x = KS.tx; KS.y = KS.ty; const t = KS.then; kSet('sit', 2000); if (t) t(); }
@@ -202,18 +209,25 @@ function kFrame(now){
     case 'happy': return F.happy[Math.min(2, Math.floor(t / 130))];
     case 'eat': return cyc(F.eat, 260);
     case 'sad': return cyc(F.sad, 1400);
-    default: { const ph = now % 5200; return ph < 160 ? F.sit[1] : ph > 3000 && ph < 3900 && Math.floor(ph / 220) % 2 ? F.sit[2] : F.sit[0]; }
+    case 'carry': return cyc(F.carry, 140);
+    case 'dans': return F.happy[[0, 1, 2, 1][Math.floor(now / 160) % 4]];
+    case 'yuvarlan': return F.sleep[Math.floor(now / 200) % 2];
+    default: { if (typeof kMood === 'function' && kMood() === 'kus') return cyc(F.sad, 1400); const ph = now % 5200; return ph < 160 ? F.sit[1] : ph > 3000 && ph < 3900 && Math.floor(ph / 220) % 2 ? F.sit[2] : F.sit[0]; }
   }
 }
-const KSIDE = new Set(['walk', 'lie', 'sleep', 'eat', 'carry']);
+const KSIDE = new Set(['walk', 'lie', 'sleep', 'eat', 'carry', 'yuvarlan']);
 let atKFr = null;
 function atKDraw(){
   const now = performance.now(), fr = kFrame(now), [x, y] = atKPos(), side = KSIDE.has(KS.mode);
   const zz = KS.mode === 'sleep' ? Math.floor(now / 500) % 3 + KS.zzz * 10 : -1, key = x + '|' + y + '|' + KS.face + '|' + zz;
-  if (fr === atKFr && key === atKKey) return; atKFr = fr; atKKey = key;
+  const dyn = typeof kDyn === 'function' && kDyn();
+  if (!dyn && fr === atKFr && key === atKKey) return; atKFr = fr; atKKey = key;
   const g = atKCv.getContext('2d'); g.imageSmoothingEnabled = false; g.clearRect(0, 0, AT.room.w, AT.room.h);
   const sp = atSprite(fr);
+  if (typeof kBehind === 'function') kBehind(g);                                                 // mama kabındaki mama, yerdeki top
   if (side && KS.face < 0){ g.save(); g.translate(x + fr.w, y); g.scale(-1, 1); g.drawImage(sp, 0, 0); g.restore(); } else g.drawImage(sp, x, y);
+  if (typeof kWear === 'function') kWear(g, fr, x, y, side && KS.face < 0);                       // kıyafetler
+  if (typeof kFront === 'function') kFront(g, now);                                               // kalpler, hediye, uçan top
   if (KS.mode === 'sleep'){                                                                  // "zzz": küçük piksel z'ler yukarı süzülür, dokundukça artar
     const n = 1 + (Math.floor(now / 500) % 3) + Math.min(3, KS.zzz), zx = x + (KS.face < 0 ? 4 : 30), zy = y + 14;
     g.fillStyle = '#F6F0E0';
