@@ -162,15 +162,18 @@ const KOLTUK = () => AT.spots.koltuk, ZEMIN = () => AT.spots.zemin;
 function atKPos(){ return [Math.round(KS.x), Math.round(KS.y)]; }
 function kSet(mode, ms, then){ KS.mode = mode; KS.t0 = performance.now(); KS.until = KS.t0 + (ms || 0); KS.then = then || null; if (mode !== 'sleep') KS.zzz = 0; atKKey = ''; }
 function kWalk(x, y, then){ KS.tx = x; KS.ty = y; KS.face = x >= KS.x ? 1 : -1; kSet('walk', 0, then); }
-function kToChair(rest){                                                                     // koltuğa git: önüne yürü, zıpla, uzan ya da uyu
-  const [cx, cy] = KOLTUK(), fy = ZEMIN()[1], dur = rest === 'sleep' ? 26000 : 9000;
-  if (KS.y === cy && KS.x === cx) return kSet(rest || 'lie', dur);
-  kWalk(cx, fy, () => { KS.y = cy; KS.face = -1; kSet('happy', 360, () => kSet(rest || 'lie', dur)); });
+// Koltukta iki hâl: "lounge" (fotoğraftaki gibi yayılmış) ve "sleep" (kıvrılmış). Ayrı noktalara çizilir.
+function kOnChair(){ return KS.y === KOLTUK()[1] || KS.y === AT.spots.yayil[1]; }
+function kChairPose(rest){ const sp = rest === 'sleep' ? KOLTUK() : AT.spots.yayil; KS.x = sp[0]; KS.y = sp[1]; KS.face = -1; kSet(rest === 'sleep' ? 'sleep' : 'lounge', rest === 'sleep' ? 26000 : 12000); }
+function kToChair(rest){                                                                     // koltuğa git: önüne yürü, zıpla, yayıl ya da kıvrılıp uyu
+  if (kOnChair()) return kChairPose(rest);
+  const fy = ZEMIN()[1];
+  kWalk(KOLTUK()[0] + 6, fy, () => { KS.y = KOLTUK()[1]; kSet('happy', 360, () => kChairPose(rest)); });
 }
 function kDown(then){ const [, fy] = ZEMIN(); if (KS.y !== fy){ KS.y = fy; KS.x = KOLTUK()[0] - 6; } then(); }
 function kIdle(){
-  const night = atTime().part === 'gece', r = Math.random(), onChair = KS.y === KOLTUK()[1];
-  if (onChair){ if (KS.mode === 'lie' && r < (night ? 0.6 : 0.3)) return kSet('sleep', 20000 + Math.random() * 15000); return kDown(() => kSet('sit', 2500)); }
+  const night = atTime().part === 'gece', r = Math.random(), onChair = kOnChair();
+  if (onChair){ if (KS.mode === 'lounge' && r < (night ? 0.6 : 0.3)) return kChairPose('sleep'); if (KS.mode === 'lounge' && r < 0.55) return kChairPose('lie'); return kDown(() => kSet('sit', 2500)); }
   const [x0, fy, x1] = ZEMIN();
   if (r < 0.38) return kWalk(x0 + Math.random() * (x1 - x0), fy, () => kSet('sit', 4000 + Math.random() * 4000));
   if (r < 0.58) return kToChair('lie');
@@ -193,6 +196,7 @@ function kFrame(now){
   switch (KS.mode){
     case 'walk': return cyc(F.walk, 140);
     case 'lie': return cyc(F.lie, 900);
+    case 'lounge': { const ph = now % 6000; return ph < 170 ? F.lounge[1] : ph > 4200 && ph < 4700 ? F.lounge[2] : F.lounge[0]; }
     case 'sleep': return cyc(F.sleep, 1100);
     case 'yawn': return F.yawn[Math.min(2, Math.floor(t / 300))];
     case 'happy': return F.happy[Math.min(2, Math.floor(t / 130))];
@@ -230,8 +234,8 @@ function atSay(text){
 }
 function atMeow(){
   if (KS.mode === 'sleep'){ KS.zzz = Math.min(3, KS.zzz + 1); atKKey = ''; return atSay(trx('Zzz…')); }
-  const back = KS.mode === 'lie' ? 'lie' : 'sit';
-  kSet('happy', 400, () => kSet(back, back === 'lie' ? 6000 : 2500));
+  if (KS.mode === 'lounge'){ KS.until = performance.now() + 8000; atKFr = null; }                 // koltukta yayılmışken sadece mırlar
+  else { const back = KS.mode === 'lie' ? 'lie' : 'sit'; kSet('happy', 400, () => kSet(back, back === 'lie' ? 6000 : 2500)); }
   tone(880, 0.07, 0, 'triangle', 0.05); tone(660, 0.1, 0.08, 'triangle', 0.05);
   if (navigator.vibrate && !DB.noVibe) try { navigator.vibrate(12); } catch(e){}
   atSay(trx(AT_LINES[Math.floor(Math.random() * AT_LINES.length)]));
@@ -340,7 +344,7 @@ function atBuy(it){
 // Odaya dokununca: Köfte, çerçeve, raf ya da üstteki eşyanın yuvası seçilir
 atRoomCv.addEventListener('click', e => {
   const r = atRoomCv.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * AT.room.w, y = (e.clientY - r.top) / r.height * AT.room.h;
-  const [kx, ky] = atKPos(); if (x >= kx + 2 && x < kx + 38 && y >= ky + 2 && y < ky + 36) return atMeow();
+  const [kx, ky] = atKPos(), kw = atKFr ? atKFr.w : 40, kh = atKFr ? atKFr.h : 36; if (x >= kx + 2 && x < kx + kw - 2 && y >= ky + 2 && y < ky + Math.min(kh, 44)) return atMeow();
   const ch = AT.chair; if (x >= ch.x && x < ch.x + ch.art.w && y >= ch.y && y < ch.y + ch.art.h){ kToChair('lie'); return atSay(trx('Koltuğuma gidiyorum!')); }   // koltuğa dokununca Köfte koltuğa gider
   const fk = AT.frames.findIndex(([fx, fy]) => x >= fx - 2 && x < fx + 24 && y >= fy - 2 && y < fy + 24); if (fk >= 0) return atSelect('cerceve', fk);
   const sk = AT.shelf.spots.findIndex(([sx, sy]) => x >= sx && x < sx + 16 && y >= sy && y < sy + 17); if (sk >= 0) return atSelect('raf', sk);
@@ -355,7 +359,7 @@ function openAtolye(tab){
   const first = DB.atolye.yeni.length ? AT_ITEM[DB.atolye.yeni[0]].slot : null;
   atSelect(tab || first || atTab);
   $('#atolye').scrollTop = 0;
-  atFit(); if (!KS.x){ KS.x = KOLTUK()[0]; KS.y = KOLTUK()[1]; KS.face = -1; kSet('lie', 5000); }   // ilk açılışta koltuğunda
+  atFit(); if (!KS.x) kChairPose('lie');   // ilk açılışta koltuğunda yayılmış
   atLast = performance.now(); clearTimeout(atLoopT); atLoop();
 }
 $('#atBack').onclick = () => { clearTimeout(atLoopT); atLoopT = 0; atOver = null; show('home'); refreshHome(); };

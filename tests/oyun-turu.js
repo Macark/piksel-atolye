@@ -137,9 +137,9 @@
     if ($('#atBubble').hidden) throw new Error('Köfte tepki vermedi');
     // koltuğa dokununca Köfte koltuğa gider
     const ch = AT.chair; $('#atRoom').dispatchEvent(new MouseEvent('click', { bubbles:true, clientX:r.left + (ch.x + 8) / AT.room.w * r.width, clientY:r.top + (ch.y + 10) / AT.room.h * r.height }));
-    if (!['walk', 'happy', 'lie'].includes(KS.mode)) throw new Error('koltuğa dokununca Köfte gitmedi: ' + KS.mode);
+    if (!['walk', 'happy', 'lie', 'lounge', 'sleep'].includes(KS.mode)) throw new Error('koltuğa dokununca Köfte gitmedi: ' + KS.mode);
     // Köfte'nin bütün hareketleri ve günün her saati/mevsim çizilebilsin
-    ['sit', 'walk', 'lie', 'sleep', 'eat', 'yawn', 'happy', 'sad'].forEach(m => { kSet(m, 1000); atKKey = ''; atKDraw(); });
+    ['sit', 'walk', 'lie', 'lounge', 'sleep', 'eat', 'yawn', 'happy', 'sad'].forEach(m => { kSet(m, 1000); atKKey = ''; atKDraw(); });
     for (const part of ['sabah', 'gun', 'aksam', 'gece']) for (const season of ['kis', 'ilkbahar', 'yaz', 'sonbahar']){ atTimeTest = { part, season }; atRender(); }
     atTimeTest = null; atRender();
     // paylaş

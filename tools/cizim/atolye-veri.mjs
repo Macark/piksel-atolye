@@ -24,9 +24,9 @@ export const SLOTS = [
 // Çerçeveler (iç 22×22, 2 piksel kenar), raf (3 hatıra yeri), sabit hasır koltuk
 export const FRAMES = [[14, 22], [52, 36], [164, 22], [204, 36]];
 export const SHELF = { x:160, y:86, w:72, spots:[[166, 70], [190, 70], [214, 70]] };
-export const CHAIR = { x:166, y:98 };
+export const CHAIR = { x:156, y:94 };
 // Köfte'nin duracağı yerler (40×36 çizimin sol üstü) ve geceleri yanan ışıklar
-export const SPOTS = { koltuk:[178, 104], zemin:[60, 130, 196], kap:[160, 139], yatak:[10, 136] };
+export const SPOTS = { koltuk:[168, 106], yayil:[166, 97], zemin:[60, 130, 196], kap:[160, 139], yatak:[10, 136] };
 export const LIGHTS = { tavan:[120, 18, 90], kose_ayaklilamba:[17, 82, 60], mu_lamba:[64, 84, 48] };
 
 // [kimlik, yuva, ad, fiyat | ödül, ek]  ödül: { type:'region'|'badge', id }

@@ -166,26 +166,41 @@ I.oy_yumak = () => { const d = T(21, 18); d.sEll(9, 10, 7.5, 7.5, R.red); d.line
 I.oy_fare = () => { const d = T(21, 18); d.sEll(9, 12, 7.5, 4.5, R.grey); d.sEll(4, 8, 2.4, 2.4, R.pink); d.px(3, 12, R.dark[0]); d.px(1, 13, R.pink[1]); d.line(16, 12, 20, 7, R.pink[1]); return d.outline().done(); };
 I.oy_tuy = () => { const d = T(21, 18); d.line(1, 17, 13, 6, R.wood[2]); d.line(2, 17, 14, 6, R.wood[0]); d.line(13, 6, 16, 2, R.dark[1]); d.sEll(16, 3, 3.6, 2, R.teal); d.px(18, 2, R.yellow[1]).px(15, 4, R.red[1]); return d.outline().done(); };
 
-/* ===== HASIR KOLTUK (64×58): Köfte'nin gerçek koltuğu. Açık meşe yan kollar (vidalı, yuvarlak hatlı),
-   arkaya yatık hasır sırt ve öne hafif eğik hasır oturak; minder yok. ===== */
+/* ===== HASIR KOLTUK (80×62): Köfte'nin gerçek koltuğu, fotoğraftaki gibi yandan.
+   İki yanda kıvrımlı açık meşe çerçeve (vidalı), aralarında arkaya yatık, öne doğru sarkan hasır şerit. ===== */
 export function koltuk(){
-  const d = T(64, 58);
-  // sırt (arkaya yatık hasır örgü)
-  d.poly([[13, 4], [17, 0], [49, 0], [53, 4], [55, 40], [9, 40]], R.sisal[1]);
-  for (let y = 1; y < 40; y += 2) for (let x = 10; x < 55; x += 4){ const o = (y >> 1) % 2 ? 2 : 0; d.px(x + o, y, R.sisal[0]); d.px(x + o + 1, y, R.sisal[2]); }
-  d.poly([[13, 4], [17, 0], [49, 0], [53, 4], [55, 40], [52, 40], [50, 4]], R.sisal[0], (x, y) => x > 50);   // sağ kenar gölgesi
-  // oturak (öne doğru alçalan hasır)
-  d.poly([[6, 38], [58, 38], [60, 46], [4, 46]], R.sisal[1]);
-  for (let y = 39; y < 46; y += 2) for (let x = 6; x < 58; x += 4){ const o = (y >> 1) % 2 ? 2 : 0; d.px(x + o, y, R.sisal[2]); d.px(x + o + 1, y, R.sisal[0]); }
-  d.rect(4, 45, 56, 1, R.sisal[0]);
-  // meşe yan kollar: önde yuvarlak burun, arkada eğik ayak
-  const yan = (x0, flip) => { const f = x => flip ? 63 - x : x;
-    d.poly([[f(x0), 30], [f(x0 + 4), 28], [f(x0 + 12), 30], [f(x0 + 14), 44], [f(x0 + 12), 57], [f(x0 + 2), 57], [f(x0), 50]], R.oak[1]);
-    d.poly([[f(x0), 30], [f(x0 + 4), 28], [f(x0 + 12), 30], [f(x0 + 6), 32], [f(x0 + 2), 34]], R.oak[2]);
-    d.rect(Math.min(f(x0 + 2), f(x0 + 12)), 55, 11, 2, R.oak[0]);
-    d.px(f(x0 + 7), 39, R.wood[0]).px(f(x0 + 7), 49, R.wood[0]); d.px(f(x0 + 6), 39, '#E8E8E8').px(f(x0 + 6), 49, '#E8E8E8'); };   // vidalar
-  yan(0, false); yan(0, true);
+  const d = T(80, 62), oakD = ['#8A6640', '#B48A5C', '#CFA878'];
+  // uzak yan çerçeve (arkada, biraz koyu): arka ray + öndeki kıvrık kol + ayak
+  d.poly([[30, 1], [35, 3], [11, 44], [6, 42]], oakD[1]); d.poly([[30, 1], [33, 2], [9, 43], [6, 42]], oakD[2]);
+  d.sEll(9, 41, 7, 5.5, oakD); d.ell(9, 41, 3.4, 2.4, oakD[0]);                                           // öndeki yuvarlak kol (C biçimi)
+  d.poly([[8, 45], [12, 45], [9, 58], [5, 58]], oakD[1]);
+  // hasır şerit: arkada yatık sırt, büküm, öne doğru oturak
+  const sling = [[32, 3], [70, 7], [56, 40], [48, 54], [10, 46], [16, 34]];
+  d.poly(sling, R.sisal[1]);
+  d.poly([[16, 34], [56, 40], [48, 54], [10, 46]], R.sisal[2]);                                            // oturak (ışık alan kısım)
+  for (let y = 4; y < 54; y += 2) for (let x = 6; x < 72; x += 4){ const o = (y >> 1) % 2 ? 2 : 0, X = x + o, c = d.get(X, y); if (c === R.sisal[1] || c === R.sisal[2]){ d.px(X, y, R.sisal[0]); d.px(X + 1, y, c === R.sisal[2] ? '#E8D4AA' : R.sisal[2]); } }
+  d.line(16, 34, 56, 40, R.sisal[0]); d.line(10, 46, 48, 54, '#8A6E46'); d.line(32, 3, 70, 7, R.sisal[0]);  // büküm, ön ve üst kenar
+  // yakın yan çerçeve (önde, açık meşe): uzun eğik ray, ortada kol dayanağı, önde kısa ayak, arkada eğik ayak
+  d.poly([[69, 4], [75, 7], [55, 50], [49, 50]], R.oak[1]); d.poly([[69, 4], [72, 5], [52, 50], [49, 50]], R.oak[2]);
+  d.sEll(60, 34, 7, 4.5, R.oak);                                                                           // kol dayanağı
+  d.poly([[48, 48], [55, 48], [52, 61], [45, 61]], R.oak[1]); d.poly([[48, 48], [50, 48], [47, 61], [45, 61]], R.oak[2]);   // ön ayak
+  d.poly([[62, 32], [67, 30], [76, 61], [70, 61]], R.oak[1]); d.poly([[67, 30], [69, 30], [76, 61], [74, 61]], R.oak[0]);   // arka ayak
+  d.sEll(52, 50, 5, 3.4, R.oak);                                                                           // öndeki yuvarlak uç
+  [[66, 14], [60, 27], [53, 44], [50, 56]].forEach(([x, y]) => { d.px(x, y, '#F2F2F2'); d.px(x + 1, y, '#9A9A9A'); });   // vidalar
   return d.outline().done();
+}
+// Köfte koltukta yayılmış (fotoğraftaki gibi): sırtı hasıra yaslı, arka bacaklar uzanmış, kuyruk öne sarkık
+function yayil(o = {}){
+  const d = T(52, 54);
+  d.sEll(29, 27, 13, 9, F);                                                                                // gövde (arkaya yaslı)
+  d.ell(31, 29, 7, 5.5, FL[0]);                                                                            // açık göğüs
+  d.poly([[18, 30], [4, 32], [3, 35], [18, 36]], F[1]); d.sEll(4, 33.5, 3, 2, FL);                         // uzanan arka bacak
+  d.poly([[22, 33], [10, 37], [10, 40], [24, 37]], F[0]); d.sEll(10, 38.5, 3, 2, FL);                      // diğer arka bacak
+  d.poly([[38, 26], [46, 27], [47, 30], [39, 31]], F[1]); d.sEll(46, 28.5, 3, 2, FL);                      // kol dayanağındaki ön pati
+  for (let k = 0; k <= 12; k++){ const t = k / 12, x = 20 - 10 * t - 3 * Math.sin(t * 3), y = 33 + 18 * t; d.ell(x, y, 2.6 + t * 0.8, 2.2, k % 3 ? F[1] : F[2]); }   // koltuğun önünden sarkan kabarık kuyruk
+  d.sEll(9, 50, 3.6, 3, F);
+  bas(d, 33, 13 + (o.breath || 0), o);
+  return d.outline(K.ol).done();
 }
 
 /* ===== KÖFTE (40×36) — ana sayfa portresinin renkleri: çikolata kahvesi tüy, bakır gözler, küçük kulaklar.
@@ -265,6 +280,7 @@ export function kofteFrames(){
     sad:[onden({ half:true, flat:true, tail:'down' }), onden({ closed:true, flat:true, tail:'down' })],
     walk:[0, 1, 2, 3].map(k => yandan({ step:k, body:k % 2 ? -1 : 0, tailUp:true })),
     lie:[yandan({ lie:true, closed:false }), yandan({ lie:true, breath:1 })],
+    lounge:[yayil({}), yayil({ closed:true }), yayil({ tongue:true })],
     sleep:[yandan({ curl:true }), yandan({ curl:true, breath:1 })],
     eat:[yandan({ eat:true }), yandan({ eat:true, chew:1 }), yandan({ eat:true, tongue:true })],
     carry:[0, 2].map(k => yandan({ step:k, ball:true, tailUp:true })),
