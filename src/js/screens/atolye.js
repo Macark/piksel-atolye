@@ -8,7 +8,7 @@
 const AT = CONTENT.atolye;
 const AT_ITEM = Object.fromEntries(AT.items.map(i => [i.id, i]));
 const AT_SLOT = Object.fromEntries(AT.slots.map(s => [s.id, s]));
-const AT_DRAW = ['tavan', 'kose', 'masa', 'masaustu', 'hali', 'yatak', 'mama', 'oyuncak'];   // çizim sırası (arkadan öne)
+const AT_DRAW = ['tavan', 'kose', 'masa', 'masaustu', 'hali', 'yatak', 'oyuncak', 'mama'];   // çizim sırası (arkadan öne)
 const AT_TABS = [...AT.slots.map(s => ({ id:s.id, name:s.name })), { id:'cerceve', name:'Çerçeveler' }, { id:'raf', name:'Raf' }];
 
 function atData(){
@@ -89,55 +89,152 @@ function atPicCanvas(ref){
 }
 const atPicCache = new Map();
 function atPic(ref){ const k = JSON.stringify(ref); if (!atPicCache.has(k)) atPicCache.set(k, atPicCanvas(ref)); return atPicCache.get(k); }
-function atRoomDraw(g, over){
-  const a = atData(), pick = id => AT_ITEM[(over && over[id]) || a.yuva[id]];
+// Gün saati ve mevsim (gerçek saate göre): pencere manzarası ve odanın ışığı buna göre değişir
+let atTimeTest = null;   // test için sabitlenebilir: { part, season }
+function atTime(){
+  if (atTimeTest) return atTimeTest;
+  const d = new Date(), h = d.getHours(), m = d.getMonth();
+  return { part:h >= 6 && h < 9 ? 'sabah' : h >= 9 && h < 17 ? 'gun' : h >= 17 && h < 20 ? 'aksam' : 'gece', season:m === 11 || m <= 1 ? 'kis' : m <= 4 ? 'ilkbahar' : m <= 7 ? 'yaz' : 'sonbahar' };
+}
+function atWindowFx(g, s, tm){
+  const tint = { sabah:'rgba(255,196,150,0.18)', aksam:'rgba(236,112,56,0.32)', gece:'rgba(8,14,44,0.62)' }[tm.part];
+  if (tint){ g.fillStyle = tint; g.fillRect(s.x, s.y, s.w, s.h); }
+  const r = rng(7), dots = (n, cols, yMax) => { for (let k = 0; k < n; k++){ g.fillStyle = cols[k % cols.length]; g.fillRect(s.x + Math.floor(r() * s.w), s.y + Math.floor(r() * (yMax || s.h)), 1, 1); } };
+  if (tm.part === 'gece') dots(10, ['#FFFFFF', '#F6F0C8'], s.h * 0.45);
+  if (tm.season === 'kis') dots(26, ['#FFFFFF', '#E8F0FA']);
+  else if (tm.season === 'sonbahar') dots(16, ['#E8A23A', '#C8602A', '#F2C43A']);
+  else if (tm.season === 'ilkbahar') dots(16, ['#F6C2D0', '#FFFFFF', '#F28AA0']);
+}
+// Gece: oda kararır, lambaların çevresi sıcak ışıkla aydınlanır (basamaklı, piksel görünümünde)
+function atNight(g, a){
+  const W = AT.room.w, H = AT.room.h, im = g.getImageData(0, 0, W, H), d = im.data;
+  const L = [AT.lights.tavan, ...['kose', 'masaustu'].map(id => AT.lights[a.yuva[id]]).filter(Boolean)];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+    let t = 0; L.forEach(([lx, ly, lr]) => { const v = 1 - Math.hypot(x - lx, (y - ly) * 1.15) / lr; if (v > t) t = v; });
+    t = Math.ceil(Math.max(0, t) * 3) / 3;                                                   // 3 basamak
+    const o = (y * W + x) * 4, k = 0.5 + 0.5 * t;
+    d[o] = Math.min(255, d[o] * (k * (0.92 + 0.16 * t))); d[o + 1] = d[o + 1] * k * (0.94 + 0.02 * t); d[o + 2] = d[o + 2] * k * (1.18 - 0.36 * t);
+  }
+  g.putImageData(im, 0, 0);
+}
+function atRoomDraw(g, over, tm){
+  const a = atData(), pick = id => AT_ITEM[(over && over[id]) || a.yuva[id]]; tm = tm || atTime();
   g.imageSmoothingEnabled = false; g.clearRect(0, 0, AT.room.w, AT.room.h);
   atPlace(g, pick('duvar'), AT_SLOT.duvar); atPlace(g, pick('zemin'), AT_SLOT.zemin);
-  rect(g, 0, AT.room.wallH - 2, AT.room.w, 3, '#6E4A2A');                                                                 // süpürgelik
-  const pw = AT_SLOT.pencere;                                                                                              // pencere çerçevesi
-  rect(g, pw.x - 2, pw.y - 2, pw.w + 4, pw.h + 4, '#F6F0E2'); atPlace(g, pick('pencere'), pw);
-  rect(g, pw.x + pw.w / 2 - 1, pw.y - 2, 2, pw.h + 4, '#F6F0E2'); rect(g, pw.x - 2, pw.y + pw.h / 2 - 1, pw.w + 4, 2, '#F6F0E2'); rect(g, pw.x - 4, pw.y + pw.h + 1, pw.w + 8, 2, '#D8C8A8');
-  AT.frames.forEach(([x, y], k) => {                                                                                       // çerçeveler
-    rect(g, x - 1, y - 1, 18, 18, '#6E4A2A');
+  rect(g, 0, AT.room.wallH - 3, AT.room.w, 3, '#6E4426'); rect(g, 0, AT.room.wallH - 3, AT.room.w, 1, '#9A6838');            // süpürgelik
+  const pw = AT_SLOT.pencere;                                                                                                 // pencere
+  rect(g, pw.x - 3, pw.y - 3, pw.w + 6, pw.h + 6, '#ECE8E0'); atPlace(g, pick('pencere'), pw); atWindowFx(g, pw, tm);
+  rect(g, pw.x + pw.w / 2 - 1, pw.y - 3, 2, pw.h + 6, '#ECE8E0'); rect(g, pw.x - 3, pw.y + pw.h / 2 - 1, pw.w + 6, 2, '#ECE8E0');
+  rect(g, pw.x - 3, pw.y - 3, pw.w + 6, 1, '#FFFFFF'); rect(g, pw.x - 6, pw.y + pw.h + 2, pw.w + 12, 3, '#C8C4BC'); rect(g, pw.x - 6, pw.y + pw.h + 2, pw.w + 12, 1, '#ECE8E0');
+  AT.frames.forEach(([x, y], k) => {                                                                                          // çerçeveler
+    rect(g, x - 2, y - 2, 26, 26, '#6E4426'); rect(g, x - 2, y - 2, 26, 1, '#9A6838'); rect(g, x - 2, y - 2, 1, 26, '#9A6838');
     const pc = atPic(a.cerceve[k]);
-    if (pc) g.drawImage(pc, 0, 0, pc.width, pc.height, x, y, 16, 16); else { rect(g, x, y, 16, 16, '#F6F0E2'); rect(g, x + 6, y + 7, 4, 2, '#D8C8A8'); }
+    if (pc) g.drawImage(pc, 0, 0, pc.width, pc.height, x, y, 22, 22); else { rect(g, x, y, 22, 22, '#ECE8E0'); rect(g, x + 8, y + 10, 6, 2, '#C8C4BC'); }
   });
-  const sh = AT.shelf;                                                                                                     // raf ve hatıralar
-  rect(g, sh.x, sh.y, sh.w, 3, '#8A5E38'); rect(g, sh.x + 4, sh.y + 3, 2, 3, '#6E4A2A'); rect(g, sh.x + sh.w - 6, sh.y + 3, 2, 3, '#6E4A2A');
+  const sh = AT.shelf;                                                                                                        // raf ve hatıralar
+  rect(g, sh.x, sh.y, sh.w, 4, '#9A6838'); rect(g, sh.x, sh.y, sh.w, 1, '#C08A52'); rect(g, sh.x, sh.y + 3, sh.w, 1, '#6E4426');
+  rect(g, sh.x + 6, sh.y + 4, 3, 4, '#6E4426'); rect(g, sh.x + sh.w - 9, sh.y + 4, 3, 4, '#6E4426');
   sh.spots.forEach(([x, y], k) => { const id = a.raf[k]; if (id && SOUV[id] && DB.souv[id]){ const c = document.createElement('canvas'); drawArt(c, decodeArt(SOUV[id].art, id)); g.drawImage(c, x, y); } });
   AT_DRAW.forEach(id => atPlace(g, pick(id), AT_SLOT[id]));
+  g.drawImage(atSprite(AT.chair.art), AT.chair.x, AT.chair.y);                                                                // Köfte'nin hasır koltuğu (sabit)
+  if (tm.part === 'gece') atNight(g, { yuva:{ ...a.yuva, ...(over || {}) } });
 }
 const atRoomCv = $('#atRoom'), atKCv = $('#atKofte');
 let atOver = null;
 function atRender(){ atRoomDraw(atRoomCv.getContext('2d'), atOver); atKKey = ''; atKDraw(); }
+// Keskin büyütme: oda her zaman cihaz pikselinin tam sayı katıyla çizilir (bulanıklık yok)
+function atFit(){
+  const wrap = $('#atRoomWrap'), avail = $('#atolye').clientWidth - 6, dpr = window.devicePixelRatio || 1;   // gerekirse kenar boşluğuna taşar (ortalı)
+  const k = Math.max(1, Math.floor(Math.max(120, avail) * dpr / AT.room.w)), w = AT.room.w * k / dpr, h = AT.room.h * k / dpr;
+  wrap.style.width = w + 'px'; wrap.style.height = h + 'px';
+  [atRoomCv, atKCv].forEach(c => { c.style.width = w + 'px'; c.style.height = h + 'px'; });
+}
+addEventListener('resize', () => { if ($('#atolye').classList.contains('on')) atFit(); });
 
-/* Köfte: göz kırpar, kuyruk sallar; dokununca tepki verir */
-let atLoopT = 0, atNextBlink = 0, atBlinkTo = 0, atTailTo = 0, atNextTail = 0, atHopTo = 0, atKKey = '', atBubT = 0;
-function atKPos(){ const y = AT_ITEM[(atOver && atOver.yatak) || atData().yuva.yatak]; return (y && y.kofte) || [98, 76]; }
+/* Köfte: odada kendi kendine yaşar. Yürür, koltuğa çıkıp uzanır, kıvrılıp uyur, esner.
+   Dokununca sevinir; uyurken dokununca uyanmaz, sadece "zzz" büyür. */
+const KS = { mode:'sit', x:0, y:0, face:1, tx:0, ty:0, then:null, until:0, t0:0, zzz:0 };
+let atLoopT = 0, atKKey = '', atBubT = 0, atLast = 0;
+const KOLTUK = () => AT.spots.koltuk, ZEMIN = () => AT.spots.zemin;
+function atKPos(){ return [Math.round(KS.x), Math.round(KS.y)]; }
+function kSet(mode, ms, then){ KS.mode = mode; KS.t0 = performance.now(); KS.until = KS.t0 + (ms || 0); KS.then = then || null; if (mode !== 'sleep') KS.zzz = 0; atKKey = ''; }
+function kWalk(x, y, then){ KS.tx = x; KS.ty = y; KS.face = x >= KS.x ? 1 : -1; kSet('walk', 0, then); }
+function kToChair(rest){                                                                     // koltuğa git: önüne yürü, zıpla, uzan ya da uyu
+  const [cx, cy] = KOLTUK(), fy = ZEMIN()[1], dur = rest === 'sleep' ? 26000 : 9000;
+  if (KS.y === cy && KS.x === cx) return kSet(rest || 'lie', dur);
+  kWalk(cx, fy, () => { KS.y = cy; KS.face = -1; kSet('happy', 360, () => kSet(rest || 'lie', dur)); });
+}
+function kDown(then){ const [, fy] = ZEMIN(); if (KS.y !== fy){ KS.y = fy; KS.x = KOLTUK()[0] - 6; } then(); }
+function kIdle(){
+  const night = atTime().part === 'gece', r = Math.random(), onChair = KS.y === KOLTUK()[1];
+  if (onChair){ if (KS.mode === 'lie' && r < (night ? 0.6 : 0.3)) return kSet('sleep', 20000 + Math.random() * 15000); return kDown(() => kSet('sit', 2500)); }
+  const [x0, fy, x1] = ZEMIN();
+  if (r < 0.38) return kWalk(x0 + Math.random() * (x1 - x0), fy, () => kSet('sit', 4000 + Math.random() * 4000));
+  if (r < 0.58) return kToChair('lie');
+  if (r < (night ? 0.8 : 0.66)) return kToChair('sleep');
+  if (r < 0.76) return kSet('yawn', 900, () => kSet('sit', 3000));
+  kSet('sit', 4000 + Math.random() * 5000);
+}
+function kStep(now){
+  const dt = Math.min(0.2, (now - atLast) / 1000 || 0); atLast = now;
+  if (KS.mode === 'walk'){
+    const dx = KS.tx - KS.x, dy = KS.ty - KS.y, dist = Math.hypot(dx, dy), v = 34 * dt;
+    if (dist <= v){ KS.x = KS.tx; KS.y = KS.ty; const t = KS.then; kSet('sit', 2000); if (t) t(); }
+    else { KS.x += dx / dist * v; KS.y += dy / dist * v; }
+    return;
+  }
+  if (KS.until && now > KS.until){ const t = KS.then; KS.until = 0; if (t) t(); else kIdle(); }
+}
+function kFrame(now){
+  const t = now - KS.t0, F = AT.kofte, cyc = (arr, ms) => arr[Math.floor(now / ms) % arr.length];
+  switch (KS.mode){
+    case 'walk': return cyc(F.walk, 140);
+    case 'lie': return cyc(F.lie, 900);
+    case 'sleep': return cyc(F.sleep, 1100);
+    case 'yawn': return F.yawn[Math.min(2, Math.floor(t / 300))];
+    case 'happy': return F.happy[Math.min(2, Math.floor(t / 130))];
+    case 'eat': return cyc(F.eat, 260);
+    case 'sad': return cyc(F.sad, 1400);
+    default: { const ph = now % 5200; return ph < 160 ? F.sit[1] : ph > 3000 && ph < 3900 && Math.floor(ph / 220) % 2 ? F.sit[2] : F.sit[0]; }
+  }
+}
+const KSIDE = new Set(['walk', 'lie', 'sleep', 'eat', 'carry']);
+let atKFr = null;
 function atKDraw(){
-  const now = performance.now(), blink = now < atBlinkTo, tail = now < atTailTo && Math.floor(now / 180) % 2 === 0, hop = now < atHopTo ? -2 : 0;
-  const [x, y] = atKPos(), key = blink + '|' + tail + '|' + hop + '|' + x + '|' + y;
-  if (key === atKKey) return; atKKey = key;
-  const g = atKCv.getContext('2d'); g.clearRect(0, 0, AT.room.w, AT.room.h);
-  g.drawImage(atSprite(blink ? AT.kofte.blink : tail ? AT.kofte.tail : AT.kofte.normal), x, y + hop);
+  const now = performance.now(), fr = kFrame(now), [x, y] = atKPos(), side = KSIDE.has(KS.mode);
+  const zz = KS.mode === 'sleep' ? Math.floor(now / 500) % 3 + KS.zzz * 10 : -1, key = x + '|' + y + '|' + KS.face + '|' + zz;
+  if (fr === atKFr && key === atKKey) return; atKFr = fr; atKKey = key;
+  const g = atKCv.getContext('2d'); g.imageSmoothingEnabled = false; g.clearRect(0, 0, AT.room.w, AT.room.h);
+  const sp = atSprite(fr);
+  if (side && KS.face < 0){ g.save(); g.translate(x + fr.w, y); g.scale(-1, 1); g.drawImage(sp, 0, 0); g.restore(); } else g.drawImage(sp, x, y);
+  if (KS.mode === 'sleep'){                                                                  // "zzz": küçük piksel z'ler yukarı süzülür, dokundukça artar
+    const n = 1 + (Math.floor(now / 500) % 3) + Math.min(3, KS.zzz), zx = x + (KS.face < 0 ? 4 : 30), zy = y + 14;
+    g.fillStyle = '#F6F0E0';
+    for (let k = 0; k < n; k++){ const s = k > 2 ? 2 : 1, px = zx + k * 4, py = zy - k * 6;
+      g.fillRect(px, py, 3 * s, s); g.fillRect(px + 2 * s, py + s, s, s); g.fillRect(px + s, py + 2 * s, s, s); g.fillRect(px, py + 3 * s, 3 * s, s); }
+  }
 }
 function atLoop(){
   atLoopT = 0; if (!$('#atolye').classList.contains('on')) return;
-  const now = performance.now();
-  if (now > atNextBlink){ atBlinkTo = now + 160; atNextBlink = now + 2400 + Math.random() * 3200; }
-  if (now > atNextTail){ atTailTo = now + 1100; atNextTail = now + 3000 + Math.random() * 4000; }
-  atKDraw(); atLoopT = setTimeout(atLoop, 120);
+  const now = performance.now(); kStep(now); atKDraw();
+  atLoopT = setTimeout(atLoop, KS.mode === 'walk' ? 60 : 110);
 }
 const AT_LINES = ['Miyav!', 'Mırrr…', 'Mama vakti mi?', 'Bugün ne boyuyoruz?', 'Atölyemiz çok güzel oldu.', 'Biraz daha sev beni.'];
-function atMeow(){
-  atHopTo = performance.now() + 260; atKKey = ''; atKDraw();
-  tone(880, 0.07, 0, 'triangle', 0.05); tone(660, 0.1, 0.08, 'triangle', 0.05);
-  if (navigator.vibrate && !DB.noVibe) try { navigator.vibrate(12); } catch(e){}
+function atSay(text){
   const b = $('#atBubble'), [x, y] = atKPos();
-  b.textContent = trx(AT_LINES[Math.floor(Math.random() * AT_LINES.length)]);
-  b.style.left = ((x + 14) / AT.room.w * 100) + '%'; b.style.top = ((y - 2) / AT.room.h * 100) + '%'; b.hidden = false;
+  b.textContent = text; b.style.left = ((x + 20) / AT.room.w * 100) + '%'; b.style.top = ((y + 2) / AT.room.h * 100) + '%'; b.hidden = false;
   clearTimeout(atBubT); atBubT = setTimeout(() => { b.hidden = true; }, 1800);
 }
+function atMeow(){
+  if (KS.mode === 'sleep'){ KS.zzz = Math.min(3, KS.zzz + 1); atKKey = ''; return atSay(trx('Zzz…')); }
+  const back = KS.mode === 'lie' ? 'lie' : 'sit';
+  kSet('happy', 400, () => kSet(back, back === 'lie' ? 6000 : 2500));
+  tone(880, 0.07, 0, 'triangle', 0.05); tone(660, 0.1, 0.08, 'triangle', 0.05);
+  if (navigator.vibrate && !DB.noVibe) try { navigator.vibrate(12); } catch(e){}
+  atSay(trx(AT_LINES[Math.floor(Math.random() * AT_LINES.length)]));
+}
+// Resim asılınca: Köfte çerçevenin altına gidip bakar ve sevinir
+function kLookAt(k){ const [fx] = AT.frames[k], [x0, fy, x1] = ZEMIN(); kDown(() => kWalk(Math.max(x0, Math.min(x1, fx - 9)), fy, () => kSet('happy', 450, () => kSet('sit', 3000)))); }
 
 /* seçim ve eşya listesi */
 let atTab = 'yatak', atFrame = 0, atSpot = 0, atPickId = null;
@@ -166,7 +263,14 @@ function atSelect(tab, extra){
   atBuildTabs(); atBuildItems(); atSelText(); atRender();
   const on = $('#atSlots [aria-pressed="true"]'); if (on) on.scrollIntoView({ block:'nearest', inline:'nearest' });
 }
-function atThumb(c, it){ const s = AT_SLOT[it.slot]; if (s.tile){ const k = document.createElement('canvas'); k.width = k.height = 32; const g = k.getContext('2d'); atPlace(g, it, { x:0, y:0, w:32, h:32, tile:true }); return k; } return atSprite(it.art); }
+// Küçük resim: tam sayı katıyla büyütülür, CSS boyutu cihaz pikseline göre ayarlanır (keskin)
+function atThumb(it, box = 54){
+  const s = AT_SLOT[it.slot]; let base = atSprite(it.art);
+  if (s.tile){ base = document.createElement('canvas'); base.width = base.height = it.art.w * 2; atPlace(base.getContext('2d'), it, { x:0, y:0, w:base.width, h:base.height, tile:true }); }
+  const dpr = window.devicePixelRatio || 1, sc = Math.max(1, Math.floor(box * dpr / Math.max(base.width, base.height)));
+  const c = document.createElement('canvas'); c.width = base.width * sc; c.height = base.height * sc; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(base, 0, 0, c.width, c.height);
+  c.style.width = c.width / dpr + 'px'; c.style.height = c.height / dpr + 'px'; c.className = 'atthumb'; return c;
+}
 function atBuildItems(){
   const box = $('#atItems'), a = atData(); box.innerHTML = ''; box.className = 'atgrid';
   if (atTab === 'cerceve' || atTab === 'raf'){
@@ -179,7 +283,7 @@ function atBuildItems(){
       const b = document.createElement('button'); b.type = 'button'; b.className = 'atitem'; b.setAttribute('aria-pressed', String(!!on)); b.setAttribute('aria-label', label);
       const c = document.createElement('canvas'); c.className = 'atpic'; b.append(c);
       if (draw) drawArtLazy(c, 16, () => draw(c)); else { c.width = c.height = 1; b.classList.add('empty'); }
-      b.onclick = () => { if (isF) a.cerceve[atFrame] = ref; else a.raf[atSpot] = ref; save(); atPicCache.clear(); atBuildItems(); atSelText(); atRender(); tone(740, 0.06); };
+      b.onclick = () => { if (isF) a.cerceve[atFrame] = ref; else a.raf[atSpot] = ref; save(); atPicCache.clear(); atBuildItems(); atSelText(); atRender(); tone(740, 0.06); if (isF && ref) kLookAt(atFrame); };
       list.append(b);
     };
     add(trx('Boş'), null, null, !(isF ? a.cerceve[cur] : a.raf[cur]));
@@ -196,7 +300,7 @@ function atBuildItems(){
   AT.items.filter(it => it.slot === atTab).forEach(it => {
     const st = atStatus(it), b = document.createElement('button'); b.type = 'button'; b.className = 'atitem at-' + st.kind;
     b.setAttribute('aria-pressed', String(atPickId ? atPickId === it.id : st.kind === 'on'));
-    const k = atThumb(null, it), c = document.createElement('canvas'); c.width = k.width; c.height = k.height; c.getContext('2d').drawImage(k, 0, 0); c.className = 'atthumb';
+    const c = atThumb(it);
     const nm = document.createElement('b'); nm.textContent = trx(it.name);
     const sm = document.createElement('small'); sm.textContent = (st.kind === 'lock' ? '🔒 ' : st.kind === 'stars' ? '★ ' : '') + st.text;
     b.append(c, nm, sm);
@@ -233,8 +337,9 @@ function atBuy(it){
 // Odaya dokununca: Köfte, çerçeve, raf ya da üstteki eşyanın yuvası seçilir
 atRoomCv.addEventListener('click', e => {
   const r = atRoomCv.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * AT.room.w, y = (e.clientY - r.top) / r.height * AT.room.h;
-  const [kx, ky] = atKPos(); if (x >= kx + 3 && x < kx + 25 && y >= ky && y < ky + 26) return atMeow();
-  const fk = AT.frames.findIndex(([fx, fy]) => x >= fx - 1 && x < fx + 17 && y >= fy - 1 && y < fy + 17); if (fk >= 0) return atSelect('cerceve', fk);
+  const [kx, ky] = atKPos(); if (x >= kx + 2 && x < kx + 38 && y >= ky + 2 && y < ky + 36) return atMeow();
+  const ch = AT.chair; if (x >= ch.x && x < ch.x + ch.art.w && y >= ch.y && y < ch.y + ch.art.h){ kToChair('lie'); return atSay(trx('Koltuğuma gidiyorum!')); }   // koltuğa dokununca Köfte koltuğa gider
+  const fk = AT.frames.findIndex(([fx, fy]) => x >= fx - 2 && x < fx + 24 && y >= fy - 2 && y < fy + 24); if (fk >= 0) return atSelect('cerceve', fk);
   const sk = AT.shelf.spots.findIndex(([sx, sy]) => x >= sx && x < sx + 16 && y >= sy && y < sy + 17); if (sk >= 0) return atSelect('raf', sk);
   const hit = AT_DRAW.slice().reverse().find(id => { const s = AT_SLOT[id]; return x >= s.x && x < s.x + s.w && y >= s.y && y < s.y + s.h; })
     || (AT_SLOT.pencere && x >= AT_SLOT.pencere.x && x < AT_SLOT.pencere.x + AT_SLOT.pencere.w && y >= AT_SLOT.pencere.y && y < AT_SLOT.pencere.y + AT_SLOT.pencere.h ? 'pencere' : null)
@@ -247,18 +352,18 @@ function openAtolye(tab){
   const first = DB.atolye.yeni.length ? AT_ITEM[DB.atolye.yeni[0]].slot : null;
   atSelect(tab || first || atTab);
   $('#atolye').scrollTop = 0;
-  atNextBlink = performance.now() + 900; atNextTail = performance.now() + 2000;
-  clearTimeout(atLoopT); atLoop();
+  atFit(); if (!KS.x){ KS.x = KOLTUK()[0]; KS.y = KOLTUK()[1]; KS.face = -1; kSet('lie', 5000); }   // ilk açılışta koltuğunda
+  atLast = performance.now(); clearTimeout(atLoopT); atLoop();
 }
 $('#atBack').onclick = () => { clearTimeout(atLoopT); atLoopT = 0; atOver = null; show('home'); refreshHome(); };
 $('#demo').addEventListener('click', () => openAtolye());
 $('#atLink').onclick = () => openAtolye();
 // Paylaşım: odanın büyük hâli paylaşım penceresine kart olarak gider
 $('#atShare').onclick = () => {
-  const S = 6, k = document.createElement('canvas'); k.width = AT.room.w * S + 48; k.height = AT.room.h * S + 120;
+  const S = 4, k = document.createElement('canvas'); k.width = AT.room.w * S + 48; k.height = AT.room.h * S + 120;
   const g = k.getContext('2d'); g.fillStyle = '#FFF7EA'; g.fillRect(0, 0, k.width, k.height); g.fillStyle = '#2A1D14'; g.fillRect(18, 18, k.width - 36, AT.room.h * S + 12);
   const room = document.createElement('canvas'); room.width = AT.room.w; room.height = AT.room.h; const rg = room.getContext('2d'); atRoomDraw(rg, null);
-  rg.drawImage(atSprite(AT.kofte.normal), ...atKPos());
+  rg.drawImage(atKCv, 0, 0);
   g.imageSmoothingEnabled = false; g.drawImage(room, 24, 24, AT.room.w * S, AT.room.h * S);
   g.fillStyle = '#2A1D14'; g.textAlign = 'center'; g.font = '700 46px "Pixelify Sans", monospace'; g.fillText(trx('KÖFTE’NİN ATÖLYESİ'), k.width / 2, AT.room.h * S + 92);
   cardCanvas = k; viewArt = { n:2, pal:['#3B2D28', '#C8A878', '#E9D9BC', '#E0763F'], idx:[0, 1, 2, 3] }; viewCtx = { atolye:true };

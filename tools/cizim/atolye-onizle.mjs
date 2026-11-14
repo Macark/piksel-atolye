@@ -1,9 +1,9 @@
-// Atölye önizlemesi: node atolye-onizle.mjs [yuva=eşya ...] → atolye-oda.png, atolye-esyalar.png
+// Atölye önizlemesi: node atolye-onizle.mjs [yuva=eşya ...] [poz=sit|lie|sleep...] → atolye-oda.png, atolye-esyalar.png, atolye-kofte.png
 import { writePng } from './pix.mjs';
 import { data } from './atolye-veri.mjs';
 const D = data(), byId = Object.fromEntries(D.items.map(i => [i.id, i]));
-const pick = { ...D.defaults };
-process.argv.slice(2).forEach(a => { const [s, v] = a.split('='); if (v) pick[s] = v; });
+const pick = { ...D.defaults }; let poz = 'sit', yer = 'koltuk';
+process.argv.slice(2).forEach(a => { const [s, v] = a.split('='); if (s === 'poz') poz = v; else if (s === 'yer') yer = v; else if (v) pick[s] = v; });
 const rgb = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
 const W = D.room.w, H = D.room.h, buf = new Array(W * H).fill([0, 0, 0]);
 const put = (x, y, c) => { if (x >= 0 && y >= 0 && x < W && y < H) buf[y * W + x] = c; };
@@ -13,20 +13,22 @@ const blit = (a, x0, y0, tile, tw, th) => {
 };
 const rect = (x, y, w, h, c) => { for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) put(i, j, rgb(c)); };
 const S = Object.fromEntries(D.slots.map(s => [s.id, s]));
-const at = id => { const s = S[id], it = byId[pick[id]]; if (s.tile) blit(it.art, s.x, s.y, true, s.w, s.h); else blit(it.art, s.x + Math.floor((s.w - it.art.w) / 2), s.y + s.h - it.art.h); };   // alta ve ortaya hizalı
+const at = id => { const s = S[id], it = byId[pick[id]]; if (s.tile) blit(it.art, s.x, s.y, true, s.w, s.h); else blit(it.art, s.x + Math.floor((s.w - it.art.w) / 2), s.y + s.h - it.art.h); };
 at('duvar'); at('zemin');
-rect(0, 76, 160, 3, '#6E4A2A');                                                                      // süpürgelik
-rect(60, 16, 40, 32, '#F6F0E2'); at('pencere'); rect(79, 16, 2, 32, '#F6F0E2'); rect(60, 31, 40, 2, '#F6F0E2'); rect(58, 47, 44, 2, '#D8C8A8');   // pencere çerçevesi
-D.frames.forEach(([x, y], k) => { rect(x - 1, y - 1, 18, 18, '#6E4A2A'); rect(x, y, 16, 16, ['#F2C43A', '#3AB0C0', '#E58FA6', '#8ACC6A'][k]); });
-rect(D.shelf.x, D.shelf.y, D.shelf.w, 3, '#8A5E38'); rect(D.shelf.x + 4, D.shelf.y + 3, 2, 3, '#6E4A2A'); rect(D.shelf.x + D.shelf.w - 6, D.shelf.y + 3, 2, 3, '#6E4A2A');
-D.shelf.spots.forEach(([x, y]) => rect(x + 4, y + 8, 8, 8, '#C8A040'));
-['tavan', 'kose', 'masa', 'masaustu', 'hali', 'yatak', 'mama', 'oyuncak'].forEach(at);
-const kp = byId[pick.yatak].kofte || [98, 72]; blit(D.kofte.normal, kp[0], kp[1]);
-const SC = 4; writePng('atolye-oda.png', W * SC, H * SC, (x, y) => buf[Math.floor(y / SC) * W + Math.floor(x / SC)]);
-// eşya tablosu
-const cell = 76, cols = 8, rows = Math.ceil((D.items.length + 3) / cols), sheet = new Array(cols * cell * rows * cell).fill([60, 48, 40]);
-const all = [...D.items.map(i => i.art), D.kofte.normal, D.kofte.blink, D.kofte.tail];
-all.forEach((a, k) => { const sc = Math.max(1, Math.floor(70 / Math.max(a.w, a.h))), ox = (k % cols) * cell + 3, oy = Math.floor(k / cols) * cell + 3;
-  a.rows.forEach((r, j) => [...r].forEach((ch, i) => { if (ch === '.') return; for (let yy = 0; yy < sc; yy++) for (let xx = 0; xx < sc; xx++) sheet[(oy + j * sc + yy) * cols * cell + ox + i * sc + xx] = rgb(a.cols[ch]); })); });
-writePng('atolye-esyalar.png', cols * cell, rows * cell, (x, y) => sheet[y * cols * cell + x]);
-console.log(D.items.length, 'eşya');
+rect(0, D.room.wallH - 3, W, 3, '#6E4426'); rect(0, D.room.wallH - 3, W, 1, '#9A6838');
+const pw = S.pencere; rect(pw.x - 3, pw.y - 3, pw.w + 6, pw.h + 6, '#ECE8E0'); at('pencere'); rect(pw.x + pw.w / 2 - 1, pw.y - 3, 2, pw.h + 6, '#ECE8E0'); rect(pw.x - 3, pw.y + pw.h / 2 - 1, pw.w + 6, 2, '#ECE8E0'); rect(pw.x - 6, pw.y + pw.h + 2, pw.w + 12, 3, '#C8C4BC');
+D.frames.forEach(([x, y], k) => { rect(x - 2, y - 2, 26, 26, '#6E4426'); rect(x - 2, y - 2, 26, 1, '#9A6838'); rect(x, y, 22, 22, ['#F2C43A', '#3AB0C0', '#E58FA6', '#8ACC6A'][k]); });
+const sh = D.shelf; rect(sh.x, sh.y, sh.w, 4, '#9A6838'); rect(sh.x, sh.y, sh.w, 1, '#C08A52'); rect(sh.x + 6, sh.y + 4, 3, 4, '#6E4426'); rect(sh.x + sh.w - 9, sh.y + 4, 3, 4, '#6E4426');
+sh.spots.forEach(([x, y]) => rect(x + 3, y + 4, 10, 12, '#C8A040'));
+['tavan', 'kose', 'masa', 'masaustu', 'hali', 'yatak', 'oyuncak', 'mama'].forEach(at);
+blit(D.chair.art, D.chair.x, D.chair.y);
+const kp = D.spots[yer]; blit(D.kofte[poz][0], yer === 'zemin' ? kp[0] + 40 : kp[0], kp[1]);
+const SC = 3; writePng('atolye-oda.png', W * SC, H * SC, (x, y) => buf[Math.floor(y / SC) * W + Math.floor(x / SC)]);
+// tablo
+const sheet = (file, arts, cell, cols) => { const rows = Math.ceil(arts.length / cols), Wd = cols * cell, buf2 = new Array(Wd * rows * cell).fill([60, 48, 40]);
+  arts.forEach((a, k) => { const sc = Math.max(1, Math.floor((cell - 6) / Math.max(a.w, a.h))), ox = (k % cols) * cell + 3, oy = Math.floor(k / cols) * cell + 3;
+    a.rows.forEach((r, j) => [...r].forEach((ch, i) => { if (ch === '.') return; for (let yy = 0; yy < sc; yy++) for (let xx = 0; xx < sc; xx++) buf2[(oy + j * sc + yy) * Wd + ox + i * sc + xx] = rgb(a.cols[ch]); })); });
+  writePng(file, Wd, rows * cell, (x, y) => buf2[y * Wd + x]); };
+sheet('atolye-esyalar.png', [...D.items.map(i => i.art), D.chair.art], 112, 7);
+sheet('atolye-kofte.png', Object.values(D.kofte).flat(), 128, 7);
+console.log(D.items.length, 'eşya,', Object.values(D.kofte).flat().length, 'Köfte karesi');

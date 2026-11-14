@@ -135,11 +135,21 @@
     // Köfte'ye dokun
     const [kx, ky] = atKPos(); $('#atRoom').dispatchEvent(new MouseEvent('click', { bubbles:true, clientX:r.left + (kx + 14) / AT.room.w * r.width, clientY:r.top + (ky + 12) / AT.room.h * r.height }));
     if ($('#atBubble').hidden) throw new Error('Köfte tepki vermedi');
+    // koltuğa dokununca Köfte koltuğa gider
+    const ch = AT.chair; $('#atRoom').dispatchEvent(new MouseEvent('click', { bubbles:true, clientX:r.left + (ch.x + 8) / AT.room.w * r.width, clientY:r.top + (ch.y + 10) / AT.room.h * r.height }));
+    if (!['walk', 'happy', 'lie'].includes(KS.mode)) throw new Error('koltuğa dokununca Köfte gitmedi: ' + KS.mode);
+    // Köfte'nin bütün hareketleri ve günün her saati/mevsim çizilebilsin
+    ['sit', 'walk', 'lie', 'sleep', 'eat', 'yawn', 'happy', 'sad'].forEach(m => { kSet(m, 1000); atKKey = ''; atKDraw(); });
+    for (const part of ['sabah', 'gun', 'aksam', 'gece']) for (const season of ['kis', 'ilkbahar', 'yaz', 'sonbahar']){ atTimeTest = { part, season }; atRender(); }
+    atTimeTest = null; atRender();
     // paylaş
     $('#atShare').click(); await sleep(30); if (!$('#share').classList.contains('on') || !shareCanvas) throw new Error('paylaşım açılmadı'); closeAll();
     // eski kayıt: atölye alanı olmadan
     const keep = DB.atolye; delete DB.atolye; atCheck(); openAtolye();
     if (!DB.atolye || !AT.slots.every(s => AT_ITEM[DB.atolye.yuva[s.id]].start)) throw new Error('eski kayıtta atölye kurulmadı');
+    // 1. sürüm kaydı: koltuk o zaman "Köfte'nin yeri" eşyasıydı; şimdi sabit, yerine karton kutu gelmeli
+    DB.atolye = { var:{ yatak_koltuk:true }, yuva:{ yatak:'yatak_koltuk' }, cerceve:[null, null, null, null], raf:[null, null, null], yeni:[] }; atData();
+    if (DB.atolye.yuva.yatak !== 'yatak_kutu') throw new Error('eski koltuk kaydı taşınmadı');
     DB.atolye = keep; DB.coins = coins0; save();
     $('#atBack').click(); atolyeOk = true;
   });

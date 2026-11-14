@@ -2,27 +2,32 @@
 // node atolye-veri.mjs  (tekrar çalıştırılırsa dosyayı yeniden yazar)
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { I, KOFTE } from './atolye.mjs';
+import { I, koltuk, kofteFrames } from './atolye.mjs';
 const OUT = fileURLToPath(new URL('../../src/content/atolye.json', import.meta.url));
 
-// Oda 160×120 piksel. Yuva: kimlik, ad, konum (x, y), boyut (w, h); "tile": desen olarak döşenir.
-export const ROOM = { w:160, h:120, wallH:78 };
+// Oda 240×180 piksel. Yuva: kimlik, ad, konum (x, y), boyut (w, h); "tile": desen olarak döşenir.
+// Eşya yuvanın altına ve ortasına hizalanır.
+export const ROOM = { w:240, h:180, wallH:117 };
 export const SLOTS = [
-  { id:'duvar', name:'Duvar kâğıdı', x:0, y:0, w:160, h:78, tile:true },
-  { id:'zemin', name:'Zemin', x:0, y:78, w:160, h:42, tile:true },
-  { id:'pencere', name:'Pencere', x:62, y:18, w:36, h:28 },
-  { id:'tavan', name:'Tavan lambası', x:72, y:0, w:16, h:16 },
-  { id:'kose', name:'Köşe', x:2, y:50, w:20, h:44 },
-  { id:'masa', name:'Masa', x:24, y:66, w:40, h:26 },
-  { id:'masaustu', name:'Masa üstü', x:36, y:51, w:16, h:16 },
-  { id:'hali', name:'Halı', x:44, y:96, w:72, h:18 },
-  { id:'yatak', name:'Köfte’nin yeri', x:92, y:66, w:40, h:38 },
-  { id:'mama', name:'Mama kabı', x:140, y:104, w:16, h:10 },
-  { id:'oyuncak', name:'Oyuncak', x:24, y:104, w:14, h:12 },
+  { id:'duvar', name:'Duvar kâğıdı', x:0, y:0, w:240, h:117, tile:true },
+  { id:'zemin', name:'Zemin', x:0, y:117, w:240, h:63, tile:true },
+  { id:'pencere', name:'Pencere', x:90, y:24, w:60, h:44 },
+  { id:'tavan', name:'Tavan lambası', x:108, y:0, w:24, h:24 },
+  { id:'kose', name:'Köşe', x:2, y:72, w:30, h:66 },
+  { id:'masa', name:'Masa', x:34, y:99, w:60, h:39 },
+  { id:'masaustu', name:'Masa üstü', x:52, y:75, w:24, h:24 },
+  { id:'hali', name:'Halı', x:66, y:146, w:108, h:27 },
+  { id:'yatak', name:'Köfte’nin yatağı', x:4, y:138, w:52, h:40 },
+  { id:'mama', name:'Mama kabı', x:196, y:160, w:24, h:15 },
+  { id:'oyuncak', name:'Oyuncak', x:60, y:160, w:21, h:18 },
 ];
-// Çerçeveler (iç 16×16, 1 piksel kenar) ve raf (3 hatıra yeri)
-export const FRAMES = [[10, 14], [34, 24], [108, 14], [132, 24]];
-export const SHELF = { x:102, y:64, w:54, spots:[[104, 48], [122, 48], [140, 48]] };
+// Çerçeveler (iç 22×22, 2 piksel kenar), raf (3 hatıra yeri), sabit hasır koltuk
+export const FRAMES = [[14, 22], [52, 36], [164, 22], [204, 36]];
+export const SHELF = { x:160, y:86, w:72, spots:[[166, 70], [190, 70], [214, 70]] };
+export const CHAIR = { x:166, y:98 };
+// Köfte'nin duracağı yerler (40×36 çizimin sol üstü) ve geceleri yanan ışıklar
+export const SPOTS = { koltuk:[178, 104], zemin:[60, 130, 196], kap:[160, 139], yatak:[10, 136] };
+export const LIGHTS = { tavan:[120, 18, 90], kose_ayaklilamba:[17, 82, 60], mu_lamba:[64, 84, 48] };
 
 // [kimlik, yuva, ad, fiyat | ödül, ek]  ödül: { type:'region'|'badge', id }
 const ITEMS = [
@@ -58,17 +63,16 @@ const ITEMS = [
   ['hali_post', 'hali', 'Beyaz post halı', 180],
   ['hali_pati', 'hali', 'Pati halısı', 220],
   ['hali_kilim', 'hali', 'Kilim', { type:'region', id:'guneydogu' }],
-  ['yatak_koltuk', 'yatak', 'Köfte’nin koltuğu', 0, { kofte:[98, 76] }],
-  ['yatak_kutu', 'yatak', 'Karton kutu', 0, { kofte:[98, 76] }],
-  ['yatak_yumusak', 'yatak', 'Yumuşak kedi yatağı', 300, { kofte:[98, 76] }],
-  ['yatak_kedievi', 'yatak', 'Kedi evi', 900, { stars:60, kofte:[106, 76] }],
+  ['yatak_kutu', 'yatak', 'Karton kutu', 0],
+  ['yatak_yumusak', 'yatak', 'Yumuşak kedi yatağı', 300],
+  ['yatak_kedievi', 'yatak', 'Kedi evi', 900, { stars:60 }],
   ['mama_basit', 'mama', 'Mama kabı', 0],
   ['mama_balik', 'mama', 'Balıklı mama kabı', 70],
   ['oy_yumak', 'oyuncak', 'Yün yumağı', 0],
   ['oy_fare', 'oyuncak', 'Oyuncak fare', 50],
   ['oy_tuy', 'oyuncak', 'Tüylü oyuncak', 120],
 ];
-const DEFAULT = { duvar:'duvar_krem', zemin:'zemin_parke', pencere:'pen_sehir', tavan:'tavan_ampul', kose:'kose_saksi', masa:'masa_calisma', masaustu:'mu_firca', hali:'hali_hasir', yatak:'yatak_koltuk', mama:'mama_basit', oyuncak:'oy_yumak' };
+const DEFAULT = { duvar:'duvar_krem', zemin:'zemin_parke', pencere:'pen_sehir', tavan:'tavan_ampul', kose:'kose_saksi', masa:'masa_calisma', masaustu:'mu_firca', hali:'hali_hasir', yatak:'yatak_kutu', mama:'mama_basit', oyuncak:'oy_yumak' };
 
 export function data(){
   const items = ITEMS.map(([id, slot, name, p, ex = {}]) => {
@@ -79,7 +83,7 @@ export function data(){
     o.art = I[id]();
     return o;
   });
-  return { room:ROOM, slots:SLOTS, frames:FRAMES, shelf:SHELF, defaults:DEFAULT, kofte:KOFTE, items };
+  return { room:ROOM, slots:SLOTS, frames:FRAMES, shelf:SHELF, chair:{ ...CHAIR, art:koltuk() }, spots:SPOTS, lights:LIGHTS, defaults:DEFAULT, kofte:kofteFrames(), items };
 }
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1].replace(/\\/g, '/').replace(/^(?!\w:)/, '')){
   // (doğrudan çalıştırınca yaz)

@@ -86,7 +86,17 @@ function badgeIds(){ try { const s = fs.readFileSync(path.join(ROOT, 'src', 'js'
 function checkAtolye(c, E, regs){
   const A = c.atolye, w = 'atölye', ids = new Set(), slots = new Map((A.slots || []).map(s => [s.id, s])), badges = badgeIds();
   if (!slots.size) return E.push(w + ': yuva listesi yok');
-  ['normal', 'blink', 'tail'].forEach(k => checkSprite(A.kofte && A.kofte[k], `${w} Köfte (${k})`, E));
+  // Köfte'nin hareketleri: her hareketin en az şu kadar karesi olmalı, kareler aynı boyda
+  const MOVES = { sit:3, walk:4, lie:2, sleep:2, eat:2, yawn:3, happy:3, sad:2, carry:2 };
+  Object.entries(MOVES).forEach(([m, n]) => {
+    const fr = A.kofte && A.kofte[m];
+    if (!Array.isArray(fr) || fr.length < n) return E.push(`${w} Köfte: "${m}" hareketinde en az ${n} kare olmalı`);
+    fr.forEach((f, i) => { checkSprite(f, `${w} Köfte ${m} #${i + 1}`, E); if (f && (f.w !== fr[0].w || f.h !== fr[0].h)) E.push(`${w} Köfte ${m} #${i + 1}: kare boyu farklı`); });
+  });
+  checkSprite(A.chair && A.chair.art, w + ' koltuk', E);
+  ['koltuk', 'zemin', 'kap', 'yatak'].forEach(k => { if (!A.spots || !Array.isArray(A.spots[k])) E.push(`${w}: Köfte'nin "${k}" noktası yok`); });
+  if (!A.lights || !A.lights.tavan) E.push(w + ': tavan ışığı yok');
+  Object.keys(A.lights || {}).forEach(k => { if (k !== 'tavan' && !A.items.some(it => it.id === k)) E.push(`${w}: ışık "${k}" olmayan bir eşyaya bağlı`); });
   (A.items || []).forEach((it, k) => {
     const iw = `${w} › ${it.id || '#' + k}`;
     if (!it.id) E.push(iw + ': kimlik yok'); else if (ids.has(it.id)) E.push(iw + ': kimlik çakışıyor'); ids.add(it.id);

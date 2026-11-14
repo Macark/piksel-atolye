@@ -75,8 +75,8 @@
 .atolye{padding:0 14px 18px;gap:10px;overflow-y:auto}
 .atolye>*{flex-shrink:0}
 .atolye .top .coins{margin-left:auto}
-.atroom{position:relative;width:100%;aspect-ratio:4/3;padding:0;overflow:hidden}
-.atroom canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+.atroom{position:relative;align-self:center;padding:0;overflow:hidden;box-sizing:content-box}
+.atroom canvas{position:absolute;left:0;top:0;image-rendering:pixelated;image-rendering:crisp-edges}
 #atKofte{pointer-events:none}
 .atbubble{position:absolute;transform:translate(-50%,-100%);margin:0;padding:3px 8px;font-size:14px;font-weight:700;white-space:nowrap;pointer-events:none;animation:btin .3s steps(4) both}
 .atslots .chip{position:relative}
@@ -90,7 +90,7 @@
 .atitem[aria-pressed="true"]{outline:3px solid var(--accent);outline-offset:-1px}
 .atitem.at-on small{color:var(--good);font-weight:700}
 .atitem.at-lock,.atitem.at-stars{opacity:.72}
-.atthumb{width:48px;height:48px;object-fit:contain;image-rendering:pixelated;background:repeating-conic-gradient(#0000 0 25%,#8881 0 50%) 0 0/12px 12px}
+.atitem .atthumb{margin:auto 0;image-rendering:pixelated;max-width:100%;background:repeating-conic-gradient(#0000 0 25%,#8881 0 50%) 0 0/12px 12px}
 .atgrid .atpos{grid-column:1/-1}
 .atgrid .atpos button{padding:7px 4px;font-size:14px}
 .atpics{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
