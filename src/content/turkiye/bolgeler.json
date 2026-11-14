@@ -2,7 +2,7 @@
  {"id":"marmara","name":"MARMARA","color":"#2E7DBA","guide":{"ini":"EA","name":"Elif Abla","art":{"n":16,"pal":["#e9d8f0","#3a2418","#e8b48a","#f2efe6","#2e7dba","#8fc8f0","#2a1d14","#c0504a"],"px":"a21b6a9b8a7b10a6b2c7b2a5bc2gc3gc2ba5bc8ba6bc3h2c3ba6b2c6ba8b2c4ba10e2ce3a8e2fe2fe4a5e2fe2fe2fe3a4d13a3d13a3d13a"}}},
  {"id":"ege","name":"EGE","color":"#1F9AA0","guide":{"ini":"EM","name":"Efe Mert","art":{"n":16,"pal":["#f2e2c0","#c98a5a","#f6efe2","#8a1a1a","#c0392b","#5a3a22","#2a1d14","#e0a526","#f2c14a","#3a2418"],"px":"a5f6a9f8a7e2ieieie3a6e10a6jb8ja7bgb4gba8b8a7g4b2g4a7g2b3g2a10b6a11b4a9d2c6d2a5dhdc6dhda4d3c6d3a4dhdc6dhda4d3c6d3a2"}}},
  {"id":"akdeniz","name":"AKDENİZ","color":"#E0763F","guide":{"ini":"KD","name":"Kaptan Deniz","art":{"n":16,"pal":["#bfe3f2","#fbfbf6","#c98a5a","#2e5f9e","#1f2a3a","#5a3a22","#e0a526","#2a1d14"],"px":"a20b8a7b10a6b3g3b4a5e12a6c8a8chc4hca8c8a8c2f4c2a9c6a11c4a9d2b2d2b2d2a5d2b2d2b2d2b2a4b2d2b2d2b2d2a4d2b2d2b2d2b2a4b2d2b2d2b2d2a2"}}},
- {"id":"icanadolu","name":"İÇ ANADOLU","color":"#C9A227"},
+ {"id":"icanadolu","name":"İÇ ANADOLU","color":"#C9A227","guide":{"ini":"ÇK","name":"Çoban Kaan","art":{"n":16,"pal":["#c9b48a","#d9e6c0","#c98a5a","#3a2e2a","#5a3a22","#8a5a2b","#5a4a44","#a8925e","#2a1d14"],"px":"b4d8b7dgdgdgdgd2b6d10b7c8b8cic4icb8c8b8ce6cb9c6b7a4c4a3b4a13b3aha9hab3a13b3aha9hab3a13bfba12f2b2a11f2b2"}}},
  {"id":"karadeniz","name":"KARADENİZ","color":"#3E8E5A"},
  {"id":"dogu","name":"DOĞU ANADOLU","color":"#8A4FB0"},
  {"id":"guneydogu","name":"GÜNEYDOĞU ANADOLU","color":"#C8321E","guide":{"ini":"LE","name":"Rehber Leyla","art":{"n":16,"pal":["#3a2418","#c8321e","#c98a5a","#d9a066","#f2b33d","#f7d9b0"],"px":"f36a8f8a8f8a8f8a2d5af8a2d5af8adad2adaf8ad6af8ed2b2d2ef8ad6af8a3c2a3f11c2f10b10f6beb2eb2eb2f6b10f3"}}}
