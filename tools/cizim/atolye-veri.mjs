@@ -126,7 +126,7 @@ export const BAKIM = {
     { lv:7, puan:480, kiyafet:'bere_kirmizi' },
     { lv:8, puan:640, esya:'mu_akvaryum', mama:{ kofte:1 } },
     { lv:9, puan:830, kiyafet:'papyon' },
-    { lv:10, puan:1050, kiyafet:'tac', unvan:'Kral Köfte' },
+    { lv:10, puan:1050, kiyafet:'tac' },
   ],
   hediye:{ coin:[20, 60], oran:{ coin:0.5, kuru:0.35, balik:0.15 }, kuruAdet:2 },
 };

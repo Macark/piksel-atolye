@@ -7,6 +7,8 @@
 const BK = AT.bakim, KIY_DEF = AT.kiyafet, MAMA = Object.fromEntries(BK.mamalar.map(m => [m.id, m]));
 const kClamp = v => Math.max(0, Math.min(100, v));
 const kGun = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+// Örnek anının eski alt yazısı "Kral Köfte" idi; Ali'nin isteğiyle "Köfte" oldu (eski kayıtlarda da)
+(DB.gallery || []).forEach(p => { if (p.caption === 'Kral Köfte') p.caption = 'Köfte'; });
 function kData(){
   const k = DB.kofte = DB.kofte || {};
   if (k.tok === undefined){ Object.assign(k, { tok:BK.baslangic.tok, mut:BK.baslangic.mut, ener:BK.baslangic.ener, dost:0, lv:1, t:Date.now() }); k.mama = { ...BK.baslangic.mama }; }
@@ -41,7 +43,6 @@ function kLevelUp(lv){
   if (s.hareket){ k.acik.hareket[s.hareket] = true; yeni.push(trx(s.hareket === 'dans' ? 'Sevinç dansı' : 'Sırtüstü yuvarlanma')); }
   if (s.mama) Object.entries(s.mama).forEach(([m, n]) => { k.mama[m] = (k.mama[m] || 0) + n; yeni.push(TL('{0} × {1}', n, trx(MAMA[m].name))); });
   if (s.esya){ const it = AT_ITEM[s.esya]; if (it) yeni.push(trx(it.name)); }
-  if (s.unvan) yeni.push(trx(s.unvan));
   save(); atCheck();
   kToast(TL('DOSTLUK SEVİYESİ {0}!', lv), yeni.join(', '));
   if ($('#atolye').classList.contains('on')){ kSet('happy', 500, () => kSet('sit', 2500)); kHearts(6); kPanel(); }
@@ -115,7 +116,7 @@ function kPanel(){
   const k = kData(), bar = (id, v) => { const el = $(id); el.style.setProperty('--v', Math.round(v) + '%'); el.parentElement.setAttribute('aria-label', el.parentElement.dataset.n + ': ' + Math.round(v)); el.parentElement.classList.toggle('low', v < 30); };
   bar('#kTok', k.tok); bar('#kMut', k.mut); bar('#kEner', k.ener);
   const cur = BK.seviyeler.find(s => s.lv === k.lv), next = BK.seviyeler.find(s => s.lv === k.lv + 1);
-  $('#kLv').textContent = next ? TL('Dostluk {0}', k.lv) : TL('Dostluk {0} · {1}', k.lv, trx(cur.unvan || ''));
+  $('#kLv').textContent = TL('Dostluk {0}', k.lv);
   $('#kDostBar').style.setProperty('--v', next ? Math.round((k.dost - cur.puan) / (next.puan - cur.puan) * 100) + '%' : '100%');
   $('#kDostTxt').textContent = next ? TL('{0}/{1}', k.dost, next.puan) : TL('{0}', k.dost);
   $('#kBall').textContent = kBallMode ? trx('BİTİR') : trx('TOP OYNA');

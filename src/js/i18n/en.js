@@ -403,7 +403,6 @@ const EN = new Map(Object.entries({
 "Gökkuşağı": "Rainbow",
 "Kalp": "Heart",
 "Köfte yakın çekim": "Köfte close-up",
-"Kral Köfte": "King Köfte",
 "Martı": "Seagull",
 "Kruvasan": "Croissant",
 "Pizza": "Pizza",

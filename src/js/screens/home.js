@@ -5,7 +5,7 @@ if (!DB.seedMem){
   DB.seedMem = true; DB.frames.altin = true; DB.frames.film = true;
   const seq = n => Array.from({ length:n * n }, (_, i) => i), day = 86400000;
   DB.gallery.push({ n:KOFTE_PHOTO.n, pal:KOFTE_PHOTO.pal, idx:KOFTE_PHOTO.idx, order:seq(KOFTE_PHOTO.n), date:Date.now() - 3 * day, caption:'Köfte yakın çekim', frame:'film', stickers:[] });
-  DB.gallery.push({ n:HOME_ART.n, pal:HOME_ART.pal, idx:HOME_ART.idx, order:seq(HOME_ART.n), date:Date.now() - day, caption:'Kral Köfte', frame:'altin', stickers:['tac'] });
+  DB.gallery.push({ n:HOME_ART.n, pal:HOME_ART.pal, idx:HOME_ART.idx, order:seq(HOME_ART.n), date:Date.now() - day, caption:'Köfte', frame:'altin', stickers:['tac'] });
   save();
 }
 
