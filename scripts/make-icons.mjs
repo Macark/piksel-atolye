@@ -36,14 +36,16 @@ function png(size, px){ // px(x, y) -> [r,g,b]
 
 const art = home, n = art.n, idx = decode(art), pal = art.pal.map(rgb);
 const bg = pal[idx[0]]; // köşedeki zemin rengi
-// Her piksel tam sayı büyüklükte, kalan boşluk zemin rengiyle dolar (keskin piksel görünümü).
-// pad: kenar payı (Android "maskable" simgeleri kenarları kırpar, onlara daha geniş pay)
-function icon(size, padRatio){
-  const cell = Math.floor(size * (1 - 2 * padRatio) / n), off = Math.floor((size - cell * n) / 2);
-  // simge resimden küçükse (ör. 32 px favicon, 48'lik resim): en yakın pikseli örnekle
-  if (cell < 1) return png(size, (x, y) => pal[idx[Math.floor(y * n / size) * n + Math.floor(x * n / size)]]);
-  return png(size, (x, y) => { const gx = Math.floor((x - off) / cell), gy = Math.floor((y - off) / cell); return gx < 0 || gy < 0 || gx >= n || gy >= n ? bg : pal[idx[gy * n + gx]]; });
+// Her piksel tam sayı büyüklükte (keskin piksel görünümü). Simgede kediye yakınlaşılır:
+// view = görünen kare (piksel); gövde alttan kesik olduğu için resim alt kenara yaslanır.
+// pad: yan ve üst pay (Android "maskable" simgeleri kenarları kırpar, onlara daha geniş pay)
+function icon(size, view, padRatio){
+  const x0 = (n - view) / 2, y0 = n - view;
+  const cell = Math.floor(size * (1 - padRatio) / view), offX = Math.floor((size - cell * view) / 2), offY = size - cell * view;
+  // simge resimden küçükse (ör. 32 px favicon): en yakın pikseli örnekle
+  if (cell < 1) return png(size, (x, y) => pal[idx[Math.floor(y0 + y * view / size) * n + Math.floor(x0 + x * view / size)]]);
+  return png(size, (x, y) => { const gx = Math.floor((x - offX) / cell + x0), gy = Math.floor((y - offY) / cell + y0); return gx < 0 || gy < 0 || gx >= n || gy >= n ? bg : pal[idx[gy * n + gx]]; });
 }
 fs.mkdirSync(OUT, { recursive: true });
-const list = [['apple-touch-icon.png', 180, 0.04], ['icon-192.png', 192, 0.04], ['icon-512.png', 512, 0.04], ['icon-maskable-512.png', 512, 0.12], ['favicon-32.png', 32, 0]];
-for (const [f, s, p] of list){ fs.writeFileSync(path.join(OUT, f), icon(s, p)); console.log(f, s + 'px'); }
+const list = [['apple-touch-icon.png', 180, 42, 0.04], ['icon-192.png', 192, 42, 0.04], ['icon-512.png', 512, 42, 0.04], ['icon-maskable-512.png', 512, 42, 0.2], ['favicon-32.png', 32, 42, 0]];
+for (const [f, s, v, p] of list){ fs.writeFileSync(path.join(OUT, f), icon(s, v, p)); console.log(f, s + 'px'); }
