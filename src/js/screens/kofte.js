@@ -12,7 +12,9 @@ const kGun = () => { const d = new Date(); return d.getFullYear() + '-' + (d.get
 function kData(){
   const k = DB.kofte = DB.kofte || {};
   if (k.tok === undefined){ Object.assign(k, { tok:BK.baslangic.tok, mut:BK.baslangic.mut, ener:BK.baslangic.ener, dost:0, lv:1, t:Date.now() }); k.mama = { ...BK.baslangic.mama }; }
-  k.mama = k.mama || {}; k.giy = k.giy || {}; k.acik = k.acik || {}; k.acik.kiyafet = k.acik.kiyafet || {}; k.acik.hareket = k.acik.hareket || {};
+  k.mama = k.mama || {};
+  ['kofte', 'tavuk'].forEach(o => { if (k.mama[o]){ k.mama.odul = (k.mama.odul || 0) + k.mama[o]; delete k.mama[o]; } });   // eski ödül maması sıvı ödül mamasına dönüşür
+  k.giy = k.giy || {}; k.acik = k.acik || {}; k.acik.kiyafet = k.acik.kiyafet || {}; k.acik.hareket = k.acik.hareket || {};
   if (k.gun !== kGun()){ k.gun = kGun(); k.bugun = { besle:0, sev:0, top:0, hediye:0, sevMut:0 }; }
   k.bugun = k.bugun || { besle:0, sev:0, top:0, hediye:0, sevMut:0 };
   return k;
@@ -128,7 +130,7 @@ function kBuildTab(){
   h(trx('MAMALAR'));
   BK.mamalar.forEach(m => {
     const n = k.mama[m.id] || 0, b = document.createElement('button'); b.type = 'button'; b.className = 'kmama';
-    const c = atSprite(AT.fx['mama_' + m.id], 3); c.className = 'atthumb'; c.style.width = c.width / 2 + 'px';
+    const c = atSprite(AT.fx['pak_' + m.id] || AT.fx['mama_' + m.id], 3); c.className = 'atthumb'; c.style.width = c.width / 2 + 'px';
     const t = document.createElement('span'); t.innerHTML = '<b></b><small></small>'; t.querySelector('b').textContent = trx(m.name) + (n ? ' × ' + n : '');
     t.querySelector('small').textContent = TL('Tokluk +{0}, mutluluk +{1}', m.tok, m.mut);
     const act = document.createElement('i'); act.textContent = n ? trx('VER') : m.price ? TL('AL · {0}', m.price) : trx('ÖDÜL');
@@ -160,7 +162,7 @@ function kFeed(id){
   const [kx, ky] = AT.spots.kap;
   const eat = () => { KS.face = 1; kSet('eat', m.ozel ? 1800 : 2400, () => {
     KFX.bowl = null; kFeeding = false; k.tok = kClamp(k.tok + m.tok); k.mut = kClamp(k.mut + m.mut); kDost('besle'); save(); kPanel();
-    if (m.ozel){ kSet('happy', 700, () => kSet('sit', 3000)); kHearts(id === 'kofte' ? 8 : 5); atSay(trx(id === 'kofte' ? 'KÖFTE! En sevdiğim!' : 'Balık! Mmm…')); }
+    if (m.ozel){ kSet('happy', 700, () => kSet('sit', 3000)); kHearts(id === 'odul' ? 8 : 5); atSay(trx(id === 'odul' ? 'Ödül maması! Bayılırım!' : 'Ton balığı! Mmm…')); }
     else { kSet('sit', 3000); atSay(trx('Mmm, doydum.')); kHearts(2); }
     if (navigator.vibrate && !DB.noVibe) try { navigator.vibrate(15); } catch(e){}
   }); };

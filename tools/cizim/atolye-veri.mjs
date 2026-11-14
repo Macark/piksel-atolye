@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { I as I1, koltuk, kofteFrames } from './atolye.mjs';
-import { I2, KIY, FX } from './atolye-2.mjs';
+import { I2, KIY, FX, PAK } from './atolye-2.mjs';
 const I = { ...I1, ...I2 };
 const OUT = fileURLToPath(new URL('../../src/content/atolye.json', import.meta.url));
 
@@ -112,19 +112,19 @@ export const BAKIM = {
   mamalar:[
     { id:'kuru', name:'Kuru mama', price:10, tok:35, mut:3 },
     { id:'yas', name:'Yaş mama', price:25, tok:60, mut:8 },
-    { id:'balik', name:'Balık', tok:50, mut:15, ozel:true },
-    { id:'kofte', name:'Köfte!', tok:100, mut:25, ozel:true },
+    { id:'balik', name:'Ton balıklı konserve', tok:50, mut:15, ozel:true },
+    { id:'odul', name:'Sıvı ödül maması', tok:40, mut:30, ozel:true },
   ],
   dostluk:{ puan:{ besle:3, sev:1, top:2, resim:5, hediye:5 }, sinir:{ besle:6, sev:10, top:20, hediye:5 } },
   seviyeler:[
     { lv:1, puan:0 },
-    { lv:2, puan:30, kiyafet:'tasma_kirmizi', mama:{ kofte:1 } },
+    { lv:2, puan:30, kiyafet:'tasma_kirmizi', mama:{ odul:1 } },
     { lv:3, puan:80, hareket:'dans' },
     { lv:4, puan:150, kiyafet:'fular_mavi' },
-    { lv:5, puan:240, esya:'oy_sepet', mama:{ kofte:1 } },
+    { lv:5, puan:240, esya:'oy_sepet', mama:{ odul:1 } },
     { lv:6, puan:350, hareket:'yuvarlan' },
     { lv:7, puan:480, kiyafet:'bere_kirmizi' },
-    { lv:8, puan:640, esya:'mu_akvaryum', mama:{ kofte:1 } },
+    { lv:8, puan:640, esya:'mu_akvaryum', mama:{ odul:1 } },
     { lv:9, puan:830, kiyafet:'papyon' },
     { lv:10, puan:1050, kiyafet:'tac' },
   ],
@@ -151,7 +151,7 @@ export function data(){
     o.art = I[artKey]();
     return o;
   });
-  return { bakim:BAKIM, kiyafet:Object.fromEntries(Object.entries(KIYAFET).map(([k, v]) => [k, { ...v, art:KIY[k]() }])), fx:Object.fromEntries(Object.entries(FX).map(([k, f]) => [k, f()])), anchor:ANCHOR, room:ROOM, slots:SLOTS, frames:FRAMES, shelf:SHELF, chair:{ ...CHAIR, art:koltuk() }, spots:SPOTS, lights:LIGHTS, defaults:DEFAULT, kofte:kofteFrames(), items };
+  return { bakim:BAKIM, kiyafet:Object.fromEntries(Object.entries(KIYAFET).map(([k, v]) => [k, { ...v, art:KIY[k]() }])), fx:Object.fromEntries([...Object.entries(FX).map(([k, f]) => [k, f()]), ...Object.entries(PAK).map(([k, f]) => ['pak_' + k, f()])]), anchor:ANCHOR, room:ROOM, slots:SLOTS, frames:FRAMES, shelf:SHELF, chair:{ ...CHAIR, art:koltuk() }, spots:SPOTS, lights:LIGHTS, defaults:DEFAULT, kofte:kofteFrames(), items };
 }
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1].replace(/\\/g, '/').replace(/^(?!\w:)/, '')){
   // (doğrudan çalıştırınca yaz)

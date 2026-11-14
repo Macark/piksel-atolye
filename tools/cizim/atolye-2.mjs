@@ -50,11 +50,15 @@ KIY.bere_kirmizi = () => { const d = T(16, 8); d.sEll(8, 5, 8, 3.6, R.red); d.re
 KIY.tac = () => { const d = T(14, 9); d.sRect(1, 5, 12, 4, R.gold); [1, 6, 11].forEach(x => d.poly([[x, 5], [x + 1, 0], [x + 2, 5]], R.gold[1])); d.px(7, 6, R.red[1]).px(3, 6, R.blue[1]).px(11, 6, R.blue[1]); return d.outline().done(); };
 
 /* ===== MAMA, OYUN VE EFEKTLER ===== */
+// mama ambalajları (Köfte sekmesinde): konserve kutusu, ödül tüpü
+export const PAK = {};
+PAK.balik = () => { const d = T(14, 12); d.sRect(1, 2, 12, 9, R.grey); d.rect(1, 2, 12, 2, R.grey[2]); d.rect(2, 5, 10, 4, R.blue[1]); d.ell(7, 7, 3, 1.4, R.white[2]); d.poly([[9, 7], [11, 5.5], [11, 8.5]], R.white[2]); return d.outline().done(); };
+PAK.odul = () => { const d = T(14, 12); d.sPoly([[3, 1], [11, 1], [10, 11], [4, 11]], R.pink); d.rect(3, 1, 8, 2, R.pink[0]); d.sEll(7, 7, 2.4, 2, R.white); d.px(6, 6, R.terra[1]); return d.outline().done(); };
 export const FX = {};
 FX.mama_kuru = () => { const d = T(16, 5); d.ell(8, 4, 7, 3, R.wood[1], (x, y) => y < 4); [[4, 2], [8, 1], [11, 2], [6, 3], [10, 3]].forEach(([x, y]) => d.px(x, y, R.wood[2])); return d.done(); };
 FX.mama_yas = () => { const d = T(16, 5); d.ell(8, 4, 7, 3, R.terra[1], (x, y) => y < 4); d.px(6, 2, R.terra[2]).px(10, 2, R.pink[1]); return d.done(); };
-FX.mama_balik = () => { const d = T(16, 7); d.sEll(7, 4, 5, 2.4, R.grey); d.poly([[11, 4], [15, 1], [15, 7]], R.grey[1]); d.px(4, 3, R.dark[0]); d.line(6, 3, 6, 5, R.grey[0]); return d.outline().done(); };
-FX.mama_kofte = () => { const d = T(16, 7); [[4, 4], [9, 3], [12, 5]].forEach(([x, y]) => { d.sEll(x, y, 3, 2.2, R.terra); d.px(x - 1, y - 1, R.terra[2]); }); d.px(7, 6, R.green[1]).px(8, 6, R.green[1]); return d.outline().done(); };
+FX.mama_balik = () => { const d = T(16, 7); d.sEll(8, 5, 6, 2.4, R.terra); d.px(5, 4, R.terra[2]).px(9, 3, R.terra[2]).px(11, 5, R.terra[0]); d.px(7, 3, '#F6D0B0'); return d.outline().done(); };   // ton balıklı konserve (kapta)
+FX.mama_odul = () => { const d = T(16, 7); d.ell(8, 5, 6, 2.4, '#F2C8A8', (x, y) => y < 6); d.ell(8, 4, 3.4, 1.4, '#FFE4CC'); d.px(5, 5, '#E8A888').px(11, 4, '#E8A888'); return d.outline().done(); };   // sıvı ödül maması (kaba sıkılmış)
 FX.top = () => { const d = T(7, 7); d.sEll(3.5, 3.5, 3.5, 3.5, R.red); d.ell(3.5, 3.5, 3.5, 3.5, R.white[2], (x, y, dx, dy) => Math.abs(dy) < 0.25); d.px(2, 1, '#FFFFFF'); return d.done(); };
 FX.kalp = () => { const d = T(7, 6); d.map(0, 0, ['.xx.xx.', 'xyxxxxx', 'xxxxxxx', '.xxxxx.', '..xxx..', '...x...'], { x:'#E8384F', y:'#F6A0B0' }); return d.done(); };
 FX.hediye = () => { const d = T(12, 12); d.sRect(1, 4, 10, 8, R.purple); d.rect(5, 4, 2, 8, R.gold[1]); d.sRect(0, 3, 12, 3, R.purple); d.rect(5, 3, 2, 3, R.gold[1]); d.poly([[6, 3], [2, 0], [3, 3]], R.gold[1]); d.poly([[6, 3], [10, 0], [9, 3]], R.gold[1]); return d.outline().done(); };
