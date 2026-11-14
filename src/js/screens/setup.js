@@ -45,11 +45,11 @@ function openSetup(fromCam){
 function setupMaskChose(){
   renderSetup();
   if (mask.id === 'yok') return;
-  if (eyesTried === src){ if (mask.auto) $('#eyeHint').textContent = trx('Yüzün bulundu. Yerini düzeltmek istersen FOTOĞRAF görünümünde yuvarlakları sürükle.'); return; }
+  if (eyesTried === src){ if (mask.auto) $('#eyeHint').textContent = trx('Yüzün bulundu. Yerini düzeltmek istersen resmin üstünde parmağınla kaydır.'); return; }
   const s0 = src; eyesTried = src; $('#eyeHint').textContent = trx('Yüz aranıyor…');
   findEyes(src).then(ok => {
     if (src !== s0) return;
-    $('#eyeHint').textContent = trx(ok ? 'Yüzün bulundu. Yerini düzeltmek istersen FOTOĞRAF görünümünde yuvarlakları sürükle.' : 'İki yuvarlağı gözlerinin üstüne sürükle, aksesuar yüzüne otursun.');
+    $('#eyeHint').textContent = trx(ok ? 'Yüzün bulundu. Yerini düzeltmek istersen resmin üstünde parmağınla kaydır.' : 'İki yuvarlağı gözlerinin üstüne sürükle, aksesuar yüzüne otursun.');
     if (ok){ shotFace(true); placeEyes(); renderSetup(); }
   });
 }
@@ -74,7 +74,7 @@ function renderSetup(quick){
   document.querySelectorAll('#pvMode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === pvMode)));
   $('#viewSeg').hidden = !(shot && shot.face);
   // göz tutamaçları: yüz kendiliğinden bulunduysa piksel önizlemenin üstünde göz gibi durmasın
-  document.querySelectorAll('.eyeh').forEach(h => h.hidden = mask.id === 'yok' || (pvMode === 'pix' && mask.auto));
+  document.querySelectorAll('.eyeh').forEach(h => h.hidden = mask.id === 'yok' || mask.auto);
   if (shot) document.querySelectorAll('#viewSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === shot.view)));
   const dk = setupK + '|' + fx;
   if (!quick && (dk !== denKey || denSrc !== src)){ denKey = dk; denSrc = src; buildDenChips(); }

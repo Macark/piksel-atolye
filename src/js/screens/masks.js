@@ -54,7 +54,6 @@ const MASKS = {
   gozluk:{ name:'Güneş gözlüğü', draw(g, u){
     rect(g, -u*0.52, -u*0.1, u*1.04, u*0.08, '#141414');
     rr(g, -u*0.47, -u*0.11, u*0.43, u*0.28, u*0.07, '#141414'); rr(g, u*0.04, -u*0.11, u*0.43, u*0.28, u*0.07, '#141414');
-    rect(g, -u*0.4, -u*0.05, u*0.12, u*0.06, '#7C8A99'); rect(g, u*0.11, -u*0.05, u*0.12, u*0.06, '#7C8A99');
   }},
   kalp:{ name:'Kalp gözlük', draw(g, u){
     const h = (cx, r) => { circ(g, cx - r*0.5, -r*0.25, r*0.56, '#E8384F'); circ(g, cx + r*0.5, -r*0.25, r*0.56, '#E8384F'); poly(g, [cx - r*1.04, -r*0.08, cx + r*1.04, -r*0.08, cx, r*0.95], '#E8384F'); circ(g, cx - r*0.55, -r*0.38, r*0.17, '#FFB3C0'); };
@@ -134,17 +133,23 @@ function buildMaskChips(box, onChange){
   const on = mask.id !== 'yok';
   $('#maskCtl').hidden = !on; document.querySelectorAll('.eyeh').forEach(h => h.hidden = !on);
 }
-// Göz noktalarını sürükleme
+// Sürükleme: yüz kendiliğinden bulunduysa noktalar görünmez, parmak aksesuarı bütün olarak taşır.
+// Bulunamadıysa iki göz noktası görünür ve en yakın nokta tek tek taşınır.
 (() => {
-  const wrap = $('#pvWrap'); let drag = -1, raf = 0;
+  const wrap = $('#pvWrap'); let drag = -1, raf = 0, last = null;
   const pos = e => { const r = $('#preview').getBoundingClientRect(); return [Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)), Math.max(0, Math.min(1, (e.clientY - r.top) / r.height))]; };
   wrap.addEventListener('pointerdown', e => {
     if (mask.id === 'yok') return;
-    const p = pos(e), d0 = Math.hypot(p[0] - mask.eyes[0][0], p[1] - mask.eyes[0][1]), d1 = Math.hypot(p[0] - mask.eyes[1][0], p[1] - mask.eyes[1][1]);
-    drag = d0 <= d1 ? 0 : 1; wrap.setPointerCapture(e.pointerId); move(e); e.preventDefault();
+    const p = pos(e); last = p;
+    if (mask.auto) drag = 2;
+    else { const d0 = Math.hypot(p[0] - mask.eyes[0][0], p[1] - mask.eyes[0][1]), d1 = Math.hypot(p[0] - mask.eyes[1][0], p[1] - mask.eyes[1][1]); drag = d0 <= d1 ? 0 : 1; }
+    wrap.setPointerCapture(e.pointerId); move(e); e.preventDefault();
   });
   const move = e => {
-    if (drag < 0) return; mask.eyes[drag] = pos(e); mask.auto = false; placeEyes();
+    if (drag < 0) return; const p = pos(e);
+    if (drag === 2){ const dx = p[0] - last[0], dy = p[1] - last[1]; mask.eyes = mask.eyes.map(([x, y]) => [x + dx, y + dy]); }
+    else mask.eyes[drag] = p;
+    last = p; placeEyes();
     if (!raf) raf = requestAnimationFrame(() => { raf = 0; renderSetup(true); });
   };
   wrap.addEventListener('pointermove', move);
