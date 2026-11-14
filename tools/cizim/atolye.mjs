@@ -170,23 +170,26 @@ I.oy_tuy = () => { const d = T(21, 18); d.line(1, 17, 13, 6, R.wood[2]); d.line(
    İki yanda kıvrımlı açık meşe çerçeve (vidalı), aralarında arkaya yatık, öne doğru sarkan hasır şerit. ===== */
 export function koltuk(){
   const d = T(80, 62), oakD = ['#8A6640', '#B48A5C', '#CFA878'];
-  // uzak yan çerçeve (arkada, biraz koyu): arka ray + öndeki kıvrık kol + ayak
-  d.poly([[30, 1], [35, 3], [11, 44], [6, 42]], oakD[1]); d.poly([[30, 1], [33, 2], [9, 43], [6, 42]], oakD[2]);
-  d.sEll(9, 41, 7, 5.5, oakD); d.ell(9, 41, 3.4, 2.4, oakD[0]);                                           // öndeki yuvarlak kol (C biçimi)
-  d.poly([[8, 45], [12, 45], [9, 58], [5, 58]], oakD[1]);
+  // kalın çizgi: noktalar boyunca yuvarlak fırça (r yarıçap); ışık sol üstten
+  const brush = (pts, rad, r, dx, dy) => { for (let i = 0; i < pts.length - 1; i++){ const [x0, y0] = pts[i], [x1, y1] = pts[i + 1], n = Math.ceil(Math.hypot(x1 - x0, y1 - y0) * 2);
+    for (let k = 0; k <= n; k++){ const t = k / n, x = x0 + (x1 - x0) * t + dx, y = y0 + (y1 - y0) * t + dy; d.ell(x, y, rad, rad, r[1]); d.px(x - rad + 0.5, y - 0.5, r[2]); d.px(x + rad - 0.5, y + 0.5, r[0]); } } };
+  // Yan çerçeve (fotoğraftaki ölçülerle): üstten öne kıvrılarak inen ince ray, önde yuvarlak kıvrım,
+  // kıvrımdan yere inen ön ayak, ortadan geriye eğik inen arka ayak. Ayak uçları yuvarlak.
+  const yan = (dx, dy, r) => {
+    brush([[66, 3], [64, 14], [60, 27], [55, 37], [49, 45]], 2, r, dx, dy);                       // ray
+    d.ell(47 + dx, 47 + dy, 4, 4, r[1]); d.ell(47 + dx, 47 + dy, 1.6, 1.6, r[0]); d.px(45 + dx, 45 + dy, r[2]);   // önde yuvarlak kıvrım
+    brush([[49, 49], [51, 59]], 2, r, dx, dy); d.ell(51 + dx, 60 + dy, 3.4, 1.6, r[0]);              // ön ayak ve ucu
+    brush([[60, 28], [64, 42]], 2, r, dx, dy); d.ell(64 + dx, 43 + dy, 3.4, 1.6, r[0]);              // arka ayak ve ucu
+    [[64, 12], [57, 33], [50, 54]].forEach(([x, y]) => { d.px(x + dx, y + dy, '#F2F2F2'); });        // vidalar
+  };
+  yan(-38, -2, oakD);                                                                                       // uzak yan (arkada, koyu)
   // hasır şerit: arkada yatık sırt, büküm, öne doğru oturak
-  const sling = [[32, 3], [70, 7], [56, 40], [48, 54], [10, 46], [16, 34]];
+  const sling = [[29, 2], [65, 5], [56, 38], [48, 47], [10, 45], [17, 34]];
   d.poly(sling, R.sisal[1]);
-  d.poly([[16, 34], [56, 40], [48, 54], [10, 46]], R.sisal[2]);                                            // oturak (ışık alan kısım)
-  for (let y = 4; y < 54; y += 2) for (let x = 6; x < 72; x += 4){ const o = (y >> 1) % 2 ? 2 : 0, X = x + o, c = d.get(X, y); if (c === R.sisal[1] || c === R.sisal[2]){ d.px(X, y, R.sisal[0]); d.px(X + 1, y, c === R.sisal[2] ? '#E8D4AA' : R.sisal[2]); } }
-  d.line(16, 34, 56, 40, R.sisal[0]); d.line(10, 46, 48, 54, '#8A6E46'); d.line(32, 3, 70, 7, R.sisal[0]);  // büküm, ön ve üst kenar
-  // yakın yan çerçeve (önde, açık meşe): uzun eğik ray, ortada kol dayanağı, önde kısa ayak, arkada eğik ayak
-  d.poly([[69, 4], [75, 7], [55, 50], [49, 50]], R.oak[1]); d.poly([[69, 4], [72, 5], [52, 50], [49, 50]], R.oak[2]);
-  d.sEll(60, 34, 7, 4.5, R.oak);                                                                           // kol dayanağı
-  d.poly([[48, 48], [55, 48], [52, 61], [45, 61]], R.oak[1]); d.poly([[48, 48], [50, 48], [47, 61], [45, 61]], R.oak[2]);   // ön ayak
-  d.poly([[62, 32], [67, 30], [76, 61], [70, 61]], R.oak[1]); d.poly([[67, 30], [69, 30], [76, 61], [74, 61]], R.oak[0]);   // arka ayak
-  d.sEll(52, 50, 5, 3.4, R.oak);                                                                           // öndeki yuvarlak uç
-  [[66, 14], [60, 27], [53, 44], [50, 56]].forEach(([x, y]) => { d.px(x, y, '#F2F2F2'); d.px(x + 1, y, '#9A9A9A'); });   // vidalar
+  d.poly([[17, 34], [56, 38], [48, 47], [10, 45]], R.sisal[2]);
+  for (let y = 3; y < 48; y += 2) for (let x = 6; x < 70; x += 4){ const o = (y >> 1) % 2 ? 2 : 0, X = x + o, c = d.get(X, y); if (c === R.sisal[1] || c === R.sisal[2]){ d.px(X, y, R.sisal[0]); d.px(X + 1, y, c === R.sisal[2] ? '#E8D4AA' : R.sisal[2]); } }
+  d.line(17, 34, 56, 38, R.sisal[0]); d.line(10, 45, 48, 47, '#8A6E46'); d.line(29, 2, 65, 5, R.sisal[0]);
+  yan(0, 0, R.oak);                                                                                         // yakın yan (önde, açık meşe)
   return d.outline().done();
 }
 // Köfte koltukta yayılmış (fotoğraftaki gibi): sırtı hasıra yaslı, arka bacaklar uzanmış, kuyruk öne sarkık
