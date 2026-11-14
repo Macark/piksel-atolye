@@ -10,13 +10,32 @@ function convCached(n, k){
   if (!a){ a = convert(n, k); convCache.set(key, a); }
   return a;
 }
+// Fotoğrafın iki hâli: tamamı ve yüz bulunduysa yüze yakın hâli. mask.eyes her zaman o an
+// gösterilen hâle göredir; hâl değişince göz noktaları da dönüştürülür.
+let shot = null;
+function newShot(big, tracked){
+  const full = big.width === 512 ? big : cropCanvas(big, { x:0, y:0, s:1 });
+  shot = { big, full, box:null, face:null, view:'full' }; src = full;
+  if (tracked) shotFace(true);
+}
+function shotFace(go){
+  if (!shot || shot.view !== 'full') return;
+  const b = faceCropBox(mask.eyes); if (!b) return;
+  shot.box = b; shot.face = cropCanvas(shot.big, b); if (go) setView('face');
+}
+function setView(v){
+  if (!shot || !shot.face || shot.view === v) return;
+  const b = shot.box;
+  mask.eyes = mask.eyes.map(([x, y]) => v === 'face' ? [(x - b.x) / b.s, (y - b.y) / b.s] : [x * b.s + b.x, y * b.s + b.y]);
+  shot.view = v; src = v === 'face' ? shot.face : shot.full; placeEyes();
+}
 // fromCam: kameradan geldi; seçilen filtre ve yüz takibinin bulduğu göz noktaları korunur.
 // Galeriden gelince aksesuarsız açılır; aksesuar seçilince yüz bir kez aranır.
 let eyesTried = null;
 function openSetup(fromCam){
   $('#add').classList.remove('on'); stopCam(); show('setup');
   fx = 'normal'; setupN = 32; setupK = 12; pvMode = 'pix';
-  if (!fromCam){ mask.id = 'yok'; maskHome(); }
+  if (!fromCam){ mask.id = 'yok'; maskHome(); newShot(src, false); }
   eyesTried = fromCam && mask.auto ? src : null;
   $('#maskSize').value = Math.round(mask.s * 100); placeEyes();
   buildFxChips($('#fxChips'), () => renderSetup()); buildMaskChips($('#maskChips'), setupMaskChose); renderSetup();
@@ -31,7 +50,7 @@ function setupMaskChose(){
   findEyes(src).then(ok => {
     if (src !== s0) return;
     $('#eyeHint').textContent = trx(ok ? 'Yüzün bulundu. Gerekirse yuvarlakları sürükleyerek düzelt.' : 'İki yuvarlağı gözlerinin üstüne sürükle, aksesuar yüzüne otursun.');
-    if (ok){ placeEyes(); renderSetup(true); }
+    if (ok){ shotFace(true); placeEyes(); renderSetup(); }
   });
 }
 // Ayrıntı düğmeleri: her biri fotoğrafın o ayrıntıdaki hâlini küçük resim olarak gösterir.
@@ -53,6 +72,8 @@ function renderSetup(quick){
   setupRaf = 0;
   document.querySelectorAll('#lvlSeg button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.k === setupK)));
   document.querySelectorAll('#pvMode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === pvMode)));
+  $('#viewSeg').hidden = !(shot && shot.face);
+  if (shot) document.querySelectorAll('#viewSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === shot.view)));
   const dk = setupK + '|' + fx;
   if (!quick && (dk !== denKey || denSrc !== src)){ denKey = dk; denSrc = src; buildDenChips(); }
   else document.querySelectorAll('#denChips button').forEach((b, k) => b.setAttribute('aria-pressed', String(DEN[k] === setupN)));
@@ -65,5 +86,6 @@ function renderSetup(quick){
 }
 document.querySelectorAll('#lvlSeg button').forEach(b => b.onclick = () => { setupK = +b.dataset.k; renderSetup(); });
 document.querySelectorAll('#pvMode button').forEach(b => b.onclick = () => { pvMode = b.dataset.v; renderSetup(true); });
+document.querySelectorAll('#viewSeg button').forEach(b => b.onclick = () => { setView(b.dataset.v); renderSetup(); });
 $('#goBtn').onclick = () => { collTab = 'memories'; origin = { screen:'coll', tab:'memories' }; startPaint({ n:setupArt.n, pal:setupArt.pal, idx:setupArt.idx, name:'FOTOĞRAFIN' }, null); };
 $('#backBtn').onclick = () => { if (DB.gallery.length || Object.keys(DB.done).length) openColl(); else { show('home'); refreshHome(); } };

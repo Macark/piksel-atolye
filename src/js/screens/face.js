@@ -43,3 +43,18 @@ async function findEyes(img){
   const L = detectFace(img); if (!L) return false;
   mask.eyes = eyesFrom(L, 1, 1, { x:0, y:0, s:1 }, false); mask.auto = true; return true;
 }
+
+/* Yüze yakınlaştırma: kol mesafesinden çekilmiş fotoğrafta yüz küçük kalır; piksele inince yüz
+   ayrıntısı kaybolur, aksesuar birkaç kareye (nokta gibi) iner. Yüz bulunduysa fotoğraf yüze göre
+   kırpılır: genişlik ≈ 2,6 yüz genişliği, başın üstünde şapka/kulak payı bırakılır. */
+function faceCropBox(eyes){
+  const [l, r] = eyes, u = Math.hypot(r[0] - l[0], r[1] - l[1]) * 2.2;
+  const S = Math.min(1, Math.max(0.3, u * 2.6)); if (S > 0.85) return null;   // yüz zaten büyük
+  const mx = (l[0] + r[0]) / 2, my = (l[1] + r[1]) / 2 - 0.25 * u;
+  return { x:Math.max(0, Math.min(1 - S, mx - S / 2)), y:Math.max(0, Math.min(1 - S, my - S / 2)), s:S };
+}
+function cropCanvas(big, b){
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  g.drawImage(big, b.x * big.width, b.y * big.height, b.s * big.width, b.s * big.height, 0, 0, 512, 512); return c;
+}

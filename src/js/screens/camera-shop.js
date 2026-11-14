@@ -110,10 +110,11 @@ function camFrame(ctx, size){
   ctx.drawImage(camVid, (vw - sq) / 2, (vh - sq) / 2, sq, sq, 0, 0, size, size); ctx.restore(); return true;
 }
 $('#shutter').onclick = () => {
-  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
-  if (!camFrame(g, 512)) return;
-  if (camTarget && camTracking()) mask.eyes = camTarget.map(e => e.slice()); else mask.auto = false;
-  src = c; tone(880, 0.08); openSetup(true);
+  const big = document.createElement('canvas'); big.width = big.height = 1024;   // yüze yakınlaştırınca da net kalsın
+  if (!camFrame(big.getContext('2d'), 1024)) return;
+  const tracked = camTarget && camTracking();
+  if (tracked) mask.eyes = camTarget.map(e => e.slice()); else mask.auto = false;
+  newShot(big, tracked); tone(880, 0.08); openSetup(true);
 };
 $('#camFlip').onclick = () => { camFacing = camFacing === 'user' ? 'environment' : 'user'; stopCam(); openCam(); };
 $('#camBack').onclick = () => { stopCam(); show('home'); refreshHome(); };
