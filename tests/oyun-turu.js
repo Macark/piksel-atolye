@@ -95,11 +95,15 @@
       try {
         await openCam(); await sleep(300);
         if ($('#camView').hidden) throw new Error('kamera görüntüsü açılmadı');
+        const ch = [...document.querySelectorAll('#camAcc .chip')].find(b => b.textContent === trx('Köpek'));
+        if (!ch) throw new Error('kamerada filtre şeridi yok'); ch.click();
+        if ($('#camHint').hidden) throw new Error('kamera ipucu görünmedi');
         $('#shutter').click(); await sleep(50);
-        if (!$('#setup').classList.contains('on') || mask.id !== 'yok' || camStream) throw new Error('kameradan hazırlama ekranına geçiş bozuk');
+        if (!$('#setup').classList.contains('on') || mask.id !== 'kopek' || camStream) throw new Error('kameradan hazırlama ekranına geçiş bozuk (filtre korunmalı)');
+        if (setupArt.n !== 32 || pvMode !== 'pix') throw new Error('çekimden sonra piksel önizleme açılmadı');
       } finally { clearInterval(tick); navigator.mediaDevices.getUserMedia = gum; stopCam(); }
     }
-    mask.id = 'yok'; show('home'); refreshHome();
+    mask.id = 'yok'; maskHome(); show('home'); refreshHome();
   });
   closeAll();
 

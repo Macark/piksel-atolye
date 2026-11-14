@@ -10,14 +10,29 @@ function convCached(n, k){
   if (!a){ a = convert(n, k); convCache.set(key, a); }
   return a;
 }
-// fromCam: kameradan geldi (ileride kamerada seçilen ayarlar korunabilir)
+// fromCam: kameradan geldi; seçilen filtre ve yüz takibinin bulduğu göz noktaları korunur.
+// Galeriden gelince aksesuarsız açılır; aksesuar seçilince yüz bir kez aranır.
+let eyesTried = null;
 function openSetup(fromCam){
   $('#add').classList.remove('on'); stopCam(); show('setup');
-  fx = 'normal'; setupN = 32; setupK = 12; pvMode = 'pix'; mask.id = 'yok'; maskHome();
-  $('#maskSize').value = 100; placeEyes();
-  buildFxChips($('#fxChips'), () => renderSetup()); buildMaskChips($('#maskChips'), () => renderSetup()); renderSetup();
+  fx = 'normal'; setupN = 32; setupK = 12; pvMode = 'pix';
+  if (!fromCam){ mask.id = 'yok'; maskHome(); }
+  eyesTried = fromCam && mask.auto ? src : null;
+  $('#maskSize').value = Math.round(mask.s * 100); placeEyes();
+  buildFxChips($('#fxChips'), () => renderSetup()); buildMaskChips($('#maskChips'), setupMaskChose); renderSetup();
   $('#setup').scrollTop = 0;
-  const s0 = src; findEyes(src).then(ok => { if (ok && src === s0){ placeEyes(); if (mask.id !== 'yok') renderSetup(true); } });
+  if (fromCam && mask.id !== 'yok') setupMaskChose();
+}
+function setupMaskChose(){
+  renderSetup();
+  if (mask.id === 'yok') return;
+  if (eyesTried === src){ if (mask.auto) $('#eyeHint').textContent = trx('Yüzün bulundu. Gerekirse yuvarlakları sürükleyerek düzelt.'); return; }
+  const s0 = src; eyesTried = src; $('#eyeHint').textContent = trx('Yüz aranıyor…');
+  findEyes(src).then(ok => {
+    if (src !== s0) return;
+    $('#eyeHint').textContent = trx(ok ? 'Yüzün bulundu. Gerekirse yuvarlakları sürükleyerek düzelt.' : 'İki yuvarlağı gözlerinin üstüne sürükle, aksesuar yüzüne otursun.');
+    if (ok){ placeEyes(); renderSetup(true); }
+  });
 }
 // Ayrıntı düğmeleri: her biri fotoğrafın o ayrıntıdaki hâlini küçük resim olarak gösterir.
 function buildDenChips(){

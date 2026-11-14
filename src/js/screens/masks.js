@@ -3,8 +3,8 @@
    aynı ızgarada kendi temiz renkleriyle ve bir kare kalınlığında koyu kenar çizgisiyle çizilir.
    Böylece renkleri fotoğrafla karışıp bulanıklaşmaz.
    Yerleşim iki göz noktasıyla yapılır: gözlerin ortası, aralarındaki mesafe (boyut) ve
-   eğimi (baş yana yatıksa aksesuar da yatar). Göz noktalarını kullanıcı önizlemede sürükler;
-   tarayıcı ya da telefon yüz bulabiliyorsa noktalar kendiliğinden yerine gider.
+   eğimi (baş yana yatıksa aksesuar da yatar). Kamerada noktaları yüz takibi (face.js) canlı
+   günceller; hazırlama ekranında kullanıcı sürükleyerek düzeltebilir.
    Çizim birimi u = yüz genişliği (≈ göz mesafesi × 2,2); 0,0 noktası iki gözün ortası,
    y aşağı doğru artar: alın üstü ≈ -0.55u, burun ucu ≈ +0.3u, ağız ≈ +0.5u. */
 const OUTLINE = '#22160F';
@@ -123,13 +123,14 @@ function applyMask(art){
   return finishArt(n, rgb, idx);
 }
 function buildMaskChips(box, onChange){
-  box = box || $('#maskChips'); onChange = onChange || renderSetup; box.innerHTML = '';
+  box = box || $('#maskChips'); onChange = onChange || renderSetup; const keep = box.scrollLeft; box.innerHTML = '';
   Object.entries(MASKS).forEach(([id, m]) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = trx(m.name);
     b.setAttribute('aria-pressed', String(mask.id === id));
     b.onclick = () => { mask.id = id; buildMaskChips(box, onChange); onChange(); };
     box.append(b);
   });
+  box.scrollLeft = keep;   // seçince şerit başa kaymasın
   const on = mask.id !== 'yok';
   $('#maskCtl').hidden = !on; document.querySelectorAll('.eyeh').forEach(h => h.hidden = !on);
 }
@@ -152,17 +153,4 @@ function buildMaskChips(box, onChange){
 })();
 function placeEyes(){
   document.querySelectorAll('.eyeh').forEach((h, k) => { h.style.left = mask.eyes[k][0] * 100 + '%'; h.style.top = mask.eyes[k][1] * 100 + '%'; });
-}
-// Tarayıcı yüz bulabiliyorsa (FaceDetector; mobil uygulamada telefonun kendi yüz algılaması
-// buraya bağlanacak) göz noktalarını kendiliğinden yerleştirir. Bulamazsa noktalar olduğu yerde kalır.
-async function findEyes(img){
-  if (!('FaceDetector' in window)) return false;
-  try {
-    const f = await new FaceDetector({ fastMode:false, maxDetectedFaces:1 }).detect(img);
-    if (!f.length) return false;
-    const W = img.width, H = img.height, lm = f[0].landmarks || [], eyes = lm.filter(l => l.type === 'eye').map(l => l.locations && l.locations[0]).filter(Boolean);
-    if (eyes.length === 2){ eyes.sort((a, b) => a.x - b.x); mask.eyes = eyes.map(p => [p.x / W, p.y / H]); }
-    else { const b = f[0].boundingBox; mask.eyes = [[(b.x + b.width * 0.3) / W, (b.y + b.height * 0.4) / H], [(b.x + b.width * 0.7) / W, (b.y + b.height * 0.4) / H]]; }
-    mask.auto = true; return true;
-  } catch(e){ return false; }
 }

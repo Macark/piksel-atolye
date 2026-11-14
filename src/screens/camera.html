@@ -10,7 +10,8 @@
       <div class="camview" id="camView">
         <video id="camVid" playsinline muted></video>
         <span class="camguide" aria-hidden="true"></span>
-        <p class="camhint">Yüzünü çerçeveye getir. Aksesuarı çektikten sonra seçeceksin.</p>
+        <canvas id="camOv" width="384" height="384" aria-hidden="true"></canvas>
+        <p class="camhint" id="camHint" aria-live="polite">Bir filtre seç ya da hemen çek.</p>
       </div>
       <div class="camfall" id="camFall" hidden>
         <p>Kamera burada açılamadı. Telefonunun kamerasıyla çekebilir ya da galeriden bir fotoğraf seçebilirsin.</p>
@@ -18,5 +19,6 @@
         <label class="btn">GALERİDEN SEÇ<input type="file" accept="image/*" class="fileIn"></label>
       </div>
     </div>
+    <div class="chips hstrip" id="camAcc" role="group" aria-label="Filtre" style="padding:8px 14px"></div>
     <div style="padding:6px 20px 18px"><button class="btn primary" id="shutter" type="button">ÇEK</button></div>
   </section>

@@ -47,20 +47,62 @@ function fxThumbBase(){
   fxThumb = g.getImageData(0, 0, 16, 16).data; fxThumbSrc = src; return fxThumb;
 }
 
-/* Kamera: sade, normal görüntü. Aksesuarlar çekimden sonra, hazırlama ekranında eklenir
-   (canlı aksesuar telefonu yorar ve doğal durmuyordu). Kesikli çerçeve yüzü ortalamaya yardım eder. */
-let camStream = null, camFacing = 'user';
-const camVid = $('#camVid');
+/* Kamera: canlı görüntü + canlı aksesuar. Yüz takibi (face.js) her yeni görüntü karesinde gözleri
+   bulur; aksesuar katmanda yüzü izler. Çekince aynı göz noktalarıyla hazırlama ekranına geçilir,
+   fotoğraf hemen piksele çevrilir ve aksesuar piksel resme eklenir. */
+let camStream = null, camFacing = 'user', camRaf = 0, camSeen = 0, camVT = -1, camNext = 0, camGap = 50, camTarget = null;
+const camVid = $('#camVid'), camOv = $('#camOv'), camOvG = camOv.getContext('2d');
 async function openCam(){
   $('#add').classList.remove('on'); show('cam'); $('#camFall').hidden = true; $('#camView').hidden = false; $('#shutter').disabled = false;
-  $('#camView').classList.toggle('mirror', camFacing === 'user');
+  $('#camView').classList.toggle('mirror', camFacing === 'user'); camSeen = 0;
+  buildMaskChips($('#camAcc'), camChose); camHint();
+  if (mask.id !== 'yok') loadFace().then(camHint, camHint);
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('no camera');
     camStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:camFacing, width:{ ideal:1280 }, height:{ ideal:1280 } }, audio:false });
     camVid.srcObject = camStream; await camVid.play();
+    if (!camRaf) camRaf = requestAnimationFrame(camLoop);
   } catch(e){ stopCam(); $('#camView').hidden = true; $('#camFall').hidden = false; $('#shutter').disabled = true; }
 }
-function stopCam(){ if (camStream){ camStream.getTracks().forEach(t => t.stop()); camStream = null; } try { camVid.srcObject = null; } catch(e){} }
+function camChose(){ if (mask.id !== 'yok' && !faceLM) loadFace().then(camHint, camHint); camSeen = 0; camHint(); }
+function stopCam(){ cancelAnimationFrame(camRaf); camRaf = 0; if (camStream){ camStream.getTracks().forEach(t => t.stop()); camStream = null; } try { camVid.srcObject = null; } catch(e){} }
+const camTracking = () => performance.now() - camSeen < 450;
+// Algılama en çok ~20 kez/sn (yavaş telefonda aralık kendiliğinden uzar); aksesuar her ekran
+// karesinde son bulunan konuma doğru kayar, böylece hareket akıcı, işlemci yükü düşük kalır.
+function camLoop(now){
+  camRaf = 0; if (!camStream) return;
+  if (faceLM && mask.id !== 'yok' && camVid.readyState >= 2 && camVid.currentTime !== camVT && now >= camNext){
+    camVT = camVid.currentTime;
+    const t0 = performance.now(), L = detectFace(camVid), dt = performance.now() - t0;
+    camGap = Math.min(200, Math.max(50, dt * 2.5)); camNext = now + camGap;
+    if (L){
+      const vw = camVid.videoWidth, vh = camVid.videoHeight, s = Math.min(vw, vh);
+      camTarget = eyesFrom(L, vw, vh, { x:(vw - s) / 2, y:(vh - s) / 2, s }, camFacing === 'user');
+      if (!camTracking()) mask.eyes = camTarget.map(e => e.slice());
+      mask.auto = true; camSeen = performance.now();
+    }
+  }
+  if (camTarget && camTracking()) mask.eyes = mask.eyes.map((p, j) => [p[0] + (camTarget[j][0] - p[0]) * 0.4, p[1] + (camTarget[j][1] - p[1]) * 0.4]);
+  drawCamOv();
+  camRaf = requestAnimationFrame(camLoop);
+}
+let camOvOn = false;
+function drawCamOv(){
+  const on = mask.id !== 'yok' && camTracking();
+  if (!on && !camOvOn) return;
+  const N = camOv.width; camOvG.clearRect(0, 0, N, N);
+  if (on) drawMaskAt(camOvG, N);
+  camOvOn = on; camHint();
+}
+function camHint(){
+  const h = $('#camHint'), tr = camTracking();
+  $('#camView').classList.toggle('tracking', mask.id !== 'yok' && tr);
+  h.textContent = mask.id === 'yok' ? trx('Bir filtre seç ya da hemen çek.')
+    : faceFail ? trx('Filtreler yüklenemedi. Çekince aksesuarı elle yerleştirebilirsin.')
+    : !faceLM ? trx('Filtreler hazırlanıyor…')
+    : tr ? '' : trx('Yüzünü çerçeveye getir.');
+  h.hidden = !h.textContent;
+}
 function camFrame(ctx, size){
   const vw = camVid.videoWidth, vh = camVid.videoHeight; if (!vw) return false;
   const sq = Math.min(vw, vh); ctx.save(); if (camFacing === 'user'){ ctx.translate(size, 0); ctx.scale(-1, 1); }
@@ -70,6 +112,7 @@ function camFrame(ctx, size){
 $('#shutter').onclick = () => {
   const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
   if (!camFrame(g, 512)) return;
+  if (camTarget && camTracking()) mask.eyes = camTarget.map(e => e.slice()); else mask.auto = false;
   src = c; tone(880, 0.08); openSetup(true);
 };
 $('#camFlip').onclick = () => { camFacing = camFacing === 'user' ? 'environment' : 'user'; stopCam(); openCam(); };
